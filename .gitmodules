@@ -1,0 +1,3 @@
+[submodule "game/definitions/love2d_definitions"]
+	path = game/definitions/love2d_definitions
+	url = https://github.com/simonbroggi/love2d_definitions.git

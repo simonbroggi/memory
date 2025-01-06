@@ -1,0 +1,10 @@
+{
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.diagnostics.globals": [
+        "love",
+    ],
+    "Lua.workspace.library": [
+        "./definitions/love2d_definitions/library"
+    ],
+    "Lua.workspace.checkThirdParty": false,
+}

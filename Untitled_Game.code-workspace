@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "Game",
+			"path": "./game",
+		},
+		{
+			"name": "Tools",
+			"path": "./tools",
+		},
+		{
+			"name": "Resources",
+			"path": "./resources",
+		},
+		{
+			"name": "Root",
+			"path": ".",
+		}
+	]
+}
