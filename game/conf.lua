@@ -16,7 +16,7 @@ end
 
 -- https://love2d.org/wiki/Config_Files
 function love.conf(t)
-	t.identity              = nil
+	t.identity              = "InsertCoin_Memory"
 	t.appendidentity        = false
 	t.version               = "12.0"
 	t.console               = false
@@ -28,7 +28,7 @@ function love.conf(t)
 	t.audio.mic             = false
 	t.audio.mixwithsystem   = true
 
-	t.window.title          = "Untitled"
+	t.window.title          = "Memory Game"
 	t.window.icon           = nil
 	t.window.width          = 1280
 	t.window.height         = 720
