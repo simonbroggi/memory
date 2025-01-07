@@ -10,8 +10,8 @@ function love.load()
     Cam = core.newEntitytInWorld()
     Cam.camera = {}
     Cam.tform = {x = 0, y = 0, r = 0, sx = 1, sy = 1}
-    Cam.rectangle = {width = 40, height = 40}
-    Cam.material = {red=1, green=0, blue=1, alpha=1}
+    --Cam.rectangle = {width = 40, height = 40}
+    --Cam.material = {red=1, green=0, blue=1, alpha=1}
 
     -- coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
