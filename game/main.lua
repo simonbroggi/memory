@@ -1,10 +1,11 @@
 local core = require("core")
-
+local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 
 local CardManager = require("CardManager")
 
 function love.load()
+    PhysicsSystem:init()
     DrawSystem:init()
 
     Cam = core.newEntitytInWorld()
@@ -30,6 +31,10 @@ function love.load()
         local card = core.newEntitytInWorld()
         card.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
         card.sprite = CardManager.cardSprites[n]
+        card.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
+        card.body:setAngle(card.tform.r)
+        love.physics.newRectangleShape(card.body, 0, 0, 256, 256)
+
     end
 
     local spacing = 300
@@ -46,12 +51,14 @@ function love.load()
 end
 
 function love.update(dt)
-    
+    PhysicsSystem:fixedUpdate(dt)
+
     DrawSystem:update(dt)
     
 end
 
 function love.draw()
+    PhysicsSystem:debugDraw()
     DrawSystem:draw()
 end
 
