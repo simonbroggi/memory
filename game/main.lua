@@ -2,6 +2,8 @@ local core = require("core")
 
 local DrawSystem = require("systems.DrawSystem")
 
+local CardManager = require("CardManager")
+
 function love.load()
     DrawSystem:init()
 
@@ -47,6 +49,10 @@ function love.load()
     local card4 = core.newEntitytInWorld()
     card4.tform = {x = -250, y = 250, r=math.pi/32 * math.random(-1.0,1.0)}
     card4.sprite = {texture = card_backs_texture, quad = card4_quad, ox = card_w*0.5, oy = card_h*0.5}
+
+    local card = core.newEntitytInWorld()
+    card.tform = {x = 0, y = 0, r = math.pi/32 * math.random(-1.0,1.0)}
+    card.sprite = CardManager.cardBackSprite
 end
 
 function love.update(dt)
