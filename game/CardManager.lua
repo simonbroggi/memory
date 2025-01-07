@@ -33,8 +33,8 @@ end
 function manager.createCardBackTexture()
     local texture = startDrawingCardTexture(cardWidth, cardHeight, 1, 1, 1)
     
-    local r, g, b = 1, 0, 1
-    love.graphics.setColor(r, g, b, 1)
+    local color = {1, 0, 1}
+    love.graphics.setColor(color)
     local inset = 10
     local lineWidth = love.graphics.getLineWidth()
     love.graphics.setLineWidth(4)
@@ -50,10 +50,9 @@ function manager.createCardBackTexture()
     return texture
 end
 
-function manager.createDiceCardTexture(n)
+function manager.createDiceCardTexture(n, color)
     local texture = startDrawingCardTexture(cardWidth, cardHeight, 1, 1, 1)
-    local r, g, b = 1, 0, 1
-    love.graphics.setColor(r, g, b, 1)
+    love.graphics.setColor(color)
     love.graphics.push()
     love.graphics.translate(cardWidth/2, cardHeight/2)
     local radius = 20
@@ -92,20 +91,32 @@ function manager.createDiceCardTexture(n)
         love.graphics.circle("fill", 0, 0, radius)
         love.graphics.pop()
     end
+    love.graphics.pop()
 
     stopDrawingCardTexture()
     return texture
 end
 
-local cardBackTexture = manager.createCardBackTexture()
-local cardTexture = manager.createDiceCardTexture(6)
-
-manager.cardBackSprite = {
-    texture = cardTexture,
-    ox = cardWidth/2,
-    oy = cardHeight/2,
+-- list of card sprites in a set
+local cardSetSize = 16
+local cardSprites = {}
+cardSprites.cardBack = {
+    texture = manager.createCardBackTexture(),
+    ox = cardWidth / 2,
+    oy = cardHeight / 2,
     quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
 }
+for i=1, cardSetSize/2 do
+    local div6 = math.floor((i-1)/6+1)
+    local mod6 = ((i-1)%6)+1
+    cardSprites[i] = {
+        texture = manager.createDiceCardTexture(mod6, div6 > 1 and {1,0,0} or {0,1,0}),
+        ox = cardWidth / 2,
+        oy = cardHeight / 2,
+        quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
+    }
+end
 
+manager.cardSprites = cardSprites
 
 return manager
