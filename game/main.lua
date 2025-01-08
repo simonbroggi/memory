@@ -1,12 +1,16 @@
 local core = require("core")
+local InputSystem = require("systems.InputSystem")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
+local AnimSystem = require("systems.AnimSystem")
 
 local CardManager = require("CardManager")
 
 function love.load()
-    PhysicsSystem:init()
     DrawSystem:init()
+    InputSystem:init()
+    PhysicsSystem:init()
+    AnimSystem:init()
 
     Cam = core.newEntitytInWorld()
     Cam.camera = {}
@@ -51,8 +55,10 @@ function love.load()
 end
 
 function love.update(dt)
+    InputSystem:update(dt)
     PhysicsSystem:fixedUpdate(dt)
 
+    AnimSystem:update(dt)
     DrawSystem:update(dt)
     
 end
