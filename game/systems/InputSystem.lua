@@ -76,6 +76,7 @@ function System:update(dt)
                                 anim.time = anim.time + t
                                 local tt = anim.time * 5
                                 if tt >= math.pi then
+                                    e.tform.r = 0
                                     e.tform.sx = 1
                                     e.tform.sy = 1
                                     e.tform.kx = 0
@@ -84,6 +85,7 @@ function System:update(dt)
                                 end
                                 e.tform.sx = 1 - math.sin(tt) * 0.1
                                 e.tform.sy = 1 - math.sin(tt) * .8
+                                e.tform.r = math.sin(tt) * math.rad(-10)
                                 e.tform.kx = math.sin(tt) * 0.5
                                 e.tform.ky = math.sin(tt) * -0.7
                             end
