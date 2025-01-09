@@ -68,29 +68,8 @@ function System:update(dt)
                     
                     local body = shape:getBody()
                     local entity = body:getUserData()
-                    if not entity.anim then
-                        entity.anim = {
-                            time = 0,
-                            update = function(e, t)
-                                local anim = e.anim
-                                anim.time = anim.time + t
-                                local tt = anim.time * 5
-                                if tt >= math.pi then
-                                    e.tform.r = 0
-                                    e.tform.sx = 1
-                                    e.tform.sy = 1
-                                    e.tform.kx = 0
-                                    e.tform.ky = 0
-                                    e.anim = nil
-                                end
-                                e.tform.sx = 1 - math.sin(tt) * 0.1
-                                e.tform.sy = 1 - math.sin(tt) * .8
-                                e.tform.r = math.sin(tt) * math.rad(-10)
-                                e.tform.kx = math.sin(tt) * 0.5
-                                e.tform.ky = math.sin(tt) * -0.7
-                            end
-                        }
-                    end
+
+                    if entity.onPointerDown then entity:onPointerDown() end
                     
                     -- continue testing for other shapes (could return false to stop testing and only handle the first shape collision)
                     return true
