@@ -1,6 +1,7 @@
 ---@class card
 ---@field backSprite sprite
 ---@field frontSprite? sprite
+---@field pair card
 
 ---@class entity
 ---@field card? card
@@ -103,6 +104,19 @@ function manager.createDiceCardTexture(n, color)
     stopDrawingCardTexture()
     return texture
 end
+
+-- Create a new edition creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
+-- But what if a card is changed during a game (e.g. a mark is added)? In that case, the card table must be copied!
+---@class edition a set of cards. Every card is unique.
+---@field cards card[]
+
+---@class cardStack A stack of cards. The same card can be in the stack multiple times.
+---@field cards card[]
+
+-- Set up a memory game:
+-- - create a card stack with the correct cards called unseenCards.
+-- - place card entities with the card back sprite on the board.
+-- - when a card is clicked, if the frontSprite is not defined draw a random card from the stack and assign it to the front card.
 
 -- list of card sprites in a set
 local cardSetSize = 16
