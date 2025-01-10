@@ -34,8 +34,20 @@ function love.load()
         local anim = e.anim
         anim.time = anim.time + deltaT
         local tt = anim.time * 5
+        if tt >= math.pi/2 and not anim.flipped then
+            anim.flipped = true
+            if e.sprite == e.card.backSprite then
+                -- if the front of the card is not yet defined, choose a random front sprite
+                if e.card.frontSprite == nil then
+                    e.card.frontSprite = CardManager.cardSprites[math.random(8)]
+                end
+                e.sprite = e.card.frontSprite
+            else
+                e.sprite = e.card.backSprite
+            end
+        end
         if tt >= math.pi then
-            e.tform.r = 0
+            e.tform.r = anim.startRot
             e.tform.sx = 1
             e.tform.sy = 1
             e.tform.kx = 0
@@ -45,24 +57,33 @@ function love.load()
         e.tform.sx = 1 - math.sin(tt) * 0.1
         e.tform.sy = 1 - math.sin(tt) * .8
         e.tform.r = math.sin(tt) * math.rad(-10)
-        e.tform.kx = math.sin(tt) * -0.5
-        e.tform.ky = math.sin(tt) * 0.7
+        e.tform.kx = math.sin(tt) * -0.6
+        e.tform.ky = math.sin(tt) * -0.8
     end
 
     local function placeCard(x, y, n)
+        n = n or 0
         print("place card " .. n)
-        local card = core.newEntitytInWorld()
-        card.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
-        card.sprite = CardManager.cardSprites[n]
-        card.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
-        card.body:setAngle(card.tform.r)
-        love.physics.newRectangleShape(card.body, 0, 0, 256, 256)
+        local cardEntity = core.newEntitytInWorld()
+        cardEntity.card = {
+            backSprite = CardManager.cardSprites.cardBack,
+        }
+        if n > 0 then
+            cardEntity.card.frontSprite = CardManager.cardSprites[n]
+        end
+        cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
+        cardEntity.sprite = cardEntity.card.backSprite
+        cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
+        cardEntity.body:setAngle(cardEntity.tform.r)
+        love.physics.newRectangleShape(cardEntity.body, 0, 0, 256, 256)
 
-        function card:onPointerDown()
+        function cardEntity:onPointerDown()
             if not self.anim then
                 self.anim = {
                     time = 0,
-                    update = cardFlipAnimUpdate
+                    update = cardFlipAnimUpdate,
+                    startRot = self.tform.r,
+                    flipped = false,
                 }
             end
         end
@@ -76,7 +97,8 @@ function love.load()
         for x = 1, 4 do
             local xx = (x-1) * spacing + staratX
             local n = x + ((y-1)*4)
-            placeCard(xx, yy, (n-1)%8+1)
+            -- placeCard(xx, yy, (n-1)%8+1)
+            placeCard(xx, yy) -- dont define the cards yet.
         end
     end
 end
