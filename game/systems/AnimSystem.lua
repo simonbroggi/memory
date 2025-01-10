@@ -1,4 +1,10 @@
 local core = require("core")
+---@class anim
+---@field time number
+---@field update function
+
+---@class entity
+---@field anim? anim
 
 local System = {
     animEntities = core.newList()

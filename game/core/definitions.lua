@@ -7,10 +7,6 @@
 ---@field rectangle? rectangle
 ---@field material? material
 ---@field onPointerDown? function
----@field anim? anim
-
----@class anim
----@field update function
 
 ---@class camera
 

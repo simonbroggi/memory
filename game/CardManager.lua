@@ -1,3 +1,10 @@
+---@class card
+---@field backSprite sprite
+---@field frontSprite? sprite
+
+---@class entity
+---@field card? card
+
 ---@class CardManager
 ---@field cardBackSprite sprite
 local manager = {}
