@@ -210,27 +210,4 @@ function manager.createCardSet(cardSetSize)
     return cardSet
 end
 
-
--- list of card sprites in a set
-local cardSetSize = 16
-local cardSprites = {}
-cardSprites.cardBack = {
-    texture = manager.createCardBackTexture(),
-    ox = cardWidth / 2,
-    oy = cardHeight / 2,
-    quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
-}
-for i=1, cardSetSize/2 do
-    local div6 = math.floor((i-1)/6+1)
-    local mod6 = ((i-1)%6)+1
-    cardSprites[i] = {
-        texture = manager.createDiceCardTexture(mod6, div6 > 1 and {1,0,0} or {0,1,0}),
-        ox = cardWidth / 2,
-        oy = cardHeight / 2,
-        quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
-    }
-end
-
-manager.cardSprites = cardSprites
-
 return manager

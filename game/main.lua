@@ -69,16 +69,12 @@ function love.load()
         e.tform.ky = math.sin(tt) * 0.8
     end
 
-    local function placeCard(x, y, n)
-        n = n or 0
-        print("place card " .. n)
+    local function placeCard(x, y)
+        print("place card ")
         local cardEntity = core.newEntitytInWorld()
         cardEntity.card = {
-            backSprite = CardManager.cardSprites.cardBack,
+            backSprite = cardSet.cardBackSprite,
         }
-        if n > 0 then
-            cardEntity.card.frontSprite = CardManager.cardSprites[n]
-        end
         cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
         cardEntity.sprite = cardEntity.card.backSprite
         cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
@@ -104,8 +100,6 @@ function love.load()
         local yy = (y-1) * spacing + startY
         for x = 1, 4 do
             local xx = (x-1) * spacing + staratX
-            local n = x + ((y-1)*4)
-            -- placeCard(xx, yy, (n-1)%8+1)
             placeCard(xx, yy) -- dont define the cards yet.
         end
     end
