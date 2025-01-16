@@ -30,6 +30,9 @@ function love.load()
 
     math.randomseed(os.time())
 
+    local cardSet = CardManager.createCardSet(12)
+    local unseenCards = CardManager.createCardPairsBagFromSet(cardSet, 16)
+
     ---@function
     ---@param e entity
     local function cardFlipAnimUpdate(e, deltaT)
@@ -42,7 +45,9 @@ function love.load()
             if e.sprite == e.card.backSprite then
                 -- if the front of the card is not yet defined, choose a random front sprite
                 if e.card.frontSprite == nil then
-                    e.card.frontSprite = CardManager.cardSprites[math.random(8)]
+                    local cardIndex = CardManager.popRandomElementFromArray(unseenCards)
+                    e.card.frontSprite = cardSet.cardSprites[cardIndex]
+                    --e.card.frontSprite = CardManager.cardSprites[math.random(8)]
                 end
                 e.sprite = e.card.frontSprite
             else
