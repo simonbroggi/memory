@@ -65,7 +65,7 @@ end
 ---@field card? card
 
 ---A card bag is just an array of cards.
----@param array card[]
+---@param array any[]
 ---@return any element
 function manager.popRandomElementFromArray(array)
     local cardsSize = #array
