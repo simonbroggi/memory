@@ -18,7 +18,7 @@ function love.load()
     --Cam.rectangle = {width = 40, height = 40}
     --Cam.material = {red=1, green=0, blue=1, alpha=1}
 
-    -- coordinate system lines using rectangle components
+    --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
     ex.tform = {x = 0, y = 0}
     ex.material = {red=1, green=0, blue=0, alpha=1}
@@ -27,90 +27,10 @@ function love.load()
     ey.tform = {x = 0, y = 0}
     ey.material = {red=0, green=1, blue=0, alpha=1}
     ey.rectangle = {width=4, height=1000}
+    --]]
 
-    math.randomseed(os.time())
+    CardManager.dealCards(4, 3)
 
-    local cardSet = CardManager.createCardSet(12)
-    local unseenCards
-
-    ---@function
-    ---@param e entity
-    local function cardFlipAnimUpdate(e, deltaT)
-        local anim = e.anim
-        ---@cast anim -nil
-        anim.time = anim.time + deltaT
-        local tt = anim.time * 5
-        if tt >= math.pi/2 and not anim.flipped then
-            anim.flipped = true
-            e.card.facingUp = not e.card.facingUp
-            if e.card.facingUp then
-                -- if the front of the card is not yet defined, choose a random front sprite
-                if e.card.index == 0 then
-                    e.card.index = CardManager.popRandomElementFromArray(unseenCards)
-                end
-                e.sprite = e.card.cardSet.cardSprites[e.card.index]
-            else
-                e.sprite = e.card.cardSet.cardBackSprite
-            end
-        end
-        if tt >= math.pi then
-            e.tform.r = anim.startRot
-            e.tform.sx = 1
-            e.tform.sy = 1
-            e.tform.kx = 0
-            e.tform.ky = 0
-            e.anim = nil -- remove the animation
-        end
-        e.tform.sx = 1 - math.sin(tt) * 0.1
-        e.tform.sy = 1 - math.sin(tt) * .9
-        e.tform.r = math.sin(tt) * math.rad(10)
-        e.tform.kx = math.sin(tt) * 0.6
-        e.tform.ky = math.sin(tt) * 0.8
-    end
-
-    local function placeCard(x, y, cardSet, cardBag)
-        print("place card ")
-        local cardEntity = core.newEntitytInWorld()
-
-        -- card component could have a refference to a set, and an index if defined.
-
-        cardEntity.card = {
-            cardSet = cardSet,
-            index = 0, -- unseen card
-            cardBag = cardBag,
-            facingUp = false,
-        }
-        cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
-        cardEntity.sprite = cardSet.cardBackSprite
-        cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
-        cardEntity.body:setAngle(cardEntity.tform.r)
-        love.physics.newRectangleShape(cardEntity.body, 0, 0, 256, 256)
-
-        function cardEntity:onPointerDown()
-            if not self.anim then
-                self.anim = {
-                    time = 0,
-                    update = cardFlipAnimUpdate,
-                    startRot = self.tform.r,
-                    flipped = false,
-                }
-            end
-        end
-    end
-
-    local rows, columns = 6, 4
-    unseenCards = CardManager.createCardPairsBagFromSet(cardSet, rows*columns)
-
-    local spacing = 300
-    local staratX, startY = - spacing * (rows-1) * 0.5, - spacing * (columns-1) * 0.5
-
-    for y = 1, columns do
-        local yy = (y-1) * spacing + startY
-        for x = 1, rows do
-            local xx = (x-1) * spacing + staratX
-            placeCard(xx, yy, cardSet, unseenCards) -- dont define the cards yet.
-        end
-    end
 end
 
 function love.update(dt)
@@ -119,7 +39,6 @@ function love.update(dt)
 
     AnimSystem:update(dt)
     DrawSystem:update(dt)
-    
 end
 
 function love.draw()

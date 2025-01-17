@@ -2,6 +2,8 @@ local core = require("core")
 ---@class anim
 ---@field time number
 ---@field update function
+---@field startRot? number
+---@field flipped boolean
 
 ---@class entity
 ---@field anim? anim

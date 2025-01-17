@@ -1,6 +1,8 @@
+local core = require("core")
+local PhysicsSystem = require("systems.PhysicsSystem")
 local drawer = require("CardDrawer")
 
----@class CardManager
+---@class CardManager creates new card sets, deals cards etc..
 local manager = {}
 
 -- Create a new cardSet creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
@@ -59,9 +61,9 @@ end
 
 ---@class card
 ---@field cardSet cardSet a refference to the cardSet of this card.
----@field backSprite sprite the back of the card. get it from the cardSet, but possibly alter it during game.
 ---@field index number index of the card in the cardSet. can be 0 when it's not defined yet.
----@field frontSprite? sprite the front of the card. get it from the cardSet, but possibly alter it suring game. can be nil when card is not defined jet.
+---@field cardBag number[]
+---@field facingUp boolean True if the card visible to the player.
 
 ---@class entity
 ---@field card? card
@@ -108,6 +110,92 @@ function manager.createCardSet(cardSetSize, cardWidth, cardHeight, cardBorder)
         cardSet.pairIndices[i] = i
     end
     return cardSet
+end
+
+math.randomseed(os.time())
+
+local cardSet = manager.createCardSet(12)
+---@type number[] a bag of card indices
+local unseenCards
+
+---@function
+---@param e entity
+local function cardFlipAnimUpdate(e, deltaT)
+    local anim = e.anim
+    ---@cast anim -nil
+    anim.time = anim.time + deltaT
+    local tt = anim.time * 5
+    if tt >= math.pi/2 and not anim.flipped then
+        anim.flipped = true
+        e.card.facingUp = not e.card.facingUp
+        if e.card.facingUp then
+            -- if the front of the card is not yet defined, choose a random front sprite
+            if e.card.index == 0 then
+                e.card.index = manager.popRandomElementFromArray(unseenCards)
+            end
+            e.sprite = e.card.cardSet.cardSprites[e.card.index]
+        else
+            e.sprite = e.card.cardSet.cardBackSprite
+        end
+    end
+    if tt >= math.pi then
+        e.tform.r = anim.startRot
+        e.tform.sx = 1
+        e.tform.sy = 1
+        e.tform.kx = 0
+        e.tform.ky = 0
+        e.anim = nil -- remove the animation
+    end
+    e.tform.sx = 1 - math.sin(tt) * 0.1
+    e.tform.sy = 1 - math.sin(tt) * .9
+    e.tform.r = math.sin(tt) * math.rad(10)
+    e.tform.kx = math.sin(tt) * 0.6
+    e.tform.ky = math.sin(tt) * 0.8
+end
+
+local function placeCard(x, y, cardSet, cardBag)
+    local cardEntity = core.newEntitytInWorld()
+
+    -- card component could have a refference to a set, and an index if defined.
+
+    cardEntity.card = {
+        cardSet = cardSet,
+        index = 0, -- unseen card
+        cardBag = cardBag,
+        facingUp = false,
+    }
+    cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
+    cardEntity.sprite = cardSet.cardBackSprite
+    cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
+    cardEntity.body:setAngle(cardEntity.tform.r)
+    love.physics.newRectangleShape(cardEntity.body, 0, 0, 256, 256)
+
+    function cardEntity:onPointerDown()
+        if not self.anim then
+            self.anim = {
+                time = 0,
+                update = cardFlipAnimUpdate,
+                startRot = self.tform.r,
+                flipped = false,
+            }
+        end
+    end
+end
+
+function manager.dealCards(rows, columns)
+    unseenCards = manager.createCardPairsBagFromSet(cardSet, rows*columns)
+
+    local spacing = 300
+    local staratX, startY = - spacing * (rows-1) * 0.5, - spacing * (columns-1) * 0.5
+
+    for y = 1, columns do
+        local yy = (y-1) * spacing + startY
+        for x = 1, rows do
+            local xx = (x-1) * spacing + staratX
+            placeCard(xx, yy, cardSet, unseenCards) -- dont define the cards yet.
+        end
+    end
+    
 end
 
 return manager
