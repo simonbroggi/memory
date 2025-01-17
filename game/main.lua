@@ -31,7 +31,7 @@ function love.load()
     math.randomseed(os.time())
 
     local cardSet = CardManager.createCardSet(12)
-    local unseenCards = CardManager.createCardPairsBagFromSet(cardSet, 16)
+    local unseenCards
 
     ---@function
     ---@param e entity
@@ -98,12 +98,15 @@ function love.load()
         end
     end
 
-    local spacing = 300
-    local staratX, startY = - spacing * 1.5, - spacing * 1.5
+    local rows, columns = 6, 4
+    unseenCards = CardManager.createCardPairsBagFromSet(cardSet, rows*columns)
 
-    for y = 1, 4 do
+    local spacing = 300
+    local staratX, startY = - spacing * (rows-1) * 0.5, - spacing * (columns-1) * 0.5
+
+    for y = 1, columns do
         local yy = (y-1) * spacing + startY
-        for x = 1, 4 do
+        for x = 1, rows do
             local xx = (x-1) * spacing + staratX
             placeCard(xx, yy, cardSet, unseenCards) -- dont define the cards yet.
         end
