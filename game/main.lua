@@ -29,6 +29,7 @@ function love.load()
     ey.rectangle = {width=4, height=1000}
     --]]
 
+    CardManager.initCardSet()
     CardManager.dealCards(4, 3)
 
 end
@@ -42,7 +43,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    PhysicsSystem:debugDraw()
+    -- PhysicsSystem:debugDraw()
     DrawSystem:draw()
 end
 

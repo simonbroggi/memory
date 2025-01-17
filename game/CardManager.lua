@@ -112,11 +112,10 @@ function manager.createCardSet(cardSetSize, cardWidth, cardHeight, cardBorder)
     return cardSet
 end
 
-math.randomseed(os.time())
-
-local cardSet = manager.createCardSet(12)
----@type number[] a bag of card indices
-local unseenCards
+function manager.initCardSet()
+    math.randomseed(os.time())
+    manager.cardSet = manager.createCardSet(12)
+end
 
 ---@function
 ---@param e entity
@@ -131,7 +130,7 @@ local function cardFlipAnimUpdate(e, deltaT)
         if e.card.facingUp then
             -- if the front of the card is not yet defined, choose a random front sprite
             if e.card.index == 0 then
-                e.card.index = manager.popRandomElementFromArray(unseenCards)
+                e.card.index = manager.popRandomElementFromArray(manager.unseenCards)
             end
             e.sprite = e.card.cardSet.cardSprites[e.card.index]
         else
@@ -153,6 +152,26 @@ local function cardFlipAnimUpdate(e, deltaT)
     e.tform.ky = math.sin(tt) * 0.8
 end
 
+---called whenever a card is tapped
+---@param cardEntity entity
+local function onCardTapped(cardEntity)
+    if not manager.playerTurn then
+        print("hey, it's computers turn!")
+        return
+    end
+
+    -- todo: points and computer turn. manager.revealedCardEntities ...
+
+    if not cardEntity.anim then
+        cardEntity.anim = {
+            time = 0,
+            update = cardFlipAnimUpdate,
+            startRot = cardEntity.tform.r,
+            flipped = false,
+        }
+    end
+end
+
 local function placeCard(x, y, cardSet, cardBag)
     local cardEntity = core.newEntitytInWorld()
 
@@ -170,20 +189,21 @@ local function placeCard(x, y, cardSet, cardBag)
     cardEntity.body:setAngle(cardEntity.tform.r)
     love.physics.newRectangleShape(cardEntity.body, 0, 0, 256, 256)
 
-    function cardEntity:onPointerDown()
-        if not self.anim then
-            self.anim = {
-                time = 0,
-                update = cardFlipAnimUpdate,
-                startRot = self.tform.r,
-                flipped = false,
-            }
-        end
-    end
+    cardEntity.onPointerDown = onCardTapped
+
+    return cardEntity
 end
 
+---deals cards and starts the game.
+---@param rows number
+---@param columns number
 function manager.dealCards(rows, columns)
-    unseenCards = manager.createCardPairsBagFromSet(cardSet, rows*columns)
+
+    -- a set of all card entities. weak refferenced..
+    manager.dealedCardEntities = setmetatable({}, {__mode="k"})
+
+    ---@type number[] a bag of card indices
+    manager.unseenCards = manager.createCardPairsBagFromSet(manager.cardSet, rows*columns)
 
     local spacing = 300
     local staratX, startY = - spacing * (rows-1) * 0.5, - spacing * (columns-1) * 0.5
@@ -192,10 +212,14 @@ function manager.dealCards(rows, columns)
         local yy = (y-1) * spacing + startY
         for x = 1, rows do
             local xx = (x-1) * spacing + staratX
-            placeCard(xx, yy, cardSet, unseenCards) -- dont define the cards yet.
+            local cardEntity = placeCard(xx, yy, manager.cardSet, manager.unseenCards) -- dont define the cards yet.
+            manager.dealedCardEntities[cardEntity] = true
         end
     end
-    
+
+    manager.playerTurn = true
+    manager.revealedCardEntities = setmetatable({}, {__mode="k"})
+
 end
 
 return manager
