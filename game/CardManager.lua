@@ -130,7 +130,8 @@ local function cardFlipAnimUpdate(e, deltaT)
         if e.card.facingUp then
             -- if the front of the card is not yet defined, choose a random front sprite
             if e.card.index == 0 then
-                e.card.index = manager.popRandomElementFromArray(manager.unseenCards)
+                e.card.index = manager.popRandomElementFromArray(e.card.cardBag)
+                e.card.cardBag = nil -- this card is no longer part of the unseenCards bag.
             end
             e.sprite = e.card.cardSet.cardSprites[e.card.index]
         else
@@ -172,6 +173,12 @@ local function onCardTapped(cardEntity)
     end
 end
 
+---Create an unrevealed card entity from cardBag belonging to cardSet and place it at x/y.
+---@param x number The x coordinate where card is placed.
+---@param y number The y coordinate where card is placed.
+---@param cardSet cardSet The cardSet this card belongs to.
+---@param cardBag number[] The bag of cards this unrevealed card is part of.
+---@return entity
 local function placeCard(x, y, cardSet, cardBag)
     local cardEntity = core.newEntitytInWorld()
 
@@ -179,7 +186,7 @@ local function placeCard(x, y, cardSet, cardBag)
 
     cardEntity.card = {
         cardSet = cardSet,
-        index = 0, -- unseen card
+        index = 0, -- unrevealed card
         cardBag = cardBag,
         facingUp = false,
     }
@@ -202,8 +209,8 @@ function manager.dealCards(rows, columns)
     -- a set of all card entities. weak refferenced..
     manager.dealedCardEntities = setmetatable({}, {__mode="k"})
 
-    ---@type number[] a bag of card indices
-    manager.unseenCards = manager.createCardPairsBagFromSet(manager.cardSet, rows*columns)
+    ---@type number[] a bag of card indices that are in play, but have not been revealed.
+    manager.unrevealedCards = manager.createCardPairsBagFromSet(manager.cardSet, rows*columns)
 
     local spacing = 300
     local staratX, startY = - spacing * (rows-1) * 0.5, - spacing * (columns-1) * 0.5
@@ -212,7 +219,7 @@ function manager.dealCards(rows, columns)
         local yy = (y-1) * spacing + startY
         for x = 1, rows do
             local xx = (x-1) * spacing + staratX
-            local cardEntity = placeCard(xx, yy, manager.cardSet, manager.unseenCards) -- dont define the cards yet.
+            local cardEntity = placeCard(xx, yy, manager.cardSet, manager.unrevealedCards) -- dont define the cards yet.
             manager.dealedCardEntities[cardEntity] = true
         end
     end
