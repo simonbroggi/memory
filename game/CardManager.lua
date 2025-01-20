@@ -145,21 +145,22 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.kx = 0
         e.tform.ky = 0
         e.anim = nil -- remove the animation
+
+        manager.revealedCardEntities[e] = e.card.facingUp or nil
+
+        manager.updateState()
+    else
+        e.tform.sx = 1 - math.sin(tt) * 0.1
+        e.tform.sy = 1 - math.sin(tt) * .9
+        e.tform.r = math.sin(tt) * math.rad(10)
+        e.tform.kx = math.sin(tt) * 0.6
+        e.tform.ky = math.sin(tt) * 0.8
     end
-    e.tform.sx = 1 - math.sin(tt) * 0.1
-    e.tform.sy = 1 - math.sin(tt) * .9
-    e.tform.r = math.sin(tt) * math.rad(10)
-    e.tform.kx = math.sin(tt) * 0.6
-    e.tform.ky = math.sin(tt) * 0.8
 end
 
 ---called whenever a card is tapped
 ---@param cardEntity entity
 local function onCardTapped(cardEntity)
-    if not manager.playerTurn then
-        print("hey, it's computers turn!")
-        return
-    end
 
     -- todo: points and computer turn. manager.revealedCardEntities ...
 
@@ -201,6 +202,29 @@ local function placeCard(x, y, cardSet, cardBag)
     return cardEntity
 end
 
+function manager.updateState()
+    local state = manager.state
+    for _, transfunc in ipairs(state.transitions) do
+        if transfunc() then break end
+    end
+end
+
+local playerTurn = {
+    transitions = {
+        function ()
+            local nRevealedCards = 0
+            for cardE in pairs(manager.revealedCardEntities) do
+                nRevealedCards = nRevealedCards + 1
+            end
+            print(nRevealedCards .. " cards revealed")
+            return true -- stay in this state for now
+        end,
+        function ()
+            print("shouldnt be done")
+        end
+    }
+}
+
 ---deals cards and starts the game.
 ---@param rows number
 ---@param columns number
@@ -224,7 +248,7 @@ function manager.dealCards(rows, columns)
         end
     end
 
-    manager.playerTurn = true
+    manager.state = playerTurn
     manager.revealedCardEntities = setmetatable({}, {__mode="k"})
 
 end
