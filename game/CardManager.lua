@@ -68,6 +68,17 @@ end
 ---@class entity
 ---@field card? card
 
+---check if two cards are a pair
+---@param cardA card
+---@param cardB card
+---@return boolean true if cards are a pair.
+function manager.isPair(cardA, cardB)
+    if cardA.cardSet.pairIndices[cardA.index] == cardB.index then
+        return true
+    end
+    return false
+end
+
 ---A card bag is just an array of cards.
 ---@param array any[]
 ---@return any element
@@ -146,6 +157,8 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.ky = 0
         e.anim = nil -- remove the animation
 
+        -- Add or remove cards from revealedCardEntities depending on if they are facing up or down.
+        -- Redundant data here, since the card.facingUp is already holding this value.
         manager.revealedCardEntities[e] = e.card.facingUp or nil
 
         manager.updateState()
@@ -202,6 +215,37 @@ local function placeCard(x, y, cardSet, cardBag)
     return cardEntity
 end
 
+function manager.numRevealedCards()
+    local nRevealedCards = 0
+    for _ in pairs(manager.revealedCardEntities) do
+        nRevealedCards = nRevealedCards + 1
+    end
+    return nRevealedCards
+end
+
+function manager.getRevealedPairCards()
+    local pairEs = {}
+    for e in pairs(manager.revealedCardEntities) do
+        local addCard = true
+        if #pairEs > 0 then
+            if manager.isPair(pairEs[1].card, e.card) then
+                addCard = true
+            else
+                addCard = false
+            end
+        end
+        if addCard then
+            pairEs[#pairEs+1] = e
+        end
+    end
+
+    if #pairEs > 1 then
+        return unpack(pairEs)
+    else
+        return nil
+    end
+end
+
 function manager.updateState()
     local state = manager.state
     for _, transfunc in ipairs(state.transitions) do
@@ -209,20 +253,45 @@ function manager.updateState()
     end
 end
 
-local playerTurn = {
-    transitions = {
-        function ()
-            local nRevealedCards = 0
-            for cardE in pairs(manager.revealedCardEntities) do
-                nRevealedCards = nRevealedCards + 1
-            end
-            print(nRevealedCards .. " cards revealed")
-            return true -- stay in this state for now
-        end,
-        function ()
-            print("shouldnt be done")
+-- define states
+local playerTurn = {}
+local endPlayerTurn = {}
+local computerTurn = {}
+
+endPlayerTurn.transitions = {
+    function ()
+        local nRevealedCards = manager.numRevealedCards()
+        if nRevealedCards == 0 then
+            manager.state = playerTurn -- should be computer tun.
+            return true
         end
-    }
+    end,
+    function ()
+        local p = {manager.getRevealedPairCards()}
+        for i, e in ipairs(p) do
+            core.destroyEntity(e)
+        end
+        print("collect cards if pairs match")
+        manager.state = playerTurn
+        return true
+    end
+}
+
+playerTurn.transitions = {
+    function ()
+        local nRevealedCards = manager.numRevealedCards()
+        if nRevealedCards == 2 then
+            manager.state = endPlayerTurn
+            print("end player turn!")
+            -- todo: remove the card tapped function, and add update / animation to remove pairs and flip cards.
+            return true
+        elseif nRevealedCards > 2 then
+            print("CHEATING?!")
+        end
+    end,
+    function ()
+        print("reveal another card!")
+    end
 }
 
 ---deals cards and starts the game.

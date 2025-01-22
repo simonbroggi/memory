@@ -28,4 +28,15 @@ function core.newEntitytInWorld()
     return e
 end
 
+---Destroys an entity and removes it from the world.
+---@param e entity to destroy
+function core.destroyEntity(e)
+    local body = e.body
+    if body then
+        body:setUserData(nil)
+        body:destroy()
+    end
+    core.ecs_world.entities:remove(e)
+end
+
 return core
