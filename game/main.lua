@@ -38,6 +38,8 @@ function love.update(dt)
     InputSystem:update(dt)
     PhysicsSystem:fixedUpdate(dt)
 
+    CardManager.update(dt)
+
     AnimSystem:update(dt)
     DrawSystem:update(dt)
 end

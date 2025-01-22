@@ -171,13 +171,11 @@ local function cardFlipAnimUpdate(e, deltaT)
     end
 end
 
----called whenever a card is tapped
----@param cardEntity entity
-local function onCardTapped(cardEntity)
-
-    -- todo: points and computer turn. manager.revealedCardEntities ...
-
-    if not cardEntity.anim then
+-- What happens when a card is clicked.
+local function flipCard(cardEntity)
+    if cardEntity.anim then
+        print("card already flipping")
+    else
         cardEntity.anim = {
             time = 0,
             update = cardFlipAnimUpdate,
@@ -185,6 +183,15 @@ local function onCardTapped(cardEntity)
             flipped = false,
         }
     end
+end
+local function dontAllowFlipCard(cardEntity)
+    print("not allowed to flip card now")
+end
+manager.cardTapHandler = flipCard
+---called whenever a card is tapped
+---@param cardEntity entity
+local function onCardTapped(cardEntity)
+    manager.cardTapHandler(cardEntity)
 end
 
 ---Create an unrevealed card entity from cardBag belonging to cardSet and place it at x/y.
@@ -246,6 +253,12 @@ function manager.getRevealedPairCards()
     end
 end
 
+function manager.update(dt)
+    if manager.state.update then
+        manager.state.update(dt)
+    end
+end
+
 function manager.updateState()
     local state = manager.state
     for _, transfunc in ipairs(state.transitions) do
@@ -258,21 +271,31 @@ local playerTurn = {}
 local endPlayerTurn = {}
 local computerTurn = {}
 
+function endPlayerTurn.update(dt)
+    manager.updateState()
+end
+
 endPlayerTurn.transitions = {
     function ()
         local nRevealedCards = manager.numRevealedCards()
+        print("NUM revealed cards: "..nRevealedCards)
         if nRevealedCards == 0 then
             manager.state = playerTurn -- should be computer tun.
             return true
         end
+        print("still ending turn")
     end,
     function ()
+        print("de?")
         local p = {manager.getRevealedPairCards()}
         for i, e in ipairs(p) do
+            print("destroy card")
             core.destroyEntity(e)
+            manager.revealedCardEntities[e] = nil
         end
         print("collect cards if pairs match")
         manager.state = playerTurn
+        
         return true
     end
 }
@@ -281,7 +304,10 @@ playerTurn.transitions = {
     function ()
         local nRevealedCards = manager.numRevealedCards()
         if nRevealedCards == 2 then
+            print("ending turn")
             manager.state = endPlayerTurn
+            manager.cardTapHandler = dontAllowFlipCard
+
             print("end player turn!")
             -- todo: remove the card tapped function, and add update / animation to remove pairs and flip cards.
             return true
