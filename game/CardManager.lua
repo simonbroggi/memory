@@ -161,7 +161,7 @@ local function cardFlipAnimUpdate(e, deltaT)
         -- Redundant data here, since the card.facingUp is already holding this value.
         manager.revealedCardEntities[e] = e.card.facingUp or nil
 
-        manager.updateState()
+        manager.updateState() -- todo: remove this here.
     else
         e.tform.sx = 1 - math.sin(tt) * 0.1
         e.tform.sy = 1 - math.sin(tt) * .9
@@ -254,22 +254,22 @@ function manager.getRevealedPairCards()
 end
 
 function manager.update(dt)
-    if manager.state.update then
-        manager.state:update(dt)
+    if manager.current_state.update then
+        manager.current_state:update(dt)
     end
 end
 
 function manager.updateState()
-    local state = manager.state
+    local state = manager.current_state
     for _, transfunc in ipairs(state.transitions) do
         if transfunc(state) then break end
     end
 end
 
 function manager.set_state(state)
-    if manager.state.exit then manager.state:exit() end
-    manager.state = state
-    if manager.state.enter then manager.state:enter() end
+    if manager.current_state.exit then manager.current_state:exit() end
+    manager.current_state = state
+    if manager.current_state.enter then manager.current_state:enter() end
     return true
 end
 
@@ -280,7 +280,7 @@ local computerTurn = {}
 
 function endPlayerTurn:update(dt)
     self.time = self.time + dt
-    if not self.collectStart and self.time > 2 then
+    if not self.collectStart and self.time > 0.5 then
         self.collectStart = true
         for i, e in ipairs(self.collectCards) do
             core.destroyEntity(e)
@@ -293,14 +293,14 @@ function endPlayerTurn:update(dt)
         end
         manager.set_state(playerTurn)
         print("starting to collect")
+
+        -- todo: call manager.updateState() once all animations are done.
+
     end
     --manager.updateState()
 end
 
 function endPlayerTurn:enter()
-    -- dont allow flipping more cards
-    manager.cardTapHandler = dontAllowFlipCard
-
     self.collectCards = {}
     self.flipCards = {}
     self.time = 0
@@ -355,8 +355,14 @@ endPlayerTurn.transitions = {
     end
 }
 
-function playerTurn.enter()
+function playerTurn:enter()
+    -- allow flipping cards
     manager.cardTapHandler = flipCard
+end
+
+function playerTurn:exit()
+    -- dont allow flipping cards
+    manager.cardTapHandler = dontAllowFlipCard
 end
 
 playerTurn.transitions = {
@@ -396,7 +402,7 @@ function manager.dealCards(rows, columns)
         end
     end
 
-    manager.state = playerTurn
+    manager.current_state = playerTurn
     manager.revealedCardEntities = setmetatable({}, {__mode="k"})
 
 end
