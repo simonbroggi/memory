@@ -280,12 +280,18 @@ local computerTurn = {}
 
 function endPlayerTurn:update(dt)
     self.time = self.time + dt
-    if not self.collectStart and self.time > 1 then
+    if not self.collectStart and self.time > 2 then
         self.collectStart = true
         for i, e in ipairs(self.collectCards) do
             core.destroyEntity(e)
+            manager.revealedCardEntities[e] = nil
             self.collectCards[i] = nil
         end
+        for i, e in ipairs(self.flipCards) do
+            flipCard(e)
+            self.flipCards[i] = nil
+        end
+        manager.set_state(playerTurn)
         print("starting to collect")
     end
     --manager.updateState()
@@ -348,6 +354,10 @@ endPlayerTurn.transitions = {
         return manager.set_state(playerTurn)
     end
 }
+
+function playerTurn.enter()
+    manager.cardTapHandler = flipCard
+end
 
 playerTurn.transitions = {
     function (state)
