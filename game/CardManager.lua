@@ -255,37 +255,84 @@ end
 
 function manager.update(dt)
     if manager.state.update then
-        manager.state.update(dt)
+        manager.state:update(dt)
     end
 end
 
 function manager.updateState()
     local state = manager.state
     for _, transfunc in ipairs(state.transitions) do
-        if transfunc() then break end
+        if transfunc(state) then break end
     end
 end
 
--- define states
+function manager.set_state(state)
+    if manager.state.exit then manager.state:exit() end
+    manager.state = state
+    if manager.state.enter then manager.state:enter() end
+    return true
+end
+
+-- define states (need on enter / on exit functions?)
 local playerTurn = {}
 local endPlayerTurn = {}
 local computerTurn = {}
 
-function endPlayerTurn.update(dt)
-    manager.updateState()
+function endPlayerTurn:update(dt)
+    self.time = self.time + dt
+    if not self.collectStart and self.time > 3 then
+        self.collectStart = true
+        print("starting to collect")
+    end
+    --manager.updateState()
 end
 
+function endPlayerTurn:enter()
+    -- dont allow flipping more cards
+    manager.cardTapHandler = dontAllowFlipCard
+
+    self.collectCards = {}
+    self.flipCards = {}
+    self.time = 0
+    self.collectStart = false
+    local pairIndex = 0
+    local firstCardEntity
+    -- check the revealed cards sort them by ones that can be collected and ones that need to be flipped back
+    for e in pairs(manager.revealedCardEntities) do
+        local card = e.card
+        firstCardEntity = e
+        if pairIndex == 0 then -- first revealed card enity
+            pairIndex = card.cardSet.pairIndices[card.index]
+            print("first card pair index: " .. pairIndex)
+        else
+            local pi = card.cardSet.pairIndices[card.index]
+            if pi == pairIndex then
+                print("found a pair!")
+                self.collectCards[#self.collectCards+1] = e
+            else
+                print("no pair")
+                self.flipCards[#self.flipCards+1] = e
+            end
+        end
+    end
+    if #self.collectCards > 0 then
+        self.collectCards[#self.collectCards+1] = firstCardEntity
+    else
+        self.flipCards[#self.flipCards+1] = firstCardEntity
+    end
+end
+
+-- aaa state machines... do it!
 endPlayerTurn.transitions = {
-    function ()
+    function (state)
         local nRevealedCards = manager.numRevealedCards()
         print("NUM revealed cards: "..nRevealedCards)
         if nRevealedCards == 0 then
-            manager.state = playerTurn -- should be computer tun.
-            return true
+            return manager.set_state(playerTurn)
         end
         print("still ending turn")
     end,
-    function ()
+    function (state)
         print("de?")
         local p = {manager.getRevealedPairCards()}
         for i, e in ipairs(p) do
@@ -294,28 +341,20 @@ endPlayerTurn.transitions = {
             manager.revealedCardEntities[e] = nil
         end
         print("collect cards if pairs match")
-        manager.state = playerTurn
-        
-        return true
+        return manager.set_state(playerTurn)
     end
 }
 
 playerTurn.transitions = {
-    function ()
+    function (state)
         local nRevealedCards = manager.numRevealedCards()
         if nRevealedCards == 2 then
-            print("ending turn")
-            manager.state = endPlayerTurn
-            manager.cardTapHandler = dontAllowFlipCard
-
-            print("end player turn!")
-            -- todo: remove the card tapped function, and add update / animation to remove pairs and flip cards.
-            return true
+            return manager.set_state(endPlayerTurn)
         elseif nRevealedCards > 2 then
             print("CHEATING?!")
         end
     end,
-    function ()
+    function (state)
         print("reveal another card!")
     end
 }
