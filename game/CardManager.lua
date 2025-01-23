@@ -280,8 +280,12 @@ local computerTurn = {}
 
 function endPlayerTurn:update(dt)
     self.time = self.time + dt
-    if not self.collectStart and self.time > 3 then
+    if not self.collectStart and self.time > 1 then
         self.collectStart = true
+        for i, e in ipairs(self.collectCards) do
+            core.destroyEntity(e)
+            self.collectCards[i] = nil
+        end
         print("starting to collect")
     end
     --manager.updateState()
@@ -300,8 +304,8 @@ function endPlayerTurn:enter()
     -- check the revealed cards sort them by ones that can be collected and ones that need to be flipped back
     for e in pairs(manager.revealedCardEntities) do
         local card = e.card
-        firstCardEntity = e
         if pairIndex == 0 then -- first revealed card enity
+            firstCardEntity = e
             pairIndex = card.cardSet.pairIndices[card.index]
             print("first card pair index: " .. pairIndex)
         else
