@@ -155,13 +155,8 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.sy = 1
         e.tform.kx = 0
         e.tform.ky = 0
+        e.anim.onDone(e)
         e.anim = nil -- remove the animation
-
-        -- Add or remove cards from revealedCardEntities depending on if they are facing up or down.
-        -- Redundant data here, since the card.facingUp is already holding this value.
-        manager.revealedCardEntities[e] = e.card.facingUp or nil
-
-        manager.updateState() -- todo: remove this here.
     else
         e.tform.sx = 1 - math.sin(tt) * 0.1
         e.tform.sy = 1 - math.sin(tt) * .9
@@ -171,23 +166,54 @@ local function cardFlipAnimUpdate(e, deltaT)
     end
 end
 
--- What happens when a card is clicked.
-local function flipCard(cardEntity)
+manager.flippingCardEntities = setmetatable({}, {__mode="k"})
+
+local function onFlipDone(e)
+    -- Add or remove cards from revealedCardEntities depending on if they are facing up or down.
+    -- Redundant data here, since the card.facingUp is already holding this value.
+    manager.revealedCardEntities[e] = e.card.facingUp or nil
+    manager.flippingCardEntities[e] = nil
+    manager.updateState() -- gets called multiple times when multiple cards are flipped...
+end
+
+local function addFlipCardAnimation(cardEntity)
+    cardEntity.anim = {
+        time = 0,
+        update = cardFlipAnimUpdate,
+        startRot = cardEntity.tform.r,
+        flipped = false,
+        -- add done callback function
+        onDone = onFlipDone,
+    }
+    manager.flippingCardEntities[cardEntity] = true
+end
+
+local function revealCard(cardEntity)
     if cardEntity.anim then
         print("card already flipping")
+    elseif cardEntity.card.facingUp then
+        print("card is already facing up")
     else
-        cardEntity.anim = {
-            time = 0,
-            update = cardFlipAnimUpdate,
-            startRot = cardEntity.tform.r,
-            flipped = false,
-        }
+        addFlipCardAnimation(cardEntity)
     end
 end
+
+local function concealCard(cardEntity)
+    if cardEntity.anim then
+        print("card already flipping")
+    elseif not cardEntity.card.facingUp then
+        print("card is already facing down")
+    else
+        addFlipCardAnimation(cardEntity)
+    end
+end
+
 local function dontAllowFlipCard(cardEntity)
     print("not allowed to flip card now")
 end
-manager.cardTapHandler = flipCard
+
+-- What happens when a card is clicked.
+manager.cardTapHandler = revealCard
 ---called whenever a card is tapped
 ---@param cardEntity entity
 local function onCardTapped(cardEntity)
@@ -267,7 +293,7 @@ function manager.updateState()
 end
 
 function manager.set_state(state)
-    if manager.current_state.exit then manager.current_state:exit() end
+    if manager.current_state and manager.current_state.exit then manager.current_state:exit() end
     manager.current_state = state
     if manager.current_state.enter then manager.current_state:enter() end
     return true
@@ -278,22 +304,25 @@ local playerTurn = {}
 local endPlayerTurn = {}
 local computerTurn = {}
 
+local num_cards_player_collected = 0
+local num_player_turns = 0
+
 function endPlayerTurn:update(dt)
     self.time = self.time + dt
     if not self.collectStart and self.time > 0.5 then
         self.collectStart = true
         for i, e in ipairs(self.collectCards) do
+            num_cards_player_collected = num_cards_player_collected + 1
             core.destroyEntity(e)
             manager.revealedCardEntities[e] = nil
             self.collectCards[i] = nil
         end
         for i, e in ipairs(self.flipCards) do
-            flipCard(e)
+            concealCard(e)
             self.flipCards[i] = nil
         end
+        print("collected a totoal of " .. num_cards_player_collected .. " so far.")
         manager.set_state(playerTurn)
-        print("starting to collect")
-
         -- todo: call manager.updateState() once all animations are done.
 
     end
@@ -357,7 +386,9 @@ endPlayerTurn.transitions = {
 
 function playerTurn:enter()
     -- allow flipping cards
-    manager.cardTapHandler = flipCard
+    num_player_turns = num_player_turns + 1
+    print("player turn " .. num_player_turns)
+    manager.cardTapHandler = revealCard
 end
 
 function playerTurn:exit()
@@ -372,6 +403,7 @@ playerTurn.transitions = {
             return manager.set_state(endPlayerTurn)
         elseif nRevealedCards > 2 then
             print("CHEATING?!")
+            return manager.set_state(endPlayerTurn)
         end
     end,
     function (state)
@@ -402,8 +434,9 @@ function manager.dealCards(rows, columns)
         end
     end
 
-    manager.current_state = playerTurn
     manager.revealedCardEntities = setmetatable({}, {__mode="k"})
+
+    manager.set_state(playerTurn)
 
 end
 
