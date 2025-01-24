@@ -1,9 +1,15 @@
 local core = require("core")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local drawer = require("CardDrawer")
+local ripple = require("ripple")
 
 ---@class CardManager creates new card sets, deals cards etc..
 local manager = {}
+local cardSounds = ripple.newTag()
+local flipCardSound = ripple.newSound(love.audio.newSource("assets/sound_effects/flip_1.wav", "static"), {
+    loop = false,
+    tags = {cardSounds},
+})
 
 -- Create a new cardSet creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
 -- But what if a card is altered during a game (e.g. a mark is added)?
@@ -177,6 +183,7 @@ local function onFlipDone(e)
 end
 
 local function addFlipCardAnimation(cardEntity)
+    flipCardSound:play()
     cardEntity.anim = {
         time = 0,
         update = cardFlipAnimUpdate,
