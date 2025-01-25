@@ -5,10 +5,16 @@ local ripple = require("ripple")
 
 ---@class CardManager creates new card sets, deals cards etc..
 local manager = {}
+local roomSounds = ripple.newTag()
+love.audio.setEffect("roomReverb", {type="reverb"})
+roomSounds:setEffect("roomReverb", true)
+love.audio.setEffect("compressor", {type="compressor"})
+roomSounds:setEffect("compressor", true)
+
 local cardSounds = ripple.newTag()
 local flipCardSound = ripple.newSound(love.audio.newSource("assets/sound_effects/flip_1.wav", "static"), {
     loop = false,
-    tags = {cardSounds},
+    tags = {roomSounds, cardSounds},
 })
 
 -- Create a new cardSet creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
@@ -140,7 +146,7 @@ local function cardFlipAnimUpdate(e, deltaT)
     local anim = e.anim
     ---@cast anim -nil
     anim.time = anim.time + deltaT
-    local tt = anim.time * 5
+    local tt = anim.time * 6.4
     if tt >= math.pi/2 and not anim.flipped then
         anim.flipped = true
         e.card.facingUp = not e.card.facingUp
@@ -183,7 +189,10 @@ local function onFlipDone(e)
 end
 
 local function addFlipCardAnimation(cardEntity)
-    flipCardSound:play()
+    
+    --play sound with randomized pitch
+    flipCardSound:play({pitch=1+math.random()*0.34-0.1})
+
     cardEntity.anim = {
         time = 0,
         update = cardFlipAnimUpdate,
@@ -313,6 +322,14 @@ local computerTurn = {}
 
 local num_cards_player_collected = 0
 local num_player_turns = 0
+
+function computerTurn:enter()
+    self.time = 0
+end
+
+function computerTurn:update(dt)
+
+end
 
 function endPlayerTurn:update(dt)
     self.time = self.time + dt
