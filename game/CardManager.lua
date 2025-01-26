@@ -318,7 +318,7 @@ end
 -- define states (need on enter / on exit functions?)
 manager.playerTurn = require("State_PlayerTurn")
 manager.endPlayerTurn = require("State_EndPlayerTurn")
-manager.computerTurn = {}
+manager.computerTurn = require("State_ComputerTurn")
 
 manager.playerTurn:init(manager)
 manager.endPlayerTurn:init(manager)

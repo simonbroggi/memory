@@ -17,16 +17,16 @@ function state:exit()
 end
 
 state.transitions = {
-    function (stateParam)
-        local nRevealedCards = stateParam.manager.numRevealedCards()
+    function (selfState)
+        local nRevealedCards = selfState.manager.numRevealedCards()
         if nRevealedCards == 2 then
-            return stateParam.manager.set_state(stateParam.manager.endPlayerTurn)
+            return selfState.manager.set_state(selfState.manager.endPlayerTurn)
         elseif nRevealedCards > 2 then
             print("CHEATING?!")
-            return stateParam.manager.set_state(stateParam.manager.endPlayerTurn)
+            return selfState.manager.set_state(selfState.manager.endPlayerTurn)
         end
     end,
-    function (stateParam)
+    function (selfState)
         print("reveal another card!")
     end
 }

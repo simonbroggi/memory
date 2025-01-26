@@ -63,24 +63,24 @@ end
 
 
 state.transitions = {
-    function (stateParam)
-        local nRevealedCards = stateParam.manager.numRevealedCards()
+    function (selfState)
+        local nRevealedCards = selfState.manager.numRevealedCards()
         print("NUM revealed cards: "..nRevealedCards)
         if nRevealedCards == 0 then
-            return stateParam.manager.set_state(stateParam.manager.playerTurn)
+            return selfState.manager.set_state(selfState.manager.playerTurn)
         end
         print("still ending turn")
     end,
-    function (stateParam)
+    function (selfState)
         print("de?")
-        local p = {stateParam.manager.getRevealedPairCards()}
+        local p = {selfState.manager.getRevealedPairCards()}
         for i, e in ipairs(p) do
             print("destroy card")
             core.destroyEntity(e)
-            stateParam.manager.revealedCardEntities[e] = nil
+            selfState.manager.revealedCardEntities[e] = nil
         end
         print("collect cards if pairs match")
-        return stateParam.manager.set_state(stateParam.manager.playerTurn)
+        return selfState.manager.set_state(selfState.manager.playerTurn)
     end
 }
 
