@@ -44,7 +44,9 @@ function state:update(dt)
         self.collectStart = true
         for i, e in ipairs(self.collectCards) do
             self.manager.num_cards_player_collected = self.manager.num_cards_player_collected + 1
-            core.destroyEntity(e)
+            e.body:setPosition(760, 450) -- todo: animation!
+            e.card.inPlay = false
+            --core.destroyEntity(e)
             self.manager.revealedCardEntities[e] = nil
             self.collectCards[i] = nil
         end

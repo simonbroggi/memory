@@ -17,13 +17,10 @@ local flipCardSound = ripple.newSound(love.audio.newSource("assets/sound_effects
     tags = {roomSounds, cardSounds},
 })
 
--- Create a new cardSet creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
--- But what if a card is altered during a game (e.g. a mark is added)?
--- In that case, the card table must be copied! and then the pair value is no longer true.
--- Could have card just store refference to cardSet and index of card.
--- Or the card is a class and has metatable with the unique card in set, and when a card is altered its overwritten..
--- First option seems more like everything else in my ecs works: components dont have metatables. Also it's nicely serializable.
--- need an abstraction of value and display.
+---A cardSet holds the sprites of all the set, including the card back.
+---CardSprites are stored in an array.
+---The index of pair cards is also stored in an array.
+---Card just store refference to cardSet and index of card.
 ---@class cardSet a set of cards. Every card is unique, but has the same back sprite.
 ---@field cardBackSprite sprite the back of the card.
 ---@field cardSprites sprite[] the front of the card.
@@ -76,6 +73,7 @@ end
 ---@field index number index of the card in the cardSet. can be 0 when it's not defined yet.
 ---@field cardBag number[]
 ---@field facingUp boolean True if the card visible to the player.
+---@field inPlay boolean True if the card is not yet collected by player or computer.
 
 ---@class entity
 ---@field card? card
@@ -85,24 +83,30 @@ end
 ---@param cardB card
 ---@return boolean true if cards are a pair.
 function manager.isPair(cardA, cardB)
-    if cardA.cardSet.pairIndices[cardA.index] == cardB.index then
+    -- if cards are from the same set and cardA pair index equals cardB pair index return true.
+    if cardA.cardSet == cardB.cardSet and
+        cardA.cardSet.pairIndices[cardA.index] == cardB.index then
         return true
     end
     return false
 end
 
----A card bag is just an array of cards.
+---Remove and return a random element from an array.
 ---@param array any[]
 ---@return any element
 function manager.popRandomElementFromArray(array)
-    local cardsSize = #array
-    local index = math.random(cardsSize)
+    local arraySize = #array
+    local index = math.random(arraySize)
     local element = array[index]
-    array[index] = array[cardsSize]
-    array[cardsSize] = nil
+    array[index] = array[arraySize]
+    array[arraySize] = nil
     return element
 end
 
+---Remove the element with matching value from an an array.
+---@param array any[]
+---@param value any
+---@return any value the removed value
 function manager.removeElementByValue(array, value)
     for i=1, #array do
         if array[i] == value then
@@ -112,6 +116,23 @@ function manager.removeElementByValue(array, value)
         end
     end
     error("no element " .. value .. " in array")
+end
+
+manager.__cards_in_play = core.newList()
+
+---The card entities that are in play.
+---@return List cardEntities the cards in play. 
+function manager:get_cards_in_play()
+    self.__cards_in_play:clear()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            local card = entity.card
+            if card.inPlay then
+                self.__cards_in_play:add(entity)
+            end
+        end
+    end
+    return self.__cards_in_play
 end
 
 ---create a card set with pairs pointing to its own index, so identical pairs.
@@ -252,6 +273,7 @@ local function placeCard(x, y, cardSet, cardBag)
         index = 0, -- unrevealed card
         cardBag = cardBag,
         facingUp = false,
+        inPlay = true,
     }
     cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
     cardEntity.sprite = cardSet.cardBackSprite
@@ -331,9 +353,6 @@ manager.num_player_turns = 0
 ---@param columns number
 function manager.dealCards(rows, columns)
 
-    -- a set of all card entities. weak refferenced..
-    manager.dealedCardEntities = setmetatable({}, {__mode="k"})
-
     ---@type number[] a bag of card indices that are in play, but have not been revealed.
     manager.unrevealedCards = manager.createCardPairsBagFromSet(manager.cardSet, rows*columns)
 
@@ -345,7 +364,6 @@ function manager.dealCards(rows, columns)
         for x = 1, rows do
             local xx = (x-1) * spacing + staratX
             local cardEntity = placeCard(xx, yy, manager.cardSet, manager.unrevealedCards) -- dont define the cards yet.
-            manager.dealedCardEntities[cardEntity] = true
         end
     end
 
