@@ -4,6 +4,7 @@ local state = {}
 
 function state:init(manager)
     self.manager = manager
+    self.name = "End Player Turn"
 end
 
 function state:enter()
@@ -19,14 +20,14 @@ function state:enter()
         if pairIndex == 0 then -- first revealed card enity
             firstCardEntity = e
             pairIndex = card.cardSet.pairIndices[card.index]
-            print("first card pair index: " .. pairIndex)
+            -- print("first card pair index: " .. pairIndex)
         else
             local pi = card.cardSet.pairIndices[card.index]
             if pi == pairIndex then
-                print("found a pair!")
+                -- print("found a pair!")
                 self.collectCards[#self.collectCards+1] = e
             else
-                print("no pair")
+                -- print("no pair")
                 self.flipCards[#self.flipCards+1] = e
             end
         end
@@ -54,36 +55,38 @@ function state:update(dt)
             self.manager.concealCard(e)
             self.flipCards[i] = nil
         end
-        print("collected a totoal of " .. self.manager.num_cards_player_collected .. " so far.")
-        self.manager.set_state(self.manager.playerTurn)
+        -- print("collected a totoal of " .. self.manager.num_cards_player_collected .. " so far.")
+        
+        -- transition from update seems baad. that's what transitions are for...
+        -- self.manager.set_state(self.manager.computerTurn)
         -- todo: call manager.updateState() once all animations are done.
 
     end
-    --manager.updateState()
+    self.manager.updateState()
 end
 
 
-
+-- todo: figure out what belongs in transitions and what in update!!
 state.transitions = {
     function (selfState)
         local nRevealedCards = selfState.manager.numRevealedCards()
-        print("NUM revealed cards: "..nRevealedCards)
+        print("NUMBER revealed cards: "..nRevealedCards)
         if nRevealedCards == 0 then
             return selfState.manager.set_state(selfState.manager.playerTurn)
         end
         print("still ending turn")
     end,
-    function (selfState)
-        print("de?")
-        local p = {selfState.manager.getRevealedPairCards()}
-        for i, e in ipairs(p) do
-            print("destroy card")
-            core.destroyEntity(e)
-            selfState.manager.revealedCardEntities[e] = nil
-        end
-        print("collect cards if pairs match")
-        return selfState.manager.set_state(selfState.manager.playerTurn)
-    end
+    -- function (selfState)
+    --     -- print("de?")
+    --     local p = {selfState.manager.getRevealedPairCards()}
+    --     for i, e in ipairs(p) do
+    --         print("DESTROY card")
+    --         core.destroyEntity(e)
+    --         selfState.manager.revealedCardEntities[e] = nil
+    --     end
+    --     print("collect cards if pairs match")
+    --     return selfState.manager.set_state(selfState.manager.computerTurn)
+    -- end
 }
 
 

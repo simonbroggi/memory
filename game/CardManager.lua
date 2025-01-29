@@ -121,7 +121,7 @@ end
 manager.__cards_in_play = core.newList()
 
 ---The card entities that are in play.
----@return List cardEntities the cards in play. 
+---@return List cardEntities a List of cards in play. 
 function manager:get_cards_in_play()
     self.__cards_in_play:clear()
     for _, entity in ipairs(core.ecs_world.entities) do
@@ -250,7 +250,7 @@ function manager.dontAllowFlipCard(cardEntity)
 end
 
 -- What happens when a card is clicked.
-manager.cardTapHandler = manager.revealCard
+--manager.cardTapHandler = manager.revealCard
 ---called whenever a card is tapped
 ---@param cardEntity entity
 local function onCardTapped(cardEntity)
@@ -325,6 +325,7 @@ end
 
 function manager.updateState()
     local state = manager.current_state
+    print("update state " .. (state.name or " unknown state"))
     for _, transfunc in ipairs(state.transitions) do
         if transfunc(state) then break end
     end
@@ -344,6 +345,7 @@ manager.computerTurn = require("State_ComputerTurn")
 
 manager.playerTurn:init(manager)
 manager.endPlayerTurn:init(manager)
+manager.computerTurn:init(manager)
 
 manager.num_cards_player_collected = 0
 manager.num_player_turns = 0
