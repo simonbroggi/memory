@@ -138,6 +138,34 @@ function manager:get_cards_in_play()
     return l
 end
 
+function manager:get_defined_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            ---@type card
+            local card = entity.card
+            if card.inPlay and card.index ~= 0 then
+                l:add(entity)
+            end
+        end
+    end
+    return l
+end
+
+function manager:get_undefined_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            ---@type card
+            local card = entity.card
+            if card.inPlay and card.index == 0 then
+                l:add(entity)
+            end
+        end
+    end
+    return l
+end
+
 ---create a card set with pairs pointing to its own index, so identical pairs.
 ---@param cardSetSize any
 ---@return cardSet
@@ -191,7 +219,7 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.sy = 1
         e.tform.kx = 0
         e.tform.ky = 0
-        
+
         -- remove the animation first, then call onDone
         local onDone = e.anim.onDone
         e.anim = nil
