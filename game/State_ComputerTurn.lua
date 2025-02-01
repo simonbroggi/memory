@@ -21,6 +21,12 @@ function state:enter()
     -- print("computre needs to choose from " .. #self.cards_to_choose_from .. " cards")
 
     -- choose two random cards 
+
+    if #self.cards_to_choose_from < 2 then
+        print("Game Over")
+        return
+    end
+
     local r1 = math.random(#self.cards_to_choose_from)
     local r2 = math.random(#self.cards_to_choose_from-1)
     if r2 == r1 then

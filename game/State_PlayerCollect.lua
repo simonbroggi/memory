@@ -14,6 +14,7 @@ function state:enter()
     self.flipCards = {}
     self.time = 0
     self.collectStart = false
+    self.pairFound = false
     local pairIndex = 0
     local firstCardEntity
     -- check the revealed cards sort them by ones that can be collected and ones that need to be flipped back
@@ -28,6 +29,7 @@ function state:enter()
             if pi == pairIndex then
                 -- print("found a pair!")
                 self.collectCards[#self.collectCards+1] = e
+                self.pairFound = true
             else
                 -- print("no pair")
                 self.flipCards[#self.flipCards+1] = e
@@ -87,7 +89,11 @@ state.transitions = {
         local nRevealedCards = selfState.manager.numRevealedCards()
         --print("NUMBER revealed cards: "..nRevealedCards)
         if nRevealedCards == 0 then
-            return selfState.manager.set_state(selfState.manager.computerTurn)
+            if selfState.pairFound then
+                return selfState.manager.set_state(selfState.manager.playerTurn)
+            else
+                return selfState.manager.set_state(selfState.manager.computerTurn)
+            end
         end
         --print("still ending turn")
     end,
