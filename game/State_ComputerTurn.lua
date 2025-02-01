@@ -27,7 +27,7 @@ function state:enter()
         r2 = r2+1
     end
 
-    print("r1,r2=", r1, r2)
+    -- print("r1,r2=", r1, r2)
     self.manager.revealCard( self.cards_to_choose_from[r1] )
     self.manager.revealCard( self.cards_to_choose_from[r2] )
 
