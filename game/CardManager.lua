@@ -123,16 +123,19 @@ manager.__cards_in_play = core.newList()
 ---The card entities that are in play.
 ---@return List cardEntities a List of cards in play. 
 function manager:get_cards_in_play()
-    self.__cards_in_play:clear()
+    local l = core.newList()
+    -- self.__cards_in_play:clear()
     for _, entity in ipairs(core.ecs_world.entities) do
         if entity.card then
             local card = entity.card
             if card.inPlay then
-                self.__cards_in_play:add(entity)
+                -- self.__cards_in_play:add(entity)
+                l:add(entity)
             end
         end
     end
-    return self.__cards_in_play
+    -- return self.__cards_in_play
+    return l
 end
 
 ---create a card set with pairs pointing to its own index, so identical pairs.
@@ -188,8 +191,11 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.sy = 1
         e.tform.kx = 0
         e.tform.ky = 0
-        e.anim.onDone(e)
-        e.anim = nil -- remove the animation
+        
+        -- remove the animation first, then call onDone
+        local onDone = e.anim.onDone
+        e.anim = nil
+        onDone(e)
     else
         e.tform.sx = 1 - math.sin(tt) * 0.1
         e.tform.sy = 1 - math.sin(tt) * .9
@@ -226,6 +232,7 @@ local function addFlipCardAnimation(cardEntity)
 end
 
 function manager.revealCard(cardEntity)
+    print("reveal card ")
     if cardEntity.anim then
         print("card already flipping")
     elseif cardEntity.card.facingUp then
@@ -341,12 +348,14 @@ end
 
 -- define states (need on enter / on exit functions?)
 manager.playerTurn = require("State_PlayerTurn")
-manager.endPlayerTurn = require("State_EndPlayerTurn")
+manager.playerCollect = require("State_PlayerCollect")
 manager.computerTurn = require("State_ComputerTurn")
+manager.computerCollect = require("State_ComputerCollect")
 
 manager.playerTurn:init(manager)
-manager.endPlayerTurn:init(manager)
+manager.playerCollect:init(manager)
 manager.computerTurn:init(manager)
+manager.computerCollect:init(manager)
 
 manager.num_cards_player_collected = 0
 manager.num_player_turns = 0

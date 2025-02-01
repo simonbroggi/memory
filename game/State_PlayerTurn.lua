@@ -23,10 +23,10 @@ state.transitions = {
     function (selfState)
         local nRevealedCards = selfState.manager.numRevealedCards()
         if nRevealedCards == 2 then
-            return selfState.manager.set_state(selfState.manager.endPlayerTurn)
+            return selfState.manager.set_state(selfState.manager.playerCollect)
         elseif nRevealedCards > 2 then
             print("CHEATING?!")
-            return selfState.manager.set_state(selfState.manager.endPlayerTurn)
+            return selfState.manager.set_state(selfState.manager.playerCollect)
         end
     end,
     function (selfState)

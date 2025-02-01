@@ -14,12 +14,22 @@ function state:enter()
     
     -- assuming all cards are facing down.
 
-    
+    -- todo: fix this. first choose one and then coose another. probably do it in update.
+
+
     self.cards_to_choose_from = self.manager:get_cards_in_play()
     -- print("computre needs to choose from " .. #self.cards_to_choose_from .. " cards")
-    self.manager.revealCard( self.cards_to_choose_from[math.random(#self.cards_to_choose_from)] )
-    self.cards_to_choose_from = self.manager:get_cards_in_play()
-    self.manager.revealCard( self.cards_to_choose_from[math.random(#self.cards_to_choose_from)] )
+
+    -- choose two random cards 
+    local r1 = math.random(#self.cards_to_choose_from)
+    local r2 = math.random(#self.cards_to_choose_from-1)
+    if r2 == r1 then
+        r2 = r2+1
+    end
+
+    print("r1,r2=", r1, r2)
+    self.manager.revealCard( self.cards_to_choose_from[r1] )
+    self.manager.revealCard( self.cards_to_choose_from[r2] )
 
 end
 
@@ -34,14 +44,12 @@ end
 state.transitions = {
     function (selfState)
         local nRevealedCards = selfState.manager.numRevealedCards()
+        print("n revealCard " .. nRevealedCards)
         if nRevealedCards == 2 then
             -- collect cards
-            return selfState.manager.set_state(selfState.manager.playerTurn)
+            return selfState.manager.set_state(selfState.manager.computerCollect)
         end
     end,
-    function (selfState)
-        print("ccomputer takes another card another card!")
-    end
 }
 
 return state
