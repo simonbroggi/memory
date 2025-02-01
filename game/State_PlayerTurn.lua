@@ -3,18 +3,19 @@ local state = {}
 function state:init(manager)
     self.manager = manager
     self.name = "Player Turn"
+    print(self.name, "initialized")
 end
 
 function state:enter()
     -- allow flipping cards
     self.manager.num_player_turns = self.manager.num_player_turns + 1
-    print("AAAplayer turn " .. self.manager.num_player_turns .. " enter")
+    print(self.name, "enter")
     self.manager.cardTapHandler = self.manager.revealCard
 end
 
 function state:exit()
     -- dont allow flipping cards
-    print("DDDdont allow flipping cards")
+    print(self.name, "exit")
     self.manager.cardTapHandler = self.manager.dontAllowFlipCard
 end
 
@@ -29,7 +30,7 @@ state.transitions = {
         end
     end,
     function (selfState)
-        print("reveal another card!")
+        -- print("reveal another card!")
     end
 }
 

@@ -1,21 +1,22 @@
 local state = {}
 
----comment
+---initialize the state
 ---@param manager CardManager
 function state:init(manager)
     self.manager = manager
     self.name = "Computer Turn"
+    print(self.name, "initialized")
 end
 
 function state:enter()
-    print("computr turn")
+    print(self.name, "enter")
     -- pick a card and flip it
     
     -- assuming all cards are facing down.
 
     
     self.cards_to_choose_from = self.manager:get_cards_in_play()
-    print("computre needs to choose from " .. #self.cards_to_choose_from .. " cards")
+    -- print("computre needs to choose from " .. #self.cards_to_choose_from .. " cards")
     self.manager.revealCard( self.cards_to_choose_from[math.random(#self.cards_to_choose_from)] )
     self.cards_to_choose_from = self.manager:get_cards_in_play()
     self.manager.revealCard( self.cards_to_choose_from[math.random(#self.cards_to_choose_from)] )
@@ -27,7 +28,7 @@ function state:update(dt)
 end
 
 function state:exit()
-
+    print(self.name, "exit")
 end
 
 state.transitions = {

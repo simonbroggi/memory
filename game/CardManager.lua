@@ -206,7 +206,7 @@ local function onFlipDone(e)
     -- Redundant data here, since the card.facingUp is already holding this value.
     manager.revealedCardEntities[e] = e.card.facingUp or nil
     manager.flippingCardEntities[e] = nil
-    manager.updateState() -- gets called multiple times when multiple cards are flipped...
+    manager.do_transitions() -- gets called multiple times when multiple cards are flipped...
 end
 
 local function addFlipCardAnimation(cardEntity)
@@ -323,9 +323,10 @@ function manager.update(dt)
     end
 end
 
-function manager.updateState()
+---update state transitions.
+function manager.do_transitions()
     local state = manager.current_state
-    print("update state " .. (state.name or " unknown state"))
+    print((state.name or " Unknown State"), "do transitions")
     for _, transfunc in ipairs(state.transitions) do
         if transfunc(state) then break end
     end
