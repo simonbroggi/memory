@@ -120,6 +120,19 @@ end
 
 manager.__cards_in_play = core.newList()
 
+function manager:get_flipped_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            local card = entity.card
+            if card.inPlay and card.facingUp then
+                l:add(entity)
+            end
+        end
+    end
+    return l
+end
+
 ---The card entities that are in play.
 ---@return List cardEntities a List of cards in play. 
 function manager:get_cards_in_play()
@@ -233,6 +246,7 @@ local function cardFlipAnimUpdate(e, deltaT)
     end
 end
 
+-- remove
 manager.flippingCardEntities = setmetatable({}, {__mode="k"})
 
 local function onFlipDone(e)
