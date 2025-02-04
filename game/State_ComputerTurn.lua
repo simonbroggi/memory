@@ -61,9 +61,19 @@ local function flipSecondCard()
             cards_to_choose_from = state.manager:get_undefined_cards_in_play()
         else
             cards_to_choose_from = state.manager:get_defined_cards_in_play()
+            for i, e in ipairs(cards_to_choose_from) do
+                if e.card.facingUp then
+                    cards_to_choose_from:remove(e)
+                end
+            end
         end
         if #cards_to_choose_from == 0 then
             cards_to_choose_from = state.manager:get_cards_in_play()
+            for i, e in ipairs(cards_to_choose_from) do
+                if e.card.facingUp then
+                    cards_to_choose_from:remove(e)
+                end
+            end
         end
         local cardEntity = cards_to_choose_from[math.random(#cards_to_choose_from)]
         state.manager.revealCard(cardEntity)
