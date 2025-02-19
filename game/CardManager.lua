@@ -191,7 +191,12 @@ function manager.createCardSet(cardSetSize, cardWidth, cardHeight, cardBorder)
         cardSprites = {},
         pairIndices = {},
     }
-    for i=1, cardSetSize do
+
+    -- first one is the wave
+    cardSet.cardSprites[1] = drawer.cardWaveSprite()
+    cardSet.pairIndices[1] = 1
+
+    for i=2, cardSetSize do
         local div6 = math.floor((i-1)/6+1)
         local mod6 = ((i-1)%6)+1
         cardSet.cardSprites[i] = drawer.createCardDiceSprite(mod6, div6 > 1 and {1,0,0} or {0,1,0})
@@ -200,9 +205,9 @@ function manager.createCardSet(cardSetSize, cardWidth, cardHeight, cardBorder)
     return cardSet
 end
 
-function manager.initCardSet()
+function manager.initCardSet(n)
     math.randomseed(os.time())
-    manager.cardSet = manager.createCardSet(12)
+    manager.cardSet = manager.createCardSet(n)
 end
 
 ---@function

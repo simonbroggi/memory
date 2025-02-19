@@ -66,6 +66,18 @@ function Spline.new(keyPositions, leftHandles, rightHandles)
     return __construct(keyPositions, leftHandles, rightHandles)
 end
 
+function Spline:copy()
+    local keyPositions = {}
+    local leftHandles = {}
+    local rightHandles = {}
+    for i=1, #self.keyPositions do
+        keyPositions[i] = self.keyPositions[i]:copy()
+        leftHandles[i] = self.leftHandles[i]:copy()
+        rightHandles[i] = self.rightHandles[i]:copy()
+    end
+    return __construct(keyPositions, leftHandles, rightHandles)
+end
+
 ---set a key point and keep the handles relatively constant
 ---@param i number
 ---@param vec NVec
@@ -124,7 +136,6 @@ function Spline:updateSegments()
             self.segments[i-1]:setControlPoint(4, cpB.x, cpB.y)
         else
             self.segments[i-1] = love.math.newBezierCurve({cpA.x, cpA.y, rightHandleA.x, rightHandleA.y, leftHandleB.x, leftHandleB.y, cpB.x, cpB.y})
-            print("new segment")
         end
     end
 end

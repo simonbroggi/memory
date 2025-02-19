@@ -100,20 +100,37 @@ local function createDiceCardTexture(n, color)
 end
 
 local function createWaveTexture()
+    print("create wave")
     local texture = startDrawingCardTexture(cardWidth, cardHeight, 1, 1, 1)
     local vector = vec2
     
-    local s = spline({vector(14,100), vector(126,123), vector(243,43), vector(346,122)}, {vector(14,110), vector(76,124), vector(168,44), vector(346,132)}, {vector(90,92), vector(176,122), vector(318,42), vector(376,122)})
-    love.graphics.setColor(0,0,0,1)
-    love.graphics.line(s:render())
-
-    -- for i=1, 10 do
-    --     -- interpolate
-    --     loal st = 
-    -- end
-    
+    local s1 = spline({vector(14,100), vector(126,123), vector(243,43), vector(346,122)}, {vector(14,110), vector(76,124), vector(168,44), vector(346,132)}, {vector(90,92), vector(176,122), vector(318,42), vector(376,122)})
     local s2 = spline({vector(16,173), vector(166,83), vector(265,189), vector(347,161)}, {vector(16,183), vector(64,83), vector(190,190), vector(347,171)}, {vector(92,165), vector(268,83), vector(340,188), vector(377,161)})
-    love.graphics.setColor(0,0,0,1)
+
+    love.graphics.setColor(1,0,0,1)
+    love.graphics.line(s1:render())
+
+    -- interpolate between the two splines
+    local steps = 10
+    for i=1, steps do
+        local s1_factor = 1 / (steps+1) * i
+        local s2_factor = 1 - s1_factor
+        local si = s1:copy()
+
+        for ii = 1, #si.keyPositions do
+            local ipos = s1.keyPositions[ii] * s1_factor + s2.keyPositions[ii] * s2_factor
+            local lHandle = s1.leftHandles[ii] * s1_factor + s2.leftHandles[ii] * s2_factor
+            local rHandle = s1.rightHandles[ii] * s1_factor + s2.rightHandles[ii] * s2_factor
+            si:setKeyPosition(ii, ipos)
+            si:setLeftHandle(ii, lHandle)
+            si:setRightHandle(ii, rHandle)
+        end
+        si:updateSegments()
+        love.graphics.setColor(0,1,0,1)
+        love.graphics.line(si:render())
+    end
+
+    love.graphics.setColor(0,0,1,1)
     love.graphics.line(s2:render())
     
     stopDrawingCardTexture()
@@ -122,7 +139,7 @@ end
 
 function drawer.createBackCardSprite()
     local sprite = {
-        texture = createWaveTexture(),
+        texture = createCardBackTexture(),
         ox = cardWidth / 2,
         oy = cardHeight / 2,
         quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
@@ -133,6 +150,16 @@ end
 function drawer.createCardDiceSprite(n, color)
     local sprite = {
         texture = createDiceCardTexture(n, color),
+        ox = cardWidth / 2,
+        oy = cardHeight / 2,
+        quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
+    }
+    return sprite
+end
+
+function drawer.cardWaveSprite()
+    local sprite = {
+        texture = createWaveTexture(),
         ox = cardWidth / 2,
         oy = cardHeight / 2,
         quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)

@@ -31,8 +31,10 @@ function love.load()
     ey.rectangle = {width=4, height=1000}
     --]]
 
-    CardManager.initCardSet()
-    CardManager.dealCards(4, 3)
+    local x, y = 4, 3
+    -- make the set just big enough to make sure every card is dealed twice
+    CardManager.initCardSet((x * y)/2)
+    CardManager.dealCards(x, y)
 
 end
 
