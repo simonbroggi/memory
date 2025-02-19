@@ -1,3 +1,5 @@
+require("batteries"):export()
+
 local core = require("core")
 local InputSystem = require("systems.InputSystem")
 local PhysicsSystem = require("systems.PhysicsSystem")

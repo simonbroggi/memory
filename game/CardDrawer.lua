@@ -1,5 +1,7 @@
 local drawer = {}
 
+local spline = require("spline")
+
 local cardWidth, cardHeight, cardBorder = 256, 256, 2
 
 local function startDrawingCardTexture(w, h, r, g, b)
@@ -97,9 +99,30 @@ local function createDiceCardTexture(n, color)
     return texture
 end
 
+local function createWaveTexture()
+    local texture = startDrawingCardTexture(cardWidth, cardHeight, 1, 1, 1)
+    local vector = vec2
+    
+    local s = spline({vector(14,100), vector(126,123), vector(243,43), vector(346,122)}, {vector(14,110), vector(76,124), vector(168,44), vector(346,132)}, {vector(90,92), vector(176,122), vector(318,42), vector(376,122)})
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.line(s:render())
+
+    -- for i=1, 10 do
+    --     -- interpolate
+    --     loal st = 
+    -- end
+    
+    local s2 = spline({vector(16,173), vector(166,83), vector(265,189), vector(347,161)}, {vector(16,183), vector(64,83), vector(190,190), vector(347,171)}, {vector(92,165), vector(268,83), vector(340,188), vector(377,161)})
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.line(s2:render())
+    
+    stopDrawingCardTexture()
+    return texture
+end
+
 function drawer.createBackCardSprite()
     local sprite = {
-        texture = createCardBackTexture(),
+        texture = createWaveTexture(),
         ox = cardWidth / 2,
         oy = cardHeight / 2,
         quad = love.graphics.newQuad(0, 0, cardWidth, cardHeight, cardWidth, cardHeight)
