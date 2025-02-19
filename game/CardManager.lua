@@ -1,17 +1,26 @@
 local core = require("core")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local drawer = require("CardDrawer")
+local ripple = require("ripple")
 
 ---@class CardManager creates new card sets, deals cards etc..
 local manager = {}
+local roomSounds = ripple.newTag()
+love.audio.setEffect("roomReverb", {type="reverb"})
+roomSounds:setEffect("roomReverb", true)
+love.audio.setEffect("compressor", {type="compressor"})
+roomSounds:setEffect("compressor", true)
 
--- Create a new cardSet creates the textures and all instantiates the card tables. After this, the card tables are only refferenced.
--- But what if a card is altered during a game (e.g. a mark is added)?
--- In that case, the card table must be copied! and then the pair value is no longer true.
--- Could have card just store refference to cardSet and index of card.
--- Or the card is a class and has metatable with the unique card in set, and when a card is altered its overwritten..
--- First option seems more like everything else in my ecs works: components dont have metatables. Also it's nicely serializable.
--- need an abstraction of value and display.
+local cardSounds = ripple.newTag()
+local flipCardSound = ripple.newSound(love.audio.newSource("assets/sound_effects/flip_1.wav", "static"), {
+    loop = false,
+    tags = {roomSounds, cardSounds},
+})
+
+---A cardSet holds the sprites of all the set, including the card back.
+---CardSprites are stored in an array.
+---The index of pair cards is also stored in an array.
+---Card just store refference to cardSet and index of card.
 ---@class cardSet a set of cards. Every card is unique, but has the same back sprite.
 ---@field cardBackSprite sprite the back of the card.
 ---@field cardSprites sprite[] the front of the card.
@@ -64,22 +73,40 @@ end
 ---@field index number index of the card in the cardSet. can be 0 when it's not defined yet.
 ---@field cardBag number[]
 ---@field facingUp boolean True if the card visible to the player.
+---@field inPlay boolean True if the card is not yet collected by player or computer.
 
 ---@class entity
 ---@field card? card
 
----A card bag is just an array of cards.
+---check if two cards are a pair
+---@param cardA card
+---@param cardB card
+---@return boolean true if cards are a pair.
+function manager.isPair(cardA, cardB)
+    -- if cards are from the same set and cardA pair index equals cardB pair index return true.
+    if cardA.cardSet == cardB.cardSet and
+        cardA.cardSet.pairIndices[cardA.index] == cardB.index then
+        return true
+    end
+    return false
+end
+
+---Remove and return a random element from an array.
 ---@param array any[]
 ---@return any element
 function manager.popRandomElementFromArray(array)
-    local cardsSize = #array
-    local index = math.random(cardsSize)
+    local arraySize = #array
+    local index = math.random(arraySize)
     local element = array[index]
-    array[index] = array[cardsSize]
-    array[cardsSize] = nil
+    array[index] = array[arraySize]
+    array[arraySize] = nil
     return element
 end
 
+---Remove the element with matching value from an an array.
+---@param array any[]
+---@param value any
+---@return any value the removed value
 function manager.removeElementByValue(array, value)
     for i=1, #array do
         if array[i] == value then
@@ -89,6 +116,67 @@ function manager.removeElementByValue(array, value)
         end
     end
     error("no element " .. value .. " in array")
+end
+
+manager.__cards_in_play = core.newList()
+
+function manager:get_flipped_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            local card = entity.card
+            if card.inPlay and card.facingUp then
+                l:add(entity)
+            end
+        end
+    end
+    return l
+end
+
+---The card entities that are in play.
+---@return List cardEntities a List of cards in play. 
+function manager:get_cards_in_play()
+    local l = core.newList()
+    -- self.__cards_in_play:clear()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            local card = entity.card
+            if card.inPlay then
+                -- self.__cards_in_play:add(entity)
+                l:add(entity)
+            end
+        end
+    end
+    -- return self.__cards_in_play
+    return l
+end
+
+function manager:get_defined_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            ---@type card
+            local card = entity.card
+            if card.inPlay and card.index ~= 0 then
+                l:add(entity)
+            end
+        end
+    end
+    return l
+end
+
+function manager:get_undefined_cards_in_play()
+    local l = core.newList()
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.card then
+            ---@type card
+            local card = entity.card
+            if card.inPlay and card.index == 0 then
+                l:add(entity)
+            end
+        end
+    end
+    return l
 end
 
 ---create a card set with pairs pointing to its own index, so identical pairs.
@@ -123,7 +211,7 @@ local function cardFlipAnimUpdate(e, deltaT)
     local anim = e.anim
     ---@cast anim -nil
     anim.time = anim.time + deltaT
-    local tt = anim.time * 5
+    local tt = anim.time * 6.4
     if tt >= math.pi/2 and not anim.flipped then
         anim.flipped = true
         e.card.facingUp = not e.card.facingUp
@@ -144,11 +232,11 @@ local function cardFlipAnimUpdate(e, deltaT)
         e.tform.sy = 1
         e.tform.kx = 0
         e.tform.ky = 0
-        e.anim = nil -- remove the animation
 
-        manager.revealedCardEntities[e] = e.card.facingUp or nil
-
-        manager.updateState()
+        -- remove the animation first, then call onDone
+        local onDone = e.anim.onDone
+        e.anim = nil
+        onDone(e)
     else
         e.tform.sx = 1 - math.sin(tt) * 0.1
         e.tform.sy = 1 - math.sin(tt) * .9
@@ -158,20 +246,64 @@ local function cardFlipAnimUpdate(e, deltaT)
     end
 end
 
+-- remove
+manager.flippingCardEntities = setmetatable({}, {__mode="k"})
+
+local function onFlipDone(e)
+    -- Add or remove cards from revealedCardEntities depending on if they are facing up or down.
+    -- Redundant data here, since the card.facingUp is already holding this value.
+    manager.revealedCardEntities[e] = e.card.facingUp or nil
+    manager.flippingCardEntities[e] = nil
+    manager.do_transitions() -- gets called multiple times when multiple cards are flipped...
+end
+
+local function addFlipCardAnimation(cardEntity)
+    
+    --play sound with randomized pitch
+    flipCardSound:play({pitch=1+math.random()*0.34-0.1})
+
+    cardEntity.anim = {
+        time = 0,
+        update = cardFlipAnimUpdate,
+        startRot = cardEntity.tform.r,
+        flipped = false,
+        -- add done callback function
+        onDone = onFlipDone,
+    }
+    manager.flippingCardEntities[cardEntity] = true
+end
+
+function manager.revealCard(cardEntity)
+    print("reveal card ")
+    if cardEntity.anim then
+        print("card already flipping")
+    elseif cardEntity.card.facingUp then
+        print("card is already facing up")
+    else
+        addFlipCardAnimation(cardEntity)
+    end
+end
+
+function manager.concealCard(cardEntity)
+    if cardEntity.anim then
+        print("card already flipping")
+    elseif not cardEntity.card.facingUp then
+        print("card is already facing down")
+    else
+        addFlipCardAnimation(cardEntity)
+    end
+end
+
+function manager.dontAllowFlipCard(cardEntity)
+    print("not allowed to flip card now")
+end
+
+-- What happens when a card is clicked.
+--manager.cardTapHandler = manager.revealCard
 ---called whenever a card is tapped
 ---@param cardEntity entity
 local function onCardTapped(cardEntity)
-
-    -- todo: points and computer turn. manager.revealedCardEntities ...
-
-    if not cardEntity.anim then
-        cardEntity.anim = {
-            time = 0,
-            update = cardFlipAnimUpdate,
-            startRot = cardEntity.tform.r,
-            flipped = false,
-        }
-    end
+    manager.cardTapHandler(cardEntity)
 end
 
 ---Create an unrevealed card entity from cardBag belonging to cardSet and place it at x/y.
@@ -190,6 +322,7 @@ local function placeCard(x, y, cardSet, cardBag)
         index = 0, -- unrevealed card
         cardBag = cardBag,
         facingUp = false,
+        inPlay = true,
     }
     cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
     cardEntity.sprite = cardSet.cardBackSprite
@@ -202,36 +335,77 @@ local function placeCard(x, y, cardSet, cardBag)
     return cardEntity
 end
 
-function manager.updateState()
-    local state = manager.state
-    for _, transfunc in ipairs(state.transitions) do
-        if transfunc() then break end
+function manager.numRevealedCards()
+    local nRevealedCards = 0
+    for _ in pairs(manager.revealedCardEntities) do
+        nRevealedCards = nRevealedCards + 1
+    end
+    return nRevealedCards
+end
+
+function manager.getRevealedPairCards()
+    local pairEs = {}
+    for e in pairs(manager.revealedCardEntities) do
+        local addCard = true
+        if #pairEs > 0 then
+            if manager.isPair(pairEs[1].card, e.card) then
+                addCard = true
+            else
+                addCard = false
+            end
+        end
+        if addCard then
+            pairEs[#pairEs+1] = e
+        end
+    end
+
+    if #pairEs > 1 then
+        return unpack(pairEs)
+    else
+        return nil
     end
 end
 
-local playerTurn = {
-    transitions = {
-        function ()
-            local nRevealedCards = 0
-            for cardE in pairs(manager.revealedCardEntities) do
-                nRevealedCards = nRevealedCards + 1
-            end
-            print(nRevealedCards .. " cards revealed")
-            return true -- stay in this state for now
-        end,
-        function ()
-            print("shouldnt be done")
-        end
-    }
-}
+function manager.update(dt)
+    if manager.current_state.update then
+        manager.current_state:update(dt)
+    end
+end
+
+---update state transitions.
+function manager.do_transitions()
+    local state = manager.current_state
+    print((state.name or " Unknown State"), "do transitions")
+    for _, transfunc in ipairs(state.transitions) do
+        if transfunc(state) then break end
+    end
+end
+
+function manager.set_state(state)
+    if manager.current_state and manager.current_state.exit then manager.current_state:exit() end
+    manager.current_state = state
+    if manager.current_state.enter then manager.current_state:enter() end
+    return true
+end
+
+-- define states (need on enter / on exit functions?)
+manager.playerTurn = require("State_PlayerTurn")
+manager.playerCollect = require("State_PlayerCollect")
+manager.computerTurn = require("State_ComputerTurn")
+manager.computerCollect = require("State_ComputerCollect")
+
+manager.playerTurn:init(manager)
+manager.playerCollect:init(manager)
+manager.computerTurn:init(manager)
+manager.computerCollect:init(manager)
+
+manager.num_cards_player_collected = 0
+manager.num_player_turns = 0
 
 ---deals cards and starts the game.
 ---@param rows number
 ---@param columns number
 function manager.dealCards(rows, columns)
-
-    -- a set of all card entities. weak refferenced..
-    manager.dealedCardEntities = setmetatable({}, {__mode="k"})
 
     ---@type number[] a bag of card indices that are in play, but have not been revealed.
     manager.unrevealedCards = manager.createCardPairsBagFromSet(manager.cardSet, rows*columns)
@@ -244,12 +418,12 @@ function manager.dealCards(rows, columns)
         for x = 1, rows do
             local xx = (x-1) * spacing + staratX
             local cardEntity = placeCard(xx, yy, manager.cardSet, manager.unrevealedCards) -- dont define the cards yet.
-            manager.dealedCardEntities[cardEntity] = true
         end
     end
 
-    manager.state = playerTurn
     manager.revealedCardEntities = setmetatable({}, {__mode="k"})
+
+    manager.set_state(manager.playerTurn)
 
 end
 

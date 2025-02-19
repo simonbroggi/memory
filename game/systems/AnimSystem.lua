@@ -4,6 +4,7 @@ local core = require("core")
 ---@field update function
 ---@field startRot? number
 ---@field flipped boolean
+---@field onDone function called when animation is done, with entity as an argument.
 
 ---@class entity
 ---@field anim? anim
