@@ -1,4 +1,5 @@
 local core = require("core")
+local mat4 = require("mat4")
 
 ---@class DrawSystem : System
 
@@ -99,13 +100,8 @@ local function setMaterial(mat)
 end
 
 function CreateOrto(left, right, bottom, top, near, far)
-    local m = {
-        2/(right-left), 0, 0, -(right+left)/(right-left),
-        0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),
-        0, 0, -2/(far-near), -(far+near)/(far-near),
-        0, 0, 0, 1,
-    }
-    return love.math.newTransform():setMatrix(unpack(m))
+    local m = mat4.new_ortho(left, right, bottom, top, near, far)
+    return love.math.newTransform():setMatrix(m:components())
 end
 
 function DrawSystem:resize_canvas(w, h)
