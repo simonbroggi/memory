@@ -98,11 +98,26 @@ local function setMaterial(mat)
     end
 end
 
+function CreateOrto(left, right, bottom, top, near, far)
+    local m = {
+        2/(right-left), 0, 0, -(right+left)/(right-left),
+        0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),
+        0, 0, -2/(far-near), -(far+near)/(far-near),
+        0, 0, 0, 1,
+    }
+    return love.math.newTransform():setMatrix(unpack(m))
+end
+
 function DrawSystem:resize_canvas(w, h)
     local w1, h1 = self.canvas_reference_width, self.canvas_reference_height
     local scale = math.min(w/w1, h/h1)
     self.canvas_translate_x, self.canvas_translate_y = (w - w1*scale)/2, (h - h1*scale)/2
     self.canvas_scale = scale
+
+    -- set projection
+    local left, right, bottom, top = 0-self.canvas_translate_x/scale, w1+self.canvas_translate_x/scale, h1+self.canvas_translate_y/scale, 0-self.canvas_translate_y/scale
+    self.projection = CreateOrto(left, right, bottom, top, -10, 10)
+    love.graphics.setProjection(self.projection)
 end
 
 function DrawSystem:drawScene()
@@ -137,7 +152,6 @@ function DrawSystem:drawScene()
 end
 
 function DrawSystem:draw()
-    self:pushCanvasScalerTransform()
 
     -- only support rendering the first camera
     local cameraEntity = self.cameraEntity
@@ -174,18 +188,8 @@ function DrawSystem:draw()
         love.graphics.printf(textbox.text, tform.x, tform.y, textbox.limit, textbox.align, tform.r, tform.sx, tform.sy, textbox.ox, textbox.oy, tform.kx, tform.ky)
     end
 
-    -- end of canvas transformations
-    love.graphics.pop()
     setMaterial() -- reset material
 end
-
---- apply canvas scaler transformations
-function DrawSystem:pushCanvasScalerTransform()
-    love.graphics.push()
-    love.graphics.translate(self.canvas_translate_x, self.canvas_translate_y)
-    love.graphics.scale(self.canvas_scale)
-end
-
 
 -- probably pass camera component as an argument and do this for every camera entity
 --- apply camera transformations

@@ -9,7 +9,6 @@ local AnimSystem = require("systems.AnimSystem")
 local CardManager = require("CardManager")
 
 function love.load()
-    DrawSystem:init()
     InputSystem:init()
     PhysicsSystem:init()
     AnimSystem:init()
@@ -35,7 +34,9 @@ function love.load()
     -- make the set just big enough to make sure every card is dealed twice
     CardManager.initCardSet((x * y)/2)
     CardManager.dealCards(x, y)
-
+    
+    -- need to init the draw system after cardmanager calls carddrawer which probably resets projection.
+    DrawSystem:init()
 end
 
 function love.update(dt)

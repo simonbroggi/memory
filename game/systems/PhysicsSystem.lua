@@ -107,7 +107,6 @@ function PhysicsSystem:fixedUpdate(dt)
 end
 
 function PhysicsSystem:debugDraw()
-    DrawSystem:pushCanvasScalerTransform()
     DrawSystem:pushCameraTransform()
     love.graphics.setColor(1,.2,.2,1)
     love.graphics.setBlendMode("alpha")
@@ -150,7 +149,6 @@ function PhysicsSystem:debugDraw()
     end
 
     love.graphics.setColor(1,1,1,1)
-    love.graphics.pop()
     love.graphics.pop()
     if inactiveBodies > 0 then
         love.graphics.print("inactiveBodies: " .. inactiveBodies, 10, 70)
