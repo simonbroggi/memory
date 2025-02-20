@@ -46,14 +46,23 @@ function System:update(dt)
                 -- mouse down this frame!
 
                 -- transform mouse coordinates to world coordinates
-                -- could definitely be done nicer! (learn to use transforms properly!)
-                local mx, my = self.mousePointer.x, self.mousePointer.y
-                mx = self.mousePointer.x - DrawSystem.canvas_translate_x
-                my = self.mousePointer.y - DrawSystem.canvas_translate_y
-                mx = mx / DrawSystem.canvas_scale
-                my = my / DrawSystem.canvas_scale
-                mx = mx - DrawSystem.canvas_reference_width / 2
-                my = my - DrawSystem.canvas_reference_height / 2
+                -- without projection transform function 
+                -- local mx, my = self.mousePointer.x, self.mousePointer.y
+                -- mx = self.mousePointer.x - DrawSystem.canvas_translate_x
+                -- my = self.mousePointer.y - DrawSystem.canvas_translate_y
+                -- mx = mx / DrawSystem.canvas_scale
+                -- my = my / DrawSystem.canvas_scale
+                -- mx = mx - DrawSystem.canvas_reference_width / 2
+                -- my = my - DrawSystem.canvas_reference_height / 2
+
+                -- normalize coordinates. center of the screen is 0,0
+                local mx, my = self.mousePointer.x * 2 / love.graphics.getWidth() - 1, self.mousePointer.y * 2 / love.graphics.getHeight() - 1
+                my = - my -- make y axis go up
+                
+                -- transform mouse coordinates to world coordinates (todo: take view projection into account!)
+                mx, my = DrawSystem.projection:inverseTransformPoint(mx, my)
+
+                -- print("mouse down at: " .. mx .. "," .. my .. "  -  " .. mxx .. "," .. myy)
 
                 local topLeftX = mx - 1
                 local topLeftY = my - 1

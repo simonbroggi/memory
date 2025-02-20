@@ -115,7 +115,12 @@ function DrawSystem:resize_canvas(w, h)
     self.canvas_scale = scale
 
     -- set projection
-    local left, right, bottom, top = 0-self.canvas_translate_x/scale, w1+self.canvas_translate_x/scale, h1+self.canvas_translate_y/scale, 0-self.canvas_translate_y/scale
+    
+    -- top left corner is aproximatly 0, 0
+    --local left, right, bottom, top = 0-self.canvas_translate_x/scale, w1+self.canvas_translate_x/scale, h1+self.canvas_translate_y/scale, 0-self.canvas_translate_y/scale
+
+    -- center of the screen is 0, 0
+    local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, h1/2+self.canvas_translate_y/scale, -h1/2-self.canvas_translate_y/scale
     self.projection = CreateOrto(left, right, bottom, top, -10, 10)
     love.graphics.setProjection(self.projection)
 end
@@ -198,7 +203,7 @@ function DrawSystem:pushCameraTransform()
 
     love.graphics.push()
     local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
-    love.graphics.translate(self.halfWidth, self.halfHeight)
+    --love.graphics.translate(self.halfWidth, self.halfHeight) -- not needed if projection 0,0 is set to center of the screen
     love.graphics.scale(camSX, camSY)
     love.graphics.rotate(cameraEntity.tform.r)
     love.graphics.translate(-cameraEntity.tform.x, -cameraEntity.tform.y)
