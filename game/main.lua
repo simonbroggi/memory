@@ -14,6 +14,13 @@ function love.load()
     PhysicsSystem:init()
     AnimSystem:init()
 
+    Hand = core.newEntitytInWorld()
+    Hand.tform = {x = 0, y = 0}
+    Hand.material = {red=0, green=1, blue=1, alpha=1}
+    Hand.rectangle = {width=20, height=20}
+
+    love.mouse.setVisible(false)
+
     Cam = core.newEntitytInWorld()
     Cam.camera = camera(0, 0, 1000)
 
@@ -38,6 +45,12 @@ function love.load()
 end
 
 function love.update(dt)
+
+    Hand.tform.x = love.mouse.getX()-love.graphics.getWidth()/2
+    Hand.tform.y = -love.mouse.getY()+love.graphics.getHeight()/2
+    local scale = 1/DrawSystem.canvas_scale
+    Hand.tform.x, Hand.tform.y = Hand.tform.x * scale, Hand.tform.y * scale
+
     InputSystem:update(dt)
     PhysicsSystem:fixedUpdate(dt)
 

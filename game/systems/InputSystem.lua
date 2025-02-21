@@ -65,6 +65,9 @@ function System:update(dt)
                 local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.camera.view)
                 
                 mx, my = viewProjection:inverseTransformPoint(mx, my)
+                
+                mx, my = Hand.tform.x, Hand.tform.y
+
                 -- this might not work when rotating the camera because theres no z?
                 -- todo: check Matrix.h line 366, 341
                 -- below i'm trying to do my own inverseTransformPoint
