@@ -136,7 +136,10 @@ function DrawSystem:resize_canvas(w, h)
     -- center of the screen is 0, 0, y is up. Righthanded, like in Blender when looking downwards.
     local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, -h1/2-self.canvas_translate_y/scale, h1/2+self.canvas_translate_y/scale
 
-    self.projection = orthographic_projection(left, right, bottom, top, -10, 10)
+    self.projection = orthographic_projection(left, right, bottom, top, 100, 2000)
+
+    --self.projection = love.math.newTransform():setMatrix(mat4.perspective(math.rad(40), w1/h1, 100, 2000):components())
+
     love.graphics.setProjection(self.projection)
 end
 

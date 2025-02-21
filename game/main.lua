@@ -15,7 +15,7 @@ function love.load()
     AnimSystem:init()
 
     Cam = core.newEntitytInWorld()
-    Cam.camera = camera()
+    Cam.camera = camera(0, 0, 1000)
 
     --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
@@ -54,26 +54,28 @@ end
 
 function love.keypressed(key)
 
+    local dist_step = 100
+    local angle_step = math.rad(15)
     if key == "left" then
-        Cam.camera:setPosition(Cam.camera.x - 30, Cam.camera.y, Cam.camera.z)
+        Cam.camera:setPosition(Cam.camera.x - dist_step, Cam.camera.y, Cam.camera.z)
     elseif key == "right" then
-        Cam.camera:setPosition(Cam.camera.x + 30, Cam.camera.y, Cam.camera.z)
+        Cam.camera:setPosition(Cam.camera.x + dist_step, Cam.camera.y, Cam.camera.z)
     elseif key == "up" then
-        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y + 30, Cam.camera.z)
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y + dist_step, Cam.camera.z)
     elseif key == "down" then
-        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y - 30, Cam.camera.z)
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y - dist_step, Cam.camera.z)
     elseif key == "w" then
-        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z + 3)
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z + dist_step)
     elseif key == "s" then
-        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z - 3)
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z - dist_step)
     elseif key == "a" then
-        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz + math.pi/180)
+        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz + angle_step)
     elseif key == "d" then
-        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz - math.pi/180)
+        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz - angle_step)
     elseif key == "r" then
-        Cam.camera:setRotation(Cam.camera.rx + math.pi/180, Cam.camera.ry, Cam.camera.rz)
+        Cam.camera:setRotation(Cam.camera.rx - angle_step, Cam.camera.ry, Cam.camera.rz)
     elseif key == "f" then
-        Cam.camera:setRotation(Cam.camera.rx - math.pi/180, Cam.camera.ry, Cam.camera.rz)
+        Cam.camera:setRotation(Cam.camera.rx + angle_step, Cam.camera.ry, Cam.camera.rz)
     end
     if key == "escape" then
         love.event.quit()

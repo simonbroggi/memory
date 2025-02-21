@@ -62,7 +62,9 @@ function System:update(dt)
                 -- transform mouse coordinates to world coordinates
                 -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
                 local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.camera.view)
-                mx, my = viewProjection:inverseTransformPoint(mx, my)
+                mx, my = viewProjection:inverseTransformPoint(mx, my) -- this probably doesnt work when rotating the camera because theres no z
+                -- todo: check Matrix.h line 366, 341
+                -- either implement own inverseTransformPoint or expose the 
 
                 -- print("mouse down at: " .. mx .. "," .. my .. "  -  " .. mxx .. "," .. myy)
 

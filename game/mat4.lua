@@ -90,6 +90,22 @@ function mat4.ortho(left, right, bottom, top, near, far)
     )
 end
 
+---comment
+---@param vert_fov any
+---@param aspect number width / height
+---@param near any
+---@param far any
+---@return table
+function mat4.perspective(vert_fov, aspect, near, far)
+    local f = 1 / math.tan(vert_fov / 2)
+    return __construct(
+        f/aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far+near)/(near-far), 2*far*near/(near-far),
+        0, 0, -1, 0
+    )
+end
+
 function mat4.components(m)
     return m.e1_1, m.e1_2, m.e1_3, m.e1_4,
            m.e2_1, m.e2_2, m.e2_3, m.e2_4,
