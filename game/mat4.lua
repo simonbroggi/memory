@@ -24,7 +24,20 @@ end
 
 -- https://github.com/Tachytaenius/mathsies/blob/master/mathsies.lua
 
-function mat4.orthogonal(left, right, bottom, top, near, far)
+function mat4.translate(x, y, z)
+    return __construct(
+        1, 0, 0, x,
+        0, 1, 0, y,
+        0, 0, 1, z,
+        0, 0, 0, 1
+    )
+end
+
+function mat4.rotate()
+    
+end
+
+function mat4.ortho(left, right, bottom, top, near, far)
     return __construct(
         2/(right-left), 0, 0, -(right+left)/(right-left),
         0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),
@@ -38,6 +51,26 @@ function mat4.components(m)
            m.e2_1, m.e2_2, m.e2_3, m.e2_4,
            m.e3_1, m.e3_2, m.e3_3, m.e3_4,
            m.e4_1, m.e4_2, m.e4_3, m.e4_4
+end
+
+function mat4:apply(m)
+    self.e1_1 = self.e1_1 * m.e1_1 + self.e1_2 * m.e2_1 + self.e1_3 * m.e3_1 + self.e1_4 * m.e4_1
+    self.e1_2 = self.e1_1 * m.e1_2 + self.e1_2 * m.e2_2 + self.e1_3 * m.e3_2 + self.e1_4 * m.e4_2
+    self.e1_3 = self.e1_1 * m.e1_3 + self.e1_2 * m.e2_3 + self.e1_3 * m.e3_3 + self.e1_4 * m.e4_3
+    self.e1_4 = self.e1_1 * m.e1_4 + self.e1_2 * m.e2_4 + self.e1_3 * m.e3_4 + self.e1_4 * m.e4_4
+    self.e2_1 = self.e2_1 * m.e1_1 + self.e2_2 * m.e2_1 + self.e2_3 * m.e3_1 + self.e2_4 * m.e4_1
+    self.e2_2 = self.e2_1 * m.e1_2 + self.e2_2 * m.e2_2 + self.e2_3 * m.e3_2 + self.e2_4 * m.e4_2
+    self.e2_3 = self.e2_1 * m.e1_3 + self.e2_2 * m.e2_3 + self.e2_3 * m.e3_3 + self.e2_4 * m.e4_3
+    self.e2_4 = self.e2_1 * m.e1_4 + self.e2_2 * m.e2_4 + self.e2_3 * m.e3_4 + self.e2_4 * m.e4_4
+    self.e3_1 = self.e3_1 * m.e1_1 + self.e3_2 * m.e2_1 + self.e3_3 * m.e3_1 + self.e3_4 * m.e4_1
+    self.e3_2 = self.e3_1 * m.e1_2 + self.e3_2 * m.e2_2 + self.e3_3 * m.e3_2 + self.e3_4 * m.e4_2
+    self.e3_3 = self.e3_1 * m.e1_3 + self.e3_2 * m.e2_3 + self.e3_3 * m.e3_3 + self.e3_4 * m.e4_3
+    self.e3_4 = self.e3_1 * m.e1_4 + self.e3_2 * m.e2_4 + self.e3_3 * m.e3_4 + self.e3_4 * m.e4_4
+    self.e4_1 = self.e4_1 * m.e1_1 + self.e4_2 * m.e2_1 + self.e4_3 * m.e3_1 + self.e4_4 * m.e4_1
+    self.e4_2 = self.e4_1 * m.e1_2 + self.e4_2 * m.e2_2 + self.e4_3 * m.e3_2 + self.e4_4 * m.e4_2
+    self.e4_3 = self.e4_1 * m.e1_3 + self.e4_2 * m.e2_3 + self.e4_3 * m.e3_3 + self.e4_4 * m.e4_3
+    self.e4_4 = self.e4_1 * m.e1_4 + self.e4_2 * m.e2_4 + self.e4_3 * m.e3_4 + self.e4_4 * m.e4_4
+    return self
 end
 
 mat4.__index = mat4
