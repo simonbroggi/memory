@@ -1,4 +1,5 @@
 local core = require "core"
+local mat4 = require("mat4")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 
@@ -62,7 +63,17 @@ function System:update(dt)
                 -- transform mouse coordinates to world coordinates
                 -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
                 local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.camera.view)
-                mx, my = viewProjection:inverseTransformPoint(mx, my) -- this probably doesnt work when rotating the camera because theres no z
+                
+                --mx, my = viewProjection:inverse():transformPoint(mx, my)
+                local inverse = mat4(viewProjection:inverse():getMatrix())
+                local cam = DrawSystem.cameraEntity.camera
+                local distToOrigin = 100 -- math.sqrt(cam.x * cam.x + cam.y * cam.y + cam.z * cam.z)
+                local mz = distToOrigin
+                
+                mx, my, mz = inverse:transform(mx, my, mz)
+                print("distToOrigin: " .. distToOrigin .. "   mz: " .. mz)
+
+                --mx, my = viewProjection:inverseTransformPoint(mx, my) -- this probably doesnt work when rotating the camera because theres no z
                 -- todo: check Matrix.h line 366, 341
                 -- either implement own inverseTransformPoint or expose the 
 

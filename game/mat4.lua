@@ -133,6 +133,18 @@ function mat4:apply(m)
     return self
 end
 
+function mat4:transform(x, y, z)
+    local x1 = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4
+    local y1 = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4
+    local z1 = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4
+
+    -- local x1 = self.e1_1 * x + self.e2_1 * y + self.e3_1 * z + self.e4_1
+    -- local y1 = self.e1_2 * x + self.e2_2 * y + self.e3_2 * z + self.e4_2
+    -- local z1 = self.e1_3 * x + self.e2_3 * y + self.e3_3 * z + self.e4_3
+
+    return x1, y1, z1
+end
+
 mat4.__index = mat4
 
 setmetatable(
