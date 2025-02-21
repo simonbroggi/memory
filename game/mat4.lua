@@ -40,6 +40,14 @@ function mat4:setTranslation(x, y, z)
     return self
 end
 
+---rotation roder: y x z
+---@param x number
+---@param y number
+---@param z number
+function mat4.rotation_euler(x, y, z)
+    return mat4.rotation_z(z):apply(mat4.rotation_x(x)):apply(mat4.rotation_y(y))
+end
+
 ---mat4:apply(mat4.rotation_z(x)) is equivalent to transform:rotate(x)
 ---@param rad number angle in radians
 ---@return table mat4

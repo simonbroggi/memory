@@ -26,6 +26,18 @@ function camera:setPosition(x, y, z)
     self.view_need_update = true
 end
 
+function camera:setRotation(rx, ry, rz)
+    self.rx, self.ry, self.rz = rx or 0, ry or 0, rz or 0
+    -- probably going to be gimbal locked at some point, but for now it's fine.
+    -- not 100% sure if the rotation should be inverted.
+    -- https://www.reddit.com/r/opengl/comments/x656w/am_i_understanding_the_mvp_matrices_correctly/?rdt=42113
+    
+    -- construct rotation matrix, then set the translation components.
+    self.viewMatrix = mat4.rotation_euler(self.rx, self.ry, self.rz)
+    self.viewMatrix:setTranslation(-self.x, -self.y, -self.z)
+    self.view_need_update = true
+end
+
 -- viewMatrix:setRotation
 
 function camera:getView()

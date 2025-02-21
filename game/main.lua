@@ -15,10 +15,7 @@ function love.load()
     AnimSystem:init()
 
     Cam = core.newEntitytInWorld()
-    Cam.camera = camera(0, 0, 0, 0, 0, 0)
-    --Cam.tform = {x = 0, y = 0, r = 0, sx = 1, sy = 1}
-    --Cam.rectangle = {width = 40, height = 40}
-    --Cam.material = {red=1, green=0, blue=1, alpha=1}
+    Cam.camera = camera()
 
     --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
@@ -59,20 +56,24 @@ function love.keypressed(key)
 
     if key == "left" then
         Cam.camera:setPosition(Cam.camera.x - 30, Cam.camera.y, Cam.camera.z)
-        -- Cam.tform.x = Cam.tform.x - 30
     elseif key == "right" then
         Cam.camera:setPosition(Cam.camera.x + 30, Cam.camera.y, Cam.camera.z)
-        -- Cam.tform.x = Cam.tform.x + 30
     elseif key == "up" then
         Cam.camera:setPosition(Cam.camera.x, Cam.camera.y + 30, Cam.camera.z)
-        -- Cam.tform.y = Cam.tform.y - 30
     elseif key == "down" then
         Cam.camera:setPosition(Cam.camera.x, Cam.camera.y - 30, Cam.camera.z)
-        -- Cam.tform.y = Cam.tform.y + 30
+    elseif key == "w" then
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z + 3)
+    elseif key == "s" then
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y, Cam.camera.z - 3)
     elseif key == "a" then
-        -- Cam.tform.r = Cam.tform.r + math.pi/180
+        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz + math.pi/180)
     elseif key == "d" then
-        -- Cam.tform.r = Cam.tform.r - math.pi/180
+        Cam.camera:setRotation(Cam.camera.rx, Cam.camera.ry, Cam.camera.rz - math.pi/180)
+    elseif key == "r" then
+        Cam.camera:setRotation(Cam.camera.rx + math.pi/180, Cam.camera.ry, Cam.camera.rz)
+    elseif key == "f" then
+        Cam.camera:setRotation(Cam.camera.rx - math.pi/180, Cam.camera.ry, Cam.camera.rz)
     end
     if key == "escape" then
         love.event.quit()
