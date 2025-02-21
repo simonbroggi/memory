@@ -24,6 +24,19 @@ function camera:setPosition(x, y, z)
     self.x, self.y, self.z = x or 0, y or 0, z or 0
     local translation = mat4.translation(-self.x, -self.y, -self.z)
     local rotation = mat4.rotation_euler(self.rx, self.ry, self.rz)
+
+    -- flip rotations and scale?
+    -- local r = {rotation:components()}
+    -- rotation.e1_1 = r[1]
+    -- rotation.e2_1 = r[2]
+    -- rotation.e3_1 = r[3]
+    -- rotation.e1_2 = r[5]
+    -- rotation.e2_2 = r[6]
+    -- rotation.e3_2 = r[7]
+    -- rotation.e1_3 = r[9]
+    -- rotation.e2_3 = r[10]
+    -- rotation.e3_3 = r[11]
+
     -- self.viewMatrix:setTranslation(-self.x, -self.y, -self.z)
     self.viewMatrix = rotation:apply(translation)
     self.view_need_update = true
@@ -38,6 +51,19 @@ function camera:setRotation(rx, ry, rz)
     -- construct rotation matrix, then set the translation components.
     local translation = mat4.translation(-self.x, -self.y, -self.z)
     local rotation = mat4.rotation_euler(self.rx, self.ry, self.rz)
+    
+    -- flip rotations and scale?
+    -- local r = {rotation:components()}
+    -- rotation.e1_1 = r[1]
+    -- rotation.e2_1 = r[2]
+    -- rotation.e3_1 = r[3]
+    -- rotation.e1_2 = r[5]
+    -- rotation.e2_2 = r[6]
+    -- rotation.e3_2 = r[7]
+    -- rotation.e1_3 = r[9]
+    -- rotation.e2_3 = r[10]
+    -- rotation.e3_3 = r[11]
+
     --self.viewMatrix = rotation:setTranslation(-self.x, -self.y, -self.z)
     self.viewMatrix = rotation:apply(translation)
 

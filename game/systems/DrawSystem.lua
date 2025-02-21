@@ -138,7 +138,7 @@ function DrawSystem:resize_canvas(w, h)
 
     self.projection = orthographic_projection(left, right, bottom, top, 100, 2000)
 
-    --self.projection = love.math.newTransform():setMatrix(mat4.perspective(math.rad(40), w1/h1, 100, 2000):components())
+    --self.projection = love.math.newTransform():setMatrix(mat4.perspective(math.rad(50), w1/h1, 100, 2000):components())
 
     love.graphics.setProjection(self.projection)
 end
