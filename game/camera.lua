@@ -22,7 +22,6 @@ end
 
 function camera:setPosition(x, y, z)
     self.x, self.y, self.z = x or 0, y or 0, z or 0
-    print("camera:setPosition", self.x, self.y, self.z)
     self.viewMatrix:setTranslation(-self.x, -self.y, -self.z)
     self.view_need_update = true
 end
@@ -33,8 +32,6 @@ function camera:getView()
     if self.view_need_update then
         self.view:setMatrix(self.viewMatrix:components())
         self.view_need_update = false
-        print("viewTransform updated", self.view:getMatrix())
-        print("fromTransform compone", self.viewMatrix:components())
     end
     return self.view
 end

@@ -59,8 +59,10 @@ function System:update(dt)
                 local mx, my = self.mousePointer.x * 2 / love.graphics.getWidth() - 1, self.mousePointer.y * 2 / love.graphics.getHeight() - 1
                 my = - my -- make y axis go up
                 
-                -- transform mouse coordinates to world coordinates (todo: take view projection into account!)
-                mx, my = DrawSystem.projection:inverseTransformPoint(mx, my)
+                -- transform mouse coordinates to world coordinates
+                -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
+                local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.camera.view)
+                mx, my = viewProjection:inverseTransformPoint(mx, my)
 
                 -- print("mouse down at: " .. mx .. "," .. my .. "  -  " .. mxx .. "," .. myy)
 
