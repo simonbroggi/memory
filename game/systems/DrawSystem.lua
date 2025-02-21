@@ -12,6 +12,7 @@ local DrawSystem = {
     -- current translation and scale to make the reference resolution fit
     -- into the windows resolution (letterbox/pillarbox)
     -- calculated in resize function
+    -- this is probably no longer needed since a projection matrix is used: self.projection
     canvas_translate_x = 0, canvas_translate_y = 0, canvas_scale = 1
 }
 
@@ -216,11 +217,12 @@ function DrawSystem:pushCameraTransform()
     local cameraEntity = self.cameraEntity
 
     love.graphics.push()
-    local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
+    love.graphics.applyTransform(cameraEntity.camera:getView())
+    --local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
     --love.graphics.translate(self.halfWidth, self.halfHeight) -- not needed if projection 0,0 is set to center of the screen
-    love.graphics.scale(camSX, camSY)
-    love.graphics.rotate(cameraEntity.tform.r)
-    love.graphics.translate(-cameraEntity.tform.x, -cameraEntity.tform.y)
+    --love.graphics.scale(camSX, camSY)
+    --love.graphics.rotate(cameraEntity.tform.r)
+    --love.graphics.translate(-cameraEntity.tform.x, -cameraEntity.tform.y)
 end
 
 return DrawSystem

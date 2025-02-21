@@ -1,4 +1,5 @@
 require("batteries"):export()
+local camera = require("camera")
 
 local core = require("core")
 local InputSystem = require("systems.InputSystem")
@@ -14,8 +15,8 @@ function love.load()
     AnimSystem:init()
 
     Cam = core.newEntitytInWorld()
-    Cam.camera = {}
-    Cam.tform = {x = 0, y = 0, r = 0, sx = 1, sy = 1}
+    Cam.camera = camera(0, 0, 0, 0, 0, 0)
+    --Cam.tform = {x = 0, y = 0, r = 0, sx = 1, sy = 1}
     --Cam.rectangle = {width = 40, height = 40}
     --Cam.material = {red=1, green=0, blue=1, alpha=1}
 
@@ -50,24 +51,28 @@ function love.update(dt)
 end
 
 function love.draw()
-    -- PhysicsSystem:debugDraw()
+    PhysicsSystem:debugDraw()
     DrawSystem:draw()
 end
 
 function love.keypressed(key)
 
     if key == "left" then
-        Cam.tform.x = Cam.tform.x - 30
+        Cam.camera:setPosition(Cam.camera.x - 30, Cam.camera.y, Cam.camera.z)
+        -- Cam.tform.x = Cam.tform.x - 30
     elseif key == "right" then
-        Cam.tform.x = Cam.tform.x + 30
+        Cam.camera:setPosition(Cam.camera.x + 30, Cam.camera.y, Cam.camera.z)
+        -- Cam.tform.x = Cam.tform.x + 30
     elseif key == "up" then
-        Cam.tform.y = Cam.tform.y - 30
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y + 30, Cam.camera.z)
+        -- Cam.tform.y = Cam.tform.y - 30
     elseif key == "down" then
-        Cam.tform.y = Cam.tform.y + 30
+        Cam.camera:setPosition(Cam.camera.x, Cam.camera.y - 30, Cam.camera.z)
+        -- Cam.tform.y = Cam.tform.y + 30
     elseif key == "a" then
-        Cam.tform.r = Cam.tform.r + math.pi/180
+        -- Cam.tform.r = Cam.tform.r + math.pi/180
     elseif key == "d" then
-        Cam.tform.r = Cam.tform.r - math.pi/180
+        -- Cam.tform.r = Cam.tform.r - math.pi/180
     end
     if key == "escape" then
         love.event.quit()

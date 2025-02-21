@@ -33,6 +33,13 @@ function mat4.translation(x, y, z)
     )
 end
 
+function mat4:setTranslation(x, y, z)
+    self.e1_4 = x
+    self.e2_4 = y
+    self.e3_4 = z
+    return self
+end
+
 ---mat4:apply(mat4.rotation_z(x)) is equivalent to transform:rotate(x)
 ---@param rad number angle in radians
 ---@return table mat4
