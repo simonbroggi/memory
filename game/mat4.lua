@@ -24,7 +24,7 @@ end
 
 -- https://github.com/Tachytaenius/mathsies/blob/master/mathsies.lua
 
-function mat4.translate(x, y, z)
+function mat4.translation(x, y, z)
     return __construct(
         1, 0, 0, x,
         0, 1, 0, y,
@@ -33,8 +33,37 @@ function mat4.translate(x, y, z)
     )
 end
 
-function mat4.rotate()
-    
+---mat4:apply(mat4.rotation_z(x)) is equivalent to transform:rotate(x)
+---@param rad number angle in radians
+---@return table mat4
+function mat4.rotation_z(rad)
+    local c, s = math.cos(rad), math.sin(rad)
+    return __construct(
+        c, -s, 0, 0,
+        s, c, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    )
+end
+
+function mat4.rotation_x(rad)
+    local c, s = math.cos(rad), math.sin(rad)
+    return __construct(
+        1, 0, 0, 0,
+        0, c, -s, 0,
+        0, s, c, 0,
+        0, 0, 0, 1
+    )
+end
+
+function mat4.rotation_y(rad)
+    local c, s = math.cos(rad), math.sin(rad)
+    return __construct(
+        c, 0, s, 0,
+        0, 1, 0, 0,
+        -s, 0, c, 0,
+        0, 0, 0, 1
+    )
 end
 
 function mat4.ortho(left, right, bottom, top, near, far)
