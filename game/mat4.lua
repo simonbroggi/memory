@@ -24,13 +24,7 @@ end
 
 -- https://github.com/Tachytaenius/mathsies/blob/master/mathsies.lua
 
-function mat4.new_ortho(left, right, bottom, top, near, far)
-    left = left or 0
-    right = right or love.graphics.getWidth()
-    bottom = bottom or love.graphics.getHeight()
-    top = top or 0
-    near = near or -10
-    far = far or 10
+function mat4.orthogonal(left, right, bottom, top, near, far)
     return __construct(
         2/(right-left), 0, 0, -(right+left)/(right-left),
         0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),

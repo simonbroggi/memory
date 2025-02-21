@@ -99,8 +99,14 @@ local function setMaterial(mat)
     end
 end
 
-function CreateOrto(left, right, bottom, top, near, far)
-    local m = mat4.new_ortho(left, right, bottom, top, near, far)
+local function orthographic_projection(left, right, bottom, top, near, far)
+    left = left or 0
+    right = right or love.graphics.getWidth()
+    bottom = bottom or love.graphics.getHeight()
+    top = top or 0
+    near = near or -10
+    far = far or 10
+    local m = mat4.orthogonal(left, right, bottom, top, near, far)
     return love.math.newTransform():setMatrix(m:components())
 end
 
@@ -112,12 +118,16 @@ function DrawSystem:resize_canvas(w, h)
 
     -- set projection
     
-    -- top left corner is aproximatly 0, 0
+    -- top left corner is aproximatly 0, 0, y is down
     --local left, right, bottom, top = 0-self.canvas_translate_x/scale, w1+self.canvas_translate_x/scale, h1+self.canvas_translate_y/scale, 0-self.canvas_translate_y/scale
 
-    -- center of the screen is 0, 0
-    local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, h1/2+self.canvas_translate_y/scale, -h1/2-self.canvas_translate_y/scale
-    self.projection = CreateOrto(left, right, bottom, top, -10, 10)
+    -- center of the screen is 0, 0, y is down
+    --local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, h1/2+self.canvas_translate_y/scale, -h1/2-self.canvas_translate_y/scale
+
+    -- center of the screen is 0, 0, y is up. Righthanded, like in Blender when looking downwards.
+    local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, -h1/2-self.canvas_translate_y/scale, h1/2+self.canvas_translate_y/scale
+
+    self.projection = orthographic_projection(left, right, bottom, top, -10, 10)
     love.graphics.setProjection(self.projection)
 end
 

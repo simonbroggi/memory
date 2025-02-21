@@ -54,7 +54,7 @@ function state:update(dt)
         local doTransitions = false
         for i, e in ipairs(self.collectCards) do
             self.manager.num_cards_player_collected = self.manager.num_cards_player_collected + 1
-            e.body:setPosition(760, 450) -- todo: animation!
+            e.body:setPosition(760, -450) -- todo: animation!
             doTransitions = true -- if animating remove this and instead add an onDone callback
             e.card.inPlay = false
             --core.destroyEntity(e)
