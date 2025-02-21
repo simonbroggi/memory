@@ -109,7 +109,7 @@ local function orthographic_projection(left, right, bottom, top, near, far)
     local projection_mat = mat4.ortho(left, right, bottom, top, near, far)
     local projection = love.math.newTransform():setMatrix(projection_mat:components())
 
-    -- local translation_mat = mat4.translate(130, 60, 0)
+    -- local translation_mat = mat4.translation(130, 60, 0)
     -- local translation = love.math.newTransform():setMatrix(translation_mat:components())
     -- the following two lines should be equivalent
     -- return projection:apply(translation)
