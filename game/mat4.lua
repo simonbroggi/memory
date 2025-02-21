@@ -138,6 +138,14 @@ function mat4:transform(x, y, z)
     local y1 = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4
     local z1 = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4
 
+    local div = self.e4_1 * x + self.e4_2 * y + self.e4_3 * z + self.e4_4
+    if div ~= 1 then
+        print("div", div)
+        x1 = x1 / div
+        y1 = y1 / div
+        z1 = z1 / div
+    end
+
     -- local x1 = self.e1_1 * x + self.e2_1 * y + self.e3_1 * z + self.e4_1
     -- local y1 = self.e1_2 * x + self.e2_2 * y + self.e3_2 * z + self.e4_2
     -- local z1 = self.e1_3 * x + self.e2_3 * y + self.e3_3 * z + self.e4_3
