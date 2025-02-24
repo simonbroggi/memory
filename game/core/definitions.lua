@@ -3,6 +3,7 @@
 ---@field private __body? love.Body body is actually stored here.
 ---@field tform? tform
 ---@field camera? camera
+---@field transform? love.Transform
 ---@field sprite? sprite
 ---@field rectangle? rectangle
 ---@field material? material

@@ -1,5 +1,5 @@
 local core = require("core")
-local mat4 = require("mat4")
+local mat4 = require("love3d.mat4")
 
 ---@class DrawSystem : System
 
@@ -100,25 +100,6 @@ local function setMaterial(mat)
     end
 end
 
-local function orthographic_projection(left, right, bottom, top, near, far)
-    left = left or 0
-    right = right or love.graphics.getWidth()
-    bottom = bottom or love.graphics.getHeight()
-    top = top or 0
-    near = near or -10
-    far = far or 10
-    local projection_mat = mat4.ortho(left, right, bottom, top, near, far)
-    local projection = love.math.newTransform():setMatrix(projection_mat:components())
-
-    -- local translation_mat = mat4.translation(130, 60, 0)
-    -- local translation = love.math.newTransform():setMatrix(translation_mat:components())
-    -- the following two lines should be equivalent
-    -- return projection:apply(translation)
-    -- return love.math.newTransform():setMatrix(projection_mat:apply(translation_mat):components())
-
-    return projection
-end
-
 function DrawSystem:resize_canvas(w, h)
     local w1, h1 = self.canvas_reference_width, self.canvas_reference_height
     local scale = math.min(w/w1, h/h1)
@@ -138,6 +119,8 @@ function DrawSystem:resize_canvas(w, h)
 
     --self.projection = orthographic_projection(left, right, bottom, top, 100, 2000)
 
+    -- should probably be moved to camera.
+    -- self.projection = love.math.newTransform():setMatrix(mat4.ortho(left, right, bottom, top, -10, 10):components())
     self.projection = love.math.newTransform():setMatrix(mat4.perspective(math.rad(50), w1/h1, 100, 2000):components())
 
     love.graphics.setProjection(self.projection)
@@ -220,7 +203,7 @@ function DrawSystem:pushCameraTransform()
     local cameraEntity = self.cameraEntity
 
     love.graphics.push()
-    love.graphics.applyTransform(cameraEntity.camera:getView())
+    love.graphics.applyTransform(cameraEntity.transform:inverse())
     --local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
     --love.graphics.translate(self.halfWidth, self.halfHeight) -- not needed if projection 0,0 is set to center of the screen
     --love.graphics.scale(camSX, camSY)

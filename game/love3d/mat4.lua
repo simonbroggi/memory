@@ -40,13 +40,13 @@ function mat4:setTranslation(x, y, z)
     return self
 end
 
----rotation roder: y x z
----@param x number
----@param y number
----@param z number
-function mat4.rotation_euler(x, y, z)
-    return mat4.rotation_z(z):apply(mat4.rotation_x(x)):apply(mat4.rotation_y(y))
-end
+-- ---rotation roder: y x z
+-- ---@param x number
+-- ---@param y number
+-- ---@param z number
+-- function mat4.rotation_euler(x, y, z)
+--     return mat4.rotation_z(z):apply(mat4.rotation_x(x)):apply(mat4.rotation_y(y))
+-- end
 
 ---mat4:apply(mat4.rotation_z(x)) is equivalent to transform:rotate(x)
 ---@param rad number angle in radians
@@ -90,7 +90,7 @@ function mat4.ortho(left, right, bottom, top, near, far)
     )
 end
 
----comment
+---create right hand perspective projection matrix
 ---@param vert_fov any
 ---@param aspect number width / height
 ---@param near any
@@ -133,22 +133,22 @@ function mat4:apply(m)
     return self
 end
 
-function mat4:transform(x, y, z)
-    local x1 = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4
-    local y1 = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4
-    local z1 = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4
+-- function mat4:transform(x, y, z)
+--     local x1 = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4
+--     local y1 = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4
+--     local z1 = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4
 
-    -- not quit sure if this is correct
-    local div = self.e4_1 * x + self.e4_2 * y + self.e4_3 * z + self.e4_4
-    if div ~= 1 then
-        print("div", div)
-        x1 = x1 / div
-        y1 = y1 / div
-        z1 = z1 / div
-    end
+--     -- not quit sure if this is correct
+--     local div = self.e4_1 * x + self.e4_2 * y + self.e4_3 * z + self.e4_4
+--     if div ~= 1 then
+--         print("div", div)
+--         x1 = x1 / div
+--         y1 = y1 / div
+--         z1 = z1 / div
+--     end
 
-    return x1, y1, z1
-end
+--     return x1, y1, z1
+-- end
 
 mat4.__index = mat4
 

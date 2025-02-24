@@ -1,5 +1,5 @@
 local core = require "core"
-local mat4 = require("mat4")
+local mat4 = require("love3d.mat4")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 
@@ -62,7 +62,7 @@ function System:update(dt)
                 
                 -- transform mouse coordinates to world coordinates
                 -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
-                local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.camera.view)
+                local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.transform:inverse())
                 
                 mx, my = viewProjection:inverseTransformPoint(mx, my)
                 
