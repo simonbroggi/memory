@@ -31,12 +31,12 @@ function love.load()
     Cam.transform:rotate(0, math.rad(60))
     Cam.camera = camera()
 
-    Oponent = core.newEntitytInWorld()
-    Oponent.transform = love.math.newTransform()
-    Oponent.transform:translate(0, 500)
-    Oponent.transform:rotate(0, math.rad(90))
-    Oponent.material = {red=1, green=0, blue=0, alpha=1}
-    Oponent.splines = {
+    local oponent = core.newEntitytInWorld()
+    oponent.transform = love.math.newTransform()
+    oponent.transform:translate(0, 500)
+    oponent.transform:rotate(0, math.rad(90))
+    oponent.material = {red=1, green=0, blue=0, alpha=1}
+    oponent.splines = {
         -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
         spline({vec2(30.00, 292.00), vec2(167.00, 494.00), vec2(370.00, 380.00), vec2(541.00, 498.00), vec2(699.00, 271.00), vec2(362.00, 197.00)}, {vec2(28.00, 167.00), vec2(48.00, 493.00), vec2(319.00, 378.00), vec2(431.00, 499.00), vec2(705.00, 398.00), vec2(426.00, 54.00)}, {vec2(32.00, 417.00), vec2(286.00, 495.00), vec2(421.00, 382.00), vec2(651.00, 497.00), vec2(693.00, 144.00), vec2(274.00, 58.00)}, true),
     }
