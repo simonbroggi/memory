@@ -97,11 +97,16 @@ end
 ---@param far any
 ---@return table
 function mat4.perspective(vert_fov, aspect, near, far)
+    local e3_3, e3_4 = -1, -2*near
+    if far then
+        e3_3 = (far+near)/(near-far)
+        e3_4 = 2*far*near/(near-far)
+    end
     local f = 1 / math.tan(vert_fov / 2)
     return __construct(
         f/aspect, 0, 0, 0,
         0, f, 0, 0,
-        0, 0, (far+near)/(near-far), 2*far*near/(near-far),
+        0, 0, e3_3, e3_4,
         0, 0, -1, 0
     )
 end
