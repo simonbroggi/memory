@@ -4,25 +4,27 @@
 -- functionality: add/remove/move points, scale, set handle types, save/load, sample, draw
 -- split functionality between runtime and editor
 
-local vector = vec2
+local vec2 = require("batteries.vec2")
 
----@class Spline
----@field keyPositions NVec[]
----@field rightHandles NVec[]
----@field leftHandles NVec[]
+---@class spline
+---@field keyPositions vec2[]
+---@field rightHandles vec2[]
+---@field leftHandles vec2[]
+---@field cyclic boolean
 ---@field segments love.BezierCurve[]
-local Spline = {}
+local spline = {}
 
 -- https://docs.blender.org/manual/en/latest/editors/graph_editor/fcurves/introduction.html
 -- todo: controll points and handles and handle types
 
 -- new fCurve with given control point coordinates
----construct an Spline
----@param keyPositions NVec[] control points
----@param leftHandles NVec[] left handles
----@param rightHandles NVec[] right handles
----@return Spline
-local function __construct(keyPositions, leftHandles, rightHandles)
+---construct an FCurve
+---@param keyPositions vec2[] control points
+---@param leftHandles vec2[] left handles
+---@param rightHandles vec2[] right handles
+---@param cyclic boolean?
+---@return spline
+local function __construct(keyPositions, leftHandles, rightHandles, cyclic)
     local nKeyPositions = #keyPositions
     assert(nKeyPositions >= 2, "Number of control points must be at least 2")
 
@@ -40,7 +42,7 @@ local function __construct(keyPositions, leftHandles, rightHandles)
     else
         rightHandles = {}
     end
-    local rightOffset = vector(30, 0)
+    local rightOffset = vec2(30, 0)
     for i=1, nKeyPositions do
         local keyPoint = keyPositions[i]
         if constructRightHandles then
@@ -51,7 +53,7 @@ local function __construct(keyPositions, leftHandles, rightHandles)
         end
     end
 
-    local instance = setmetatable({keyPositions = keyPositions, rightHandles = rightHandles, leftHandles = leftHandles}, Spline)
+    local instance = setmetatable({keyPositions = keyPositions, rightHandles = rightHandles, leftHandles = leftHandles, cyclic = cyclic}, spline)
     instance.segments = {}
     instance:updateSegments()
     return instance
@@ -61,12 +63,12 @@ end
 ---@param keyPositions NVec[] control points
 ---@param leftHandles NVec[] left handles
 ---@param rightHandles NVec[] right handles
----@return Spline
-function Spline.new(keyPositions, leftHandles, rightHandles)
+---@return spline
+function spline.new(keyPositions, leftHandles, rightHandles)
     return __construct(keyPositions, leftHandles, rightHandles)
 end
 
-function Spline:copy()
+function spline:copy()
     local keyPositions = {}
     local leftHandles = {}
     local rightHandles = {}
@@ -78,10 +80,20 @@ function Spline:copy()
     return __construct(keyPositions, leftHandles, rightHandles)
 end
 
+---comment
+---@param keyPositions vec2[] control points
+---@param leftHandles vec2[] left handles
+---@param rightHandles vec2[] right handles
+---@param cyclic boolean?
+---@return spline
+function spline.new(keyPositions, leftHandles, rightHandles, cyclic)
+    return __construct(keyPositions, leftHandles, rightHandles, cyclic)
+end
+
 ---set a key point and keep the handles relatively constant
 ---@param i number
----@param vec NVec
-function Spline:setKeyPosition(i, vec)
+---@param vec vec2
+function spline:setKeyPosition(i, vec)
     local v = self.keyPositions[i]
     
     -- keep handles relatively constant
@@ -94,7 +106,7 @@ function Spline:setKeyPosition(i, vec)
     self.leftHandles[i] = v + leftOffset
 end
 
-function Spline:setLeftHandle(i, vec, mirror)
+function spline:setLeftHandle(i, vec, mirror)
     local v = self.leftHandles[i]
     v.x, v.y = vec.x, vec.y
     if mirror then
@@ -106,7 +118,7 @@ function Spline:setLeftHandle(i, vec, mirror)
     end
 end
 
-function Spline:setRightHandle(i, vec, mirror)
+function spline:setRightHandle(i, vec, mirror)
     local v = self.rightHandles[i]
     v.x, v.y = vec.x, vec.y
     if mirror then
@@ -118,10 +130,87 @@ function Spline:setRightHandle(i, vec, mirror)
     end
 end
 
----Update the bezier segments of the Spline.
-function Spline:updateSegments()
-    local nControlPoints = #self.keyPositions
-    for i = 2, nControlPoints do
+function spline:insertKeyPosition(i, vec)
+    -- find reasonable handle positions
+    local previous_i = i - 1
+    local next_i = i
+    if previous_i == 0 then
+        previous_i = #self.keyPositions
+    end
+    if next_i > #self.keyPositions then
+        next_i = 1
+    end
+    local leftKey = self.keyPositions[previous_i]
+    local rightKey = self.keyPositions[next_i]
+    local newLeftHandle = (3 * vec + leftKey) / 4
+    local newRightHandle = (3 * vec + rightKey) / 4
+
+    -- insert key position and handles
+    table.insert(self.keyPositions, i, vec:copy())
+    table.insert(self.leftHandles, i, newLeftHandle)
+    table.insert(self.rightHandles, i, newRightHandle)
+    self:updateSegments()
+end
+
+function spline:removeKeyPosition(i)
+    table.remove(self.keyPositions, i)
+    table.remove(self.leftHandles, i)
+    table.remove(self.rightHandles, i)
+    if self.cyclic then
+        table.remove(self.segments, #self.segments)
+    end
+    self:updateSegments()
+end
+
+---Return the control point at vec, re
+---@param vec vec2 position
+---@param d2 number distance squared
+---@return integer? index, boolean left_handle, boolean right_handle
+function spline:getCloseControlPointIndex(vec, d2)
+    local nKeyPositions = #self.keyPositions
+    for i=1, nKeyPositions do
+        local cp = self.keyPositions[i]
+        if cp:distance_squared(vec) < d2 then
+            return i, false, false
+        end
+    end
+
+    for i=1, nKeyPositions do
+        local cp = self.leftHandles[i]
+        if cp:distance_squared(vec) < d2 then
+            return i, true, false
+        end
+    end
+
+    for i=1, nKeyPositions do
+        local cp = self.rightHandles[i]
+        if cp:distance_squared(vec) < d2 then
+            return i, false, true
+        end
+    end
+
+    return nil, false, false
+end
+
+function spline:getCloseSegment(vec, d2)
+    local nSegments = #self.segments
+    for i=1, nSegments do
+        local segment = self.segments[i]
+        local coords = segment:render(5)
+        for j=1, #coords, 2 do
+            local p = vec2(coords[j], coords[j+1])
+            if p:distance_squared(vec) < d2 then
+                return i
+            end
+        end
+    end
+    return nil
+end
+
+---Update the bezier segments of the FCurve.
+function spline:updateSegments()
+    local nKeys = #self.keyPositions
+    for i = 2, nKeys do
         local cpA = self.keyPositions[i-1]
         local rightHandleA = self.rightHandles[i-1]
         local cpB = self.keyPositions[i]
@@ -138,9 +227,29 @@ function Spline:updateSegments()
             self.segments[i-1] = love.math.newBezierCurve({cpA.x, cpA.y, rightHandleA.x, rightHandleA.y, leftHandleB.x, leftHandleB.y, cpB.x, cpB.y})
         end
     end
+
+    if self.cyclic then
+        local cpA = self.keyPositions[nKeys]
+        local rightHandleA = self.rightHandles[nKeys]
+        local cpB = self.keyPositions[1]
+        local leftHandleB = self.leftHandles[1]
+
+        if self.segments[nKeys] then
+            self.segments[nKeys]:setControlPoint(1, cpA.x, cpA.y)
+            self.segments[nKeys]:setControlPoint(2, rightHandleA.x, rightHandleA.y)
+            self.segments[nKeys]:setControlPoint(3, leftHandleB.x, leftHandleB.y)
+            self.segments[nKeys]:setControlPoint(4, cpB.x, cpB.y)
+        else
+            self.segments[nKeys] = love.math.newBezierCurve({cpA.x, cpA.y, rightHandleA.x, rightHandleA.y, leftHandleB.x, leftHandleB.y, cpB.x, cpB.y})
+        end
+    else
+        if self.segments[nKeys] then
+            self.segments[nKeys] = nil
+        end
+    end
 end
 
-function Spline:render(depth)
+function spline:render(depth)
     local nSegments = #self.segments
     if nSegments < 1 then
         return {}
@@ -158,13 +267,13 @@ function Spline:render(depth)
     return renderedLines
 end
 
-Spline.__index = Spline
+spline.__index = spline
 
-setmetatable(Spline, {
-    __call = function(_, keyPositions, leftHandles, rightHandles)
-        return __construct(keyPositions, leftHandles, rightHandles)
+setmetatable(spline, {
+    __call = function(_, keyPositions, leftHandles, rightHandles, cyclic)
+        return __construct(keyPositions, leftHandles, rightHandles, cyclic)
     end
 })
 
----@cast Spline +fun(...):Spline
-return Spline
+---@cast spline +fun(...)spline
+return spline

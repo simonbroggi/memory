@@ -102,10 +102,9 @@ end
 local function createWaveTexture()
     print("create wave")
     local texture = startDrawingCardTexture(cardWidth, cardHeight, 1, 1, 1)
-    local vector = vec2
     
-    local s1 = spline({vector(14,100), vector(126,123), vector(243,43), vector(346,122)}, {vector(14,110), vector(76,124), vector(168,44), vector(346,132)}, {vector(90,92), vector(176,122), vector(318,42), vector(376,122)})
-    local s2 = spline({vector(16,173), vector(166,83), vector(265,189), vector(347,161)}, {vector(16,183), vector(64,83), vector(190,190), vector(347,171)}, {vector(92,165), vector(268,83), vector(340,188), vector(377,161)})
+    local s1 = spline({vec2(66.00, 225.00), vec2(250.00, 110.00), vec2(428.00, 193.00), vec2(601.00, 240.00)}, {vec2(-7.00, 222.00), vec2(146.00, 104.00), vec2(332.00, 195.00), vec2(502.00, 233.00)}, {vec2(139.00, 228.00), vec2(354.00, 116.00), vec2(524.00, 191.00), vec2(700.00, 247.00)}, false)
+    local s2 = spline({vec2(29.00, 221.00), vec2(415.00, 68.00), vec2(306.00, 170.00), vec2(527.00, 221.00)}, {vec2(-44.00, 218.00), vec2(148.00, 0.00), vec2(291.00, 115.00), vec2(387.00, 225.00)}, {vec2(169.00, 140.00), vec2(327.00, 98.00), vec2(321.00, 225.00), vec2(667.00, 217.00)}, false)
 
     love.graphics.setColor(1,0,0,1)
     love.graphics.line(s1:render())
