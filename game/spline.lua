@@ -59,15 +59,6 @@ local function __construct(keyPositions, leftHandles, rightHandles, cyclic)
     return instance
 end
 
----create a new fcurve.
----@param keyPositions NVec[] control points
----@param leftHandles NVec[] left handles
----@param rightHandles NVec[] right handles
----@return spline
-function spline.new(keyPositions, leftHandles, rightHandles)
-    return __construct(keyPositions, leftHandles, rightHandles)
-end
-
 function spline:copy()
     local keyPositions = {}
     local leftHandles = {}
