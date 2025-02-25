@@ -9,6 +9,8 @@ local AnimSystem = require("systems.AnimSystem")
 
 local CardManager = require("CardManager")
 
+local spline = require("spline")
+
 require("love3d")
 
 function love.load()
@@ -27,6 +29,14 @@ function love.load()
     Cam.transform = love.math.newTransform()
     Cam.transform:translate(0, 0, 1000)
     Cam.camera = camera()
+
+    Oponent = core.newEntitytInWorld()
+    Oponent.transform = love.math.newTransform()
+    Oponent.transform:translate(0, 500)
+    Oponent.material = {red=1, green=0, blue=0, alpha=1}
+    Oponent.splines = {
+        spline({vec2(29.00, 221.00), vec2(415.00, 68.00), vec2(306.00, 170.00), vec2(527.00, 221.00)}, {vec2(-44.00, 218.00), vec2(148.00, 0.00), vec2(291.00, 115.00), vec2(387.00, 225.00)}, {vec2(169.00, 140.00), vec2(327.00, 98.00), vec2(321.00, 225.00), vec2(667.00, 217.00)}, false),
+    }
 
     --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()

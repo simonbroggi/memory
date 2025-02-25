@@ -1,6 +1,8 @@
 local core = require("core")
 local mat4 = require("love3d.mat4")
 
+local spline = require("spline")
+
 ---@class DrawSystem : System
 
 local DrawSystem = {
@@ -21,10 +23,12 @@ DrawSystem.spriteEntities = core.newList()
 DrawSystem.rectangleEntities = core.newList()
 DrawSystem.textboxEntities = core.newList()
 DrawSystem.particleSystemEntities = core.newList()
+DrawSystem.splinesEntities = core.newList()
 
 DrawSystem.uiSpriteEntities = core.newList()
 DrawSystem.uiRectangleEntities = core.newList()
 DrawSystem.uiTextboxEntities = core.newList()
+DrawSystem.uiSplinesEntities = core.newList()
 
 function DrawSystem:init()
     --self.width, self.height = love.graphics.getDimensions()
@@ -40,6 +44,10 @@ function DrawSystem:filter()
     self.uiSpriteEntities:clear()
     self.rectangleEntities:clear()
     self.uiRectangleEntities:clear()
+    self.textboxEntities:clear()
+    self.uiTextboxEntities:clear()
+    self.splinesEntities:clear()
+    self.uiSplinesEntities:clear()
     for _, entity in ipairs(core.ecs_world.entities) do
         if entity.camera then
             self.cameraEntity = entity
@@ -65,6 +73,19 @@ function DrawSystem:filter()
                 if entity.textbox then
                     self.textboxEntities:add(entity)
                 end
+                if entity.splines then
+                    self.splinesEntities:add(entity)
+                end
+            end
+        end
+
+        if entity.ui then
+            if entity.splines then
+                self.uiSplinesEntities:add(entity)
+            end
+        else
+            if entity.splines then
+                self.splinesEntities:add(entity)
             end
         end
     end
@@ -139,6 +160,24 @@ function DrawSystem:drawScene()
         setMaterial(entity.material)
         local rWidth, rHeight = rect.width * (tform.sx or 1), rect.height * (tform.sy or tform.sx or 1)
         love.graphics.rectangle("fill", tform.x - rWidth/2, tform.y - rHeight/2, rWidth, rHeight)
+    end
+    for _, entity in ipairs(self.splinesEntities) do
+        if entity.transform then
+            love.graphics.push()
+            love.graphics.applyTransform(entity.transform)
+        end
+        local tform = entity.tform
+        local splines = entity.splines
+        setMaterial(entity.material)
+        local w = love.graphics.getLineWidth()
+        love.graphics.setLineWidth(40)
+        for _, spline in ipairs(splines) do
+            love.graphics.line(spline:render())
+        end
+        love.graphics.setLineWidth(w)
+        if entity.transform then
+            love.graphics.pop()
+        end
     end
 
     -- todo: shader and/or blendmode per drawable component?
