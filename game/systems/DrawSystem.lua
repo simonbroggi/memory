@@ -171,8 +171,17 @@ function DrawSystem:drawScene()
         setMaterial(entity.material)
         local w = love.graphics.getLineWidth()
         love.graphics.setLineWidth(40)
-        for _, spline in ipairs(splines) do
-            love.graphics.line(spline:render())
+        for _, s in ipairs(splines) do
+            local verts = s:render()
+            -- This works as long as the curve is not self-intersecting (simple). Otherwise it crashes!
+            -- https://stackoverflow.com/questions/4001745/testing-whether-a-polygon-is-simple-or-complex
+            local triangles = love.math.triangulate(verts)
+            love.graphics.setColor(1, 1, 0, 1)
+            for i, triangle in ipairs(triangles) do
+                love.graphics.polygon("fill", triangle)
+            end
+            love.graphics.setColor(1, 0, 0, 1)
+            love.graphics.line(s:render())
         end
         love.graphics.setLineWidth(w)
         if entity.transform then
