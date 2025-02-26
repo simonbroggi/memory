@@ -148,19 +148,6 @@ function DrawSystem:resize_canvas(w, h)
 end
 
 function DrawSystem:drawScene()
-    for _, entity in ipairs(self.spriteEntities) do
-        local tform = entity.tform
-        local sprite = entity.sprite
-        setMaterial(entity.material)
-        love.graphics.draw(sprite.texture, sprite.quad, tform.x, tform.y, tform.r, tform.sx, tform.sy, sprite.ox, sprite.oy, tform.kx, tform.ky)
-    end
-    for _, entity in ipairs(self.rectangleEntities) do
-        local tform = entity.tform
-        local rect = entity.rectangle
-        setMaterial(entity.material)
-        local rWidth, rHeight = rect.width * (tform.sx or 1), rect.height * (tform.sy or tform.sx or 1)
-        love.graphics.rectangle("fill", tform.x - rWidth/2, tform.y - rHeight/2, rWidth, rHeight)
-    end
     for _, entity in ipairs(self.splinesEntities) do
         if entity.transform then
             love.graphics.push()
@@ -170,7 +157,7 @@ function DrawSystem:drawScene()
         local splines = entity.splines
         setMaterial(entity.material)
         local w = love.graphics.getLineWidth()
-        love.graphics.setLineWidth(40)
+        love.graphics.setLineWidth(6)
         for _, s in ipairs(splines) do
             local verts = s:render()
             -- This works as long as the curve is not self-intersecting (simple). Otherwise it crashes!
@@ -187,6 +174,20 @@ function DrawSystem:drawScene()
         if entity.transform then
             love.graphics.pop()
         end
+    end
+
+    for _, entity in ipairs(self.spriteEntities) do
+        local tform = entity.tform
+        local sprite = entity.sprite
+        setMaterial(entity.material)
+        love.graphics.draw(sprite.texture, sprite.quad, tform.x, tform.y, tform.r, tform.sx, tform.sy, sprite.ox, sprite.oy, tform.kx, tform.ky)
+    end
+    for _, entity in ipairs(self.rectangleEntities) do
+        local tform = entity.tform
+        local rect = entity.rectangle
+        setMaterial(entity.material)
+        local rWidth, rHeight = rect.width * (tform.sx or 1), rect.height * (tform.sy or tform.sx or 1)
+        love.graphics.rectangle("fill", tform.x - rWidth/2, tform.y - rHeight/2, rWidth, rHeight)
     end
 
     -- todo: shader and/or blendmode per drawable component?
