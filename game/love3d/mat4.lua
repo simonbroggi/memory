@@ -81,6 +81,15 @@ function mat4.rotation_y(rad)
     )
 end
 
+function mat4.scale(sx, sy, sz)
+    return __construct(
+        sx, 0, 0, 0,
+        0, sy, 0, 0,
+        0, 0, sz, 0,
+        0, 0, 0, 1
+    )
+end
+
 function mat4.ortho(left, right, bottom, top, near, far)
     return __construct(
         2/(right-left), 0, 0, -(right+left)/(right-left),

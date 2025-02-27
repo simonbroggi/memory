@@ -35,11 +35,13 @@ function love.load()
     oponent.transform = love.math.newTransform()
     oponent.transform:translate(0, 500)
     oponent.transform:rotate(0, math.rad(90))
-    oponent.material = {red=1, green=0, blue=0, alpha=1}
+    oponent.material = {red=1, green=1, blue=1, alpha=1}
+    oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
+    oponent.tform = {x = 0, y = 0, r = math.rad(20), sx = 2.1, sy = 2.1}
     oponent.splines = {
         -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
-        spline({vec2(-322.00, -248.00), vec2(-108.00, -115.00), vec2(-242.00, -61.00), vec2(-295.00, 159.00), vec2(166.00, 288.00), vec2(239.00, 288.00), vec2(277.00, 268.00), vec2(309.00, 108.00), vec2(265.00, -79.00), vec2(130.00, -118.00), vec2(351.00, -267.00), vec2(-7.00, -265.00)}, {vec2(-313.00, -314.00), vec2(-110.00, -219.00), vec2(-302.00, -160.00), vec2(-304.00, -28.00), vec2(56.00, 222.00), vec2(189.00, 266.00), vec2(249.00, 248.00), vec2(303.00, 183.00), vec2(223.00, -8.00), vec2(130.00, -80.00), vec2(359.00, -215.00), vec2(111.00, -257.00)}, {vec2(-331.00, -182.00), vec2(-107.00, -74.00), vec2(-182.00, 38.00), vec2(-286.00, 346.00), vec2(159.00, 203.00), vec2(235.00, 228.00), vec2(278.00, 217.00), vec2(315.00, 33.00), vec2(307.00, -150.00), vec2(127.00, -223.00), vec2(343.00, -319.00), vec2(-125.00, -273.00)}, true),
-        
+        spline({vec2(7.00, 78.00), vec2(-20.00, 188.00), vec2(263.00, 267.00), vec2(339.00, 62.00), vec2(140.00, 23.00), vec2(34.00, 58.00), vec2(-21.00, 17.00)}, {vec2(-2.00, 61.00), vec2(-22.00, 88.00), vec2(139.00, 318.00), vec2(390.00, 122.00), vec2(196.00, 17.00), vec2(68.00, 41.00), vec2(2.00, 34.00)}, {vec2(-9.00, 98.00), vec2(-18.00, 288.00), vec2(387.00, 216.00), vec2(288.00, 2.00), vec2(84.00, 29.00), vec2(9.00, 45.00), vec2(-12.00, 43.00)}, true)
+        ,
     }
 
     --[[ coordinate system lines using rectangle components
