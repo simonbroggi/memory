@@ -41,6 +41,8 @@ end
 
 -- dont do this!
 function Set_right_handed()
+    print("WARNING: Set_right_handed() is not recommended. It's a a hack.")
+    error("Set_right_handed() is not recommended. It's a a hack.")
     local _draw = love.graphics.draw
     local _body_mt = getmetatable(love.physics.newBody(love.physics.newWorld()))
     local _body_set_angle = _body_mt.setAngle
