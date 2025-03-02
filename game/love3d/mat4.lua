@@ -81,6 +81,15 @@ function mat4.rotation_y(rad)
     )
 end
 
+function mat4.scale(sx, sy, sz)
+    return __construct(
+        sx, 0, 0, 0,
+        0, sy, 0, 0,
+        0, 0, sz, 0,
+        0, 0, 0, 1
+    )
+end
+
 function mat4.ortho(left, right, bottom, top, near, far)
     return __construct(
         2/(right-left), 0, 0, -(right+left)/(right-left),
@@ -96,7 +105,7 @@ end
 ---@param near any
 ---@param far any
 ---@return table
-function mat4.perspective(vert_fov, aspect, near, far)
+function mat4.perspective_righthanded(vert_fov, aspect, near, far, shift_x, shift_y)
     local e3_3, e3_4 = -1, -2*near
     if far then
         e3_3 = (far+near)/(near-far)
@@ -104,8 +113,23 @@ function mat4.perspective(vert_fov, aspect, near, far)
     end
     local f = 1 / math.tan(vert_fov / 2)
     return __construct(
-        f/aspect, 0, 0, 0,
-        0, f, 0, 0,
+        f/aspect, 0, shift_x, 0,
+        0, f, shift_y, 0,
+        0, 0, e3_3, e3_4,
+        0, 0, -1, 0
+    )
+end
+
+function mat4.perspective_lefthanded(vert_fov, aspect, near, far, shift_x, shift_y)
+    local e3_3, e3_4 = -1, -2*near
+    if far then
+        e3_3 = (far+near)/(far-near)
+        e3_4 = 2*far*near/(far-near)
+    end
+    local f = 1 / math.tan(vert_fov / 2)
+    return __construct(
+        f/aspect, 0, shift_x, 0,
+        0, -f, shift_y, 0,
         0, 0, e3_3, e3_4,
         0, 0, -1, 0
     )

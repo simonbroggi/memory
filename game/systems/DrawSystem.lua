@@ -142,7 +142,8 @@ function DrawSystem:resize_canvas(w, h)
 
     -- should probably be moved to camera.
     -- self.projection = love.math.newTransform():setMatrix(mat4.ortho(left, right, bottom, top, -10, 10):components())
-    self.projection = love.math.newTransform():setMatrix(mat4.perspective(math.rad(50), w1/h1, 100):components())
+    self.projection = love.math.newTransform():setMatrix(mat4.perspective_lefthanded(math.rad(44), w1/h1, 100, nil, 0, -1.2):components())
+    --self.projection:translate(0, -3000) -- vertically shift camera lens
 
     love.graphics.setProjection(self.projection)
 end
@@ -175,12 +176,19 @@ function DrawSystem:drawScene()
             love.graphics.pop()
         end
     end
-
     for _, entity in ipairs(self.spriteEntities) do
         local tform = entity.tform
         local sprite = entity.sprite
+        local transform = entity.transform
+        if transform then
+            love.graphics.push()
+            love.graphics.applyTransform(transform)
+        end
         setMaterial(entity.material)
         love.graphics.draw(sprite.texture, sprite.quad, tform.x, tform.y, tform.r, tform.sx, tform.sy, sprite.ox, sprite.oy, tform.kx, tform.ky)
+        if transform then
+            love.graphics.pop()
+        end
     end
     for _, entity in ipairs(self.rectangleEntities) do
         local tform = entity.tform
