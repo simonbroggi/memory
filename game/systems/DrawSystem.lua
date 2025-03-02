@@ -142,7 +142,8 @@ function DrawSystem:resize_canvas(w, h)
 
     -- should probably be moved to camera.
     -- self.projection = love.math.newTransform():setMatrix(mat4.ortho(left, right, bottom, top, -10, 10):components())
-    self.projection = love.math.newTransform():setMatrix(mat4.perspective_lefthanded(math.rad(50), w1/h1, 100):components())
+    self.projection = love.math.newTransform():setMatrix(mat4.perspective_lefthanded(math.rad(44), w1/h1, 100, nil, 0, -1.2):components())
+    --self.projection:translate(0, -3000) -- vertically shift camera lens
 
     love.graphics.setProjection(self.projection)
 end

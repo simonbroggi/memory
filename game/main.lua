@@ -28,8 +28,8 @@ function love.load()
     Cam = core.newEntitytInWorld()
     Cam.transform = love.math.newTransform()
     -- camera without rotation is looking upwards
-    Cam.transform:translate(0, -1100, -800)
-    Cam.transform:rotate(0, math.rad(120))
+    Cam.transform:translate(0, -1800, -1200)
+    Cam.transform:rotate(0, math.rad(90))
     Cam.camera = camera()
 
     local oponent = core.newEntitytInWorld()
