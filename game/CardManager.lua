@@ -279,7 +279,7 @@ local function addFlipCardAnimation(cardEntity)
 end
 
 function manager.revealCard(cardEntity)
-    print("reveal card ")
+    -- print("reveal card ")
     if cardEntity.anim then
         print("card already flipping")
     elseif cardEntity.card.facingUp then
@@ -331,7 +331,7 @@ local function placeCard(x, y, cardSet, cardBag)
     }
     cardEntity.tform = {x = x, y = y, r = math.pi/32 * math.random(-1.0,1.0)}
     cardEntity.sprite = cardSet.cardBackSprite
-    cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "dynamic")
+    cardEntity.body = love.physics.newBody(PhysicsSystem.world, x, y, "kinematic")
     cardEntity.body:setAngle(cardEntity.tform.r)
     love.physics.newRectangleShape(cardEntity.body, 0, 0, 256, 256)
 
