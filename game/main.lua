@@ -27,8 +27,9 @@ function love.load()
 
     Cam = core.newEntitytInWorld()
     Cam.transform = love.math.newTransform()
-    Cam.transform:translate(0, -1100, 800)
-    Cam.transform:rotate(0, math.rad(60))
+    -- camera without rotation is looking upwards
+    Cam.transform:translate(0, -1100, -800)
+    Cam.transform:rotate(0, math.rad(120))
     Cam.camera = camera()
 
     local oponent = core.newEntitytInWorld()
@@ -37,7 +38,7 @@ function love.load()
     oponent.transform:rotate(0, math.rad(90))
     oponent.material = {red=1, green=1, blue=1, alpha=1}
     oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
-    oponent.tform = {x = 0, y = 0, r = math.rad(20), sx = 2.1, sy = 2.1}
+    oponent.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
     oponent.splines = {
         -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
         spline({vec2(7.00, 78.00), vec2(-20.00, 188.00), vec2(263.00, 267.00), vec2(339.00, 62.00), vec2(140.00, 23.00), vec2(34.00, 58.00), vec2(-21.00, 17.00)}, {vec2(-2.00, 61.00), vec2(-22.00, 88.00), vec2(139.00, 318.00), vec2(390.00, 122.00), vec2(196.00, 17.00), vec2(68.00, 41.00), vec2(2.00, 34.00)}, {vec2(-9.00, 98.00), vec2(-18.00, 288.00), vec2(387.00, 216.00), vec2(288.00, 2.00), vec2(84.00, 29.00), vec2(9.00, 45.00), vec2(-12.00, 43.00)}, true)

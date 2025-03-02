@@ -102,7 +102,7 @@ function PhysicsSystem:fixedUpdate(dt)
         local tform = entity.tform
         
         tform.x, tform.y = body:getPosition()
-        tform.r = -body:getAngle()
+        tform.r = body:getAngle()
     end
 end
 

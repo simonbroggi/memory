@@ -105,7 +105,7 @@ end
 ---@param near any
 ---@param far any
 ---@return table
-function mat4.perspective(vert_fov, aspect, near, far)
+function mat4.perspective_righthanded(vert_fov, aspect, near, far)
     local e3_3, e3_4 = -1, -2*near
     if far then
         e3_3 = (far+near)/(near-far)
@@ -115,6 +115,21 @@ function mat4.perspective(vert_fov, aspect, near, far)
     return __construct(
         f/aspect, 0, 0, 0,
         0, f, 0, 0,
+        0, 0, e3_3, e3_4,
+        0, 0, -1, 0
+    )
+end
+
+function mat4.perspective_lefthanded(vert_fov, aspect, near, far)
+    local e3_3, e3_4 = -1, -2*near
+    if far then
+        e3_3 = (far+near)/(far-near)
+        e3_4 = 2*far*near/(far-near)
+    end
+    local f = 1 / math.tan(vert_fov / 2)
+    return __construct(
+        f/aspect, 0, 0, 0,
+        0, -f, 0, 0,
         0, 0, e3_3, e3_4,
         0, 0, -1, 0
     )
