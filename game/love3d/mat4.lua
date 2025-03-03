@@ -120,17 +120,24 @@ function mat4.perspective_righthanded(vert_fov, aspect, near, far, shift_x, shif
     )
 end
 
-function mat4.perspective_lefthanded(vert_fov, aspect, near, far, shift_x, shift_y)
+function mat4.perspective_lefthanded(vert_fov, aspect, near, far, shift_x, shift_y, shear_x, shear_y)
     local e3_3, e3_4 = -1, -2*near
+    shift_x, shift_y = shift_x or 0, shift_y or 0
+    shear_x, shear_y = shear_x or 0, shear_y or 0
+
+    -- shear around center, even if camera lens is shifted.
+    shift_x = shift_x + shear_x * shift_y * -0.5
+    shift_y = shift_y + shear_y * shift_x * -0.5
+
     if far then
         e3_3 = (far+near)/(far-near)
         e3_4 = 2*far*near/(far-near)
     end
     local f = 1 / math.tan(vert_fov / 2)
     return __construct(
-        f/aspect, 0, shift_x, 0,
+        f/aspect, shear_x, shift_x, 0,
         0, -f, shift_y, 0,
-        0, 0, e3_3, e3_4,
+        0, shear_y, e3_3, e3_4,
         0, 0, -1, 0
     )
 end
