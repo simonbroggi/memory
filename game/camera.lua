@@ -10,7 +10,9 @@ local function __construct(canvas_reference_width, canvas_reference_height, pers
     -- should stay constant!
     c.canvas_reference_width = canvas_reference_width
     c.canvas_reference_height = canvas_reference_height
-    
+
+    c.canvas_scale = 1
+
     c.perspective = perspective
     c.fov = fov
     c.near = near
@@ -29,8 +31,8 @@ local function __construct(canvas_reference_width, canvas_reference_height, pers
     return c
 end
 
-function camera:updateProjection()
-    print("updateProjection")
+function camera:updateProjection(width, height)
+    self.canvas_scale = math.min(width/self.canvas_reference_width, height/self.canvas_reference_height)
     local matrix
     if self.perspective then
         matrix = love3d.mat4.perspective_lefthanded(self.fov, self.canvas_reference_width/self.canvas_reference_height, self.near, self.far, self.shift_x, self.shift_y, self.shear_x, self.shear_y)

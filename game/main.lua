@@ -69,7 +69,7 @@ function love.update(dt)
 
     Hand.tform.x = love.mouse.getX()-love.graphics.getWidth()/2
     Hand.tform.y = -love.mouse.getY()+love.graphics.getHeight()/2
-    local scale = 1/DrawSystem.canvas_scale
+    local scale = 1/DrawSystem.cameraEntity.camera.canvas_scale
     Hand.tform.x, Hand.tform.y = Hand.tform.x * scale, Hand.tform.y * scale
 
     InputSystem:update(dt)

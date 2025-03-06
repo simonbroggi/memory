@@ -62,7 +62,7 @@ function System:update(dt)
                 
                 -- transform mouse coordinates to world coordinates
                 -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
-                local viewProjection = DrawSystem.projection:clone():apply(DrawSystem.cameraEntity.transform:inverse())
+                local viewProjection = DrawSystem.cameraEntity.camera.projection:clone():apply(DrawSystem.cameraEntity.transform:inverse())
                 
                 mx, my = viewProjection:inverseTransformPoint(mx, my)
                 
