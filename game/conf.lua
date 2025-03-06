@@ -7,13 +7,10 @@ if IS_DEBUG then
 	end
 	function love.errorhandler(msg)
 		
+		-- print stack trace
 		error(error_printer(tostring(msg), 2), 2)
 
 		--error(msg, 2)
-
-
-
-
 	end
 
 	local function printVersion()
