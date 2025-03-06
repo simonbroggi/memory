@@ -35,6 +35,8 @@ function DrawSystem:init()
     self.halfWidth, self.halfHeight = self.canvas_reference_width/2, self.canvas_reference_height/2
 
     local width, height = love.graphics.getDimensions()
+
+    self:filter()
     self:resize_canvas(width, height)
 end
 
@@ -145,7 +147,10 @@ function DrawSystem:resize_canvas(w, h)
     self.projection = love.math.newTransform():setMatrix(mat4.perspective_lefthanded(math.rad(44), w1/h1, 100, nil, 0, -1.2):components())
     --self.projection:translate(0, -3000) -- vertically shift camera lens
 
-    love.graphics.setProjection(self.projection)
+    self.cameraEntity.camera:updateProjection()
+    love.graphics.setProjection(self.cameraEntity.camera.projection)
+
+    -- love.graphics.setProjection(self.projection)
 end
 
 function DrawSystem:drawScene()
@@ -222,10 +227,9 @@ function DrawSystem:draw()
     if cameraEntity == nil then
         love.graphics.printf("No camera entity found!", self.halfWidth, self.halfHeight, self.canvas_reference_width, "center", 0, 4, 4, self.canvas_reference_width/2, 0)
     else
-        self:pushCameraTransform()
+        love.graphics.push()
+        love.graphics.applyTransform(cameraEntity.transform:inverse())
         self:drawScene()
-        
-        -- end of camera transformations
         love.graphics.pop()
     end
 
@@ -252,20 +256,6 @@ function DrawSystem:draw()
     end
 
     setMaterial() -- reset material
-end
-
--- probably pass camera component as an argument and do this for every camera entity
---- apply camera transformations
-function DrawSystem:pushCameraTransform()
-    local cameraEntity = self.cameraEntity
-
-    love.graphics.push()
-    love.graphics.applyTransform(cameraEntity.transform:inverse())
-    --local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
-    --love.graphics.translate(self.halfWidth, self.halfHeight) -- not needed if projection 0,0 is set to center of the screen
-    --love.graphics.scale(camSX, camSY)
-    --love.graphics.rotate(cameraEntity.tform.r)
-    --love.graphics.translate(-cameraEntity.tform.x, -cameraEntity.tform.y)
 end
 
 return DrawSystem

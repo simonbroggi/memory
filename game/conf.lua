@@ -2,8 +2,18 @@ local IS_DEBUG = os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" and arg[2] == "de
 if IS_DEBUG then
 	require("lldebugger").start()
 
+	local function error_printer(msg, layer)
+		return (debug.traceback("Error: " .. tostring(msg), 1+(layer or 1)):gsub("\n[^\n]+$", ""))
+	end
 	function love.errorhandler(msg)
-		error(msg, 2)
+		
+		error(error_printer(tostring(msg), 2), 2)
+
+		--error(msg, 2)
+
+
+
+
 	end
 
 	local function printVersion()

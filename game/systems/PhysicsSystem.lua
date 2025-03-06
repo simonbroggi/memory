@@ -107,7 +107,9 @@ function PhysicsSystem:fixedUpdate(dt)
 end
 
 function PhysicsSystem:debugDraw()
-    DrawSystem:pushCameraTransform()
+    love.graphics.push()
+    love.graphics.applyTransform(DrawSystem.cameraEntity.transform:inverse())
+
     love.graphics.setColor(1,.2,.2,1)
     love.graphics.setBlendMode("alpha")
     local inactiveBodies = 0

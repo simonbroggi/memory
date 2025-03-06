@@ -30,7 +30,7 @@ function love.load()
     -- camera without rotation is looking upwards
     Cam.transform:translate(0, -1800, -1200)
     Cam.transform:rotate(0, math.rad(90))
-    Cam.camera = camera()
+    Cam.camera = camera(1920, 1080, true, math.rad(44), 100, nil, 0, -1.2)
 
     local oponent = core.newEntitytInWorld()
     oponent.transform = love.math.newTransform()
@@ -124,5 +124,6 @@ function love.keypressed(key)
 end
 
 function love.resize(w, h)
+    print("Resize Love", w, h)
     DrawSystem:resize_canvas(w, h)
 end
