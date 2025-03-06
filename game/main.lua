@@ -18,19 +18,19 @@ function love.load()
     PhysicsSystem:init()
     AnimSystem:init()
 
-    Hand = core.newEntitytInWorld()
-    Hand.tform = {x = 0, y = 0}
-    Hand.material = {red=0, green=1, blue=1, alpha=1}
-    Hand.rectangle = {width=20, height=20}
+    -- Hand = core.newEntitytInWorld()
+    -- Hand.tform = {x = 0, y = 0}
+    -- Hand.material = {red=0, green=1, blue=1, alpha=1}
+    -- Hand.rectangle = {width=20, height=20}
 
-    love.mouse.setVisible(false)
+    -- love.mouse.setVisible(false)
 
     Cam = core.newEntitytInWorld()
     Cam.transform = love.math.newTransform()
     -- camera without rotation is looking upwards
     Cam.transform:translate(0, -1800, -1200)
     Cam.transform:rotate(0, math.rad(90))
-    Cam.camera = camera(1920, 1080, true, math.rad(44), 100, nil, 0, -1.2)
+    Cam.camera = camera(1920, 1080, true, math.rad(44), 100, 10000, 0, -1.2)
 
     local oponent = core.newEntitytInWorld()
     oponent.transform = love.math.newTransform()
@@ -67,10 +67,10 @@ end
 
 function love.update(dt)
 
-    Hand.tform.x = love.mouse.getX()-love.graphics.getWidth()/2
-    Hand.tform.y = -love.mouse.getY()+love.graphics.getHeight()/2
-    local scale = 1/DrawSystem.cameraEntity.camera.canvas_scale
-    Hand.tform.x, Hand.tform.y = Hand.tform.x * scale, Hand.tform.y * scale
+    -- Hand.tform.x = love.mouse.getX()-love.graphics.getWidth()/2
+    -- Hand.tform.y = -love.mouse.getY()+love.graphics.getHeight()/2
+    -- local scale = 1/DrawSystem.cameraEntity.camera.canvas_scale
+    -- Hand.tform.x, Hand.tform.y = Hand.tform.x * scale, Hand.tform.y * scale
 
     InputSystem:update(dt)
     PhysicsSystem:fixedUpdate(dt)

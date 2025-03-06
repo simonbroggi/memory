@@ -380,7 +380,7 @@ end
 ---update state transitions.
 function manager.do_transitions()
     local state = manager.current_state
-    print((state.name or " Unknown State"), "do transitions")
+    -- print((state.name or " Unknown State"), "do transitions")
     for _, transfunc in ipairs(state.transitions) do
         if transfunc(state) then break end
     end

@@ -149,6 +149,14 @@ function mat4.components(m)
            m.e4_1, m.e4_2, m.e4_3, m.e4_4
 end
 
+function mat4:multiplyVec4(x, y, z, w)
+    local rx = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4 * w
+    local ry = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4 * w
+    local rz = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4 * w
+    local rw = self.e4_1 * x + self.e4_2 * y + self.e4_3 * z + self.e4_4 * w
+    return rx, ry, rz, rw
+end
+
 function mat4:apply(m)
     self.e1_1 = self.e1_1 * m.e1_1 + self.e1_2 * m.e2_1 + self.e1_3 * m.e3_1 + self.e1_4 * m.e4_1
     self.e1_2 = self.e1_1 * m.e1_2 + self.e1_2 * m.e2_2 + self.e1_3 * m.e3_2 + self.e1_4 * m.e4_2
