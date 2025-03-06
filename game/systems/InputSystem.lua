@@ -46,7 +46,8 @@ function System:update(dt)
             if self.mousePointer.wasDown == false then
                 -- mouse down this frame!
 
-                -- normalize coordinates. center of the screen is 0,0
+                -- calculate Normalized Device Coordinates:
+                -- center of the screen is 0,0. top left is -1,-1. bottom right is 1,1.
                 local ndc_x = self.mousePointer.x * 2 / love.graphics.getWidth() - 1
                 local ndc_y = 1 - self.mousePointer.y * 2 / love.graphics.getHeight()
 
@@ -59,16 +60,12 @@ function System:update(dt)
                 -- calculate the world coordinates of the near and far points
                 local mat_inv_vp = mat4(inv_vp:getMatrix())
                 local near_x, near_y, near_z, near_w = mat_inv_vp:multiplyVec4(ndc_x, ndc_y, -1, 1)
-                near_x, near_y, near_z = near_x / near_w, near_y / near_w, near_z / near_w
+                near_x, near_y, near_z = near_x / near_w, near_y / near_w, near_z / near_w -- homogeneous coordinates to 3D points
                 local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyVec4(ndc_x, ndc_y, 1, 1)
-                far_x, far_y, far_z = far_x / far_w, far_y / far_w, far_z / far_w
-
-                print("near", near_x, near_y, near_z, near_w)
-                print("far", far_x, far_y, far_z, far_w)
+                far_x, far_y, far_z = far_x / far_w, far_y / far_w, far_z / far_w -- homogeneous coordinates to 3D points
 
                 -- calculate the ray direction
                 local ray_dir_x, ray_dir_y, ray_dir_z = far_x - near_x, far_y - near_y, far_z - near_z
-                print("ray_dir: " .. ray_dir_x .. "," .. ray_dir_y .. "," .. ray_dir_z)
 
                 -- normalize the ray direction
                 local ray_dir_len = math.sqrt(ray_dir_x * ray_dir_x + ray_dir_y * ray_dir_y + ray_dir_z * ray_dir_z)
@@ -77,8 +74,6 @@ function System:update(dt)
                 -- find intersection with the z=0 plane
                 local t = -near_z / ray_dir_z
                 local intersection_x, intersection_y = near_x + t * ray_dir_x, near_y + t * ray_dir_y
-
-                print("intersection at: " .. intersection_x .. "," .. intersection_y, ray_dir_z)
 
                 local mx, my = intersection_x, intersection_y
                 
