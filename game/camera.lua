@@ -63,6 +63,10 @@ function camera:getXYPlaneIntersection(transform, ndc_x, ndc_y)
     local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, 1, 1)
     if far_w == 0 then
         -- there's no far clip plane. cast ray from camera position to the near clip plane.
+        if not self.perspective then
+            love.errorhandler("Camera has no far clip plane and is not in perspective mode./nCant cast ray to the far clip plane.")
+            -- todo: just cast the ray in the direction of the camera transform
+        end
         far_x, far_y, far_z = near_x, near_y, near_z
         _, _, _, near_x, _, _, _, near_y, _, _, _, near_z = transform:getMatrix()
     else
