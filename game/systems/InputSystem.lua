@@ -1,5 +1,4 @@
-local core = require "core"
-local mat4 = require("love3d.mat4")
+local core = require("core")
 local PhysicsSystem = require("systems.PhysicsSystem")
 
 local System = {}
