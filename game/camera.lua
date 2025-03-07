@@ -42,6 +42,47 @@ function camera:updateProjection(width, height)
     self.projection:setMatrix(matrix:components())
 end
 
+---Raycast from a ndc position on the camera near to far clip plane onto the world X/Y plane (Z=0).
+---Returning world position where Z is 0.
+---If the camera has no far clip plane, the ray is cast from the camera position to the near clip plane.
+---@param transform love.Transform camera transform
+---@param ndc_x number normalized device coordinate X component
+---@param ndc_y number normalized device coordinate Y component
+---@return number world coordinate on the X axis
+---@return number world coordinate on the Y axis
+function camera:getXYPlaneIntersection(transform, ndc_x, ndc_y)
+    local view = transform:inverse()
+    local viewProjection = self.projection:clone():apply(view)
+    -- compute the inverse of the view_projection matrix
+    local inv_vp = viewProjection:inverse()
+
+    -- calculate the world coordinates of the near and far points
+    local mat_inv_vp = love3d.mat4(inv_vp:getMatrix())
+    local near_x, near_y, near_z, near_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, -1, 1)
+    near_x, near_y, near_z = near_x / near_w, near_y / near_w, near_z / near_w -- homogeneous coordinates to 3D points
+    local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, 1, 1)
+    if far_w == 0 then
+        -- there's no far clip plane. cast ray from camera position to the near clip plane.
+        far_x, far_y, far_z = near_x, near_y, near_z
+        _, _, _, near_x, _, _, _, near_y, _, _, _, near_z = transform:getMatrix()
+    else
+        far_x, far_y, far_z = far_x / far_w, far_y / far_w, far_z / far_w -- homogeneous coordinates to 3D points
+    end
+
+    -- calculate the ray direction
+    local ray_dir_x, ray_dir_y, ray_dir_z = far_x - near_x, far_y - near_y, far_z - near_z
+
+    -- normalize the ray direction
+    local ray_dir_len = math.sqrt(ray_dir_x * ray_dir_x + ray_dir_y * ray_dir_y + ray_dir_z * ray_dir_z)
+    ray_dir_x, ray_dir_y, ray_dir_z = ray_dir_x / ray_dir_len, ray_dir_y / ray_dir_len, ray_dir_z / ray_dir_len
+
+    -- find intersection with the z=0 plane
+    local t = -near_z / ray_dir_z
+    local intersection_x, intersection_y = near_x + t * ray_dir_x, near_y + t * ray_dir_y
+
+    return intersection_x, intersection_y
+end
+
 camera.__index = camera
 setmetatable(camera, {__call = function(_, ...) return __construct(...) end})
 

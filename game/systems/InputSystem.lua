@@ -60,35 +60,7 @@ function System:update(dt)
                 local ndc_x = self.mousePointer.x * 2 / love.graphics.getWidth() - 1
                 local ndc_y = 1 - self.mousePointer.y * 2 / love.graphics.getHeight()
 
-                local view = self.cameraEntity.transform:inverse()
-                local projection = self.cameraEntity.camera.projection
-                local viewProjection = projection:clone():apply(view)
-                -- compute the inverse of the view_projection matrix
-                local inv_vp = viewProjection:inverse()
-
-                -- calculate the world coordinates of the near and far points
-                local mat_inv_vp = mat4(inv_vp:getMatrix())
-                local near_x, near_y, near_z, near_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, -1, 1)
-                near_x, near_y, near_z = near_x / near_w, near_y / near_w, near_z / near_w -- homogeneous coordinates to 3D points
-                local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, 1, 1)
-                far_x, far_y, far_z = far_x / far_w, far_y / far_w, far_z / far_w -- homogeneous coordinates to 3D points
-
-                -- calculate the ray direction
-                local ray_dir_x, ray_dir_y, ray_dir_z = far_x - near_x, far_y - near_y, far_z - near_z
-                if far_w == 0 then -- there's no far clip plane. cast ray from camera position to the near clip plane.
-                    local _, _, _, view_x, _, _, _, view_y, _, _, _, view_z = self.cameraEntity.transform:getMatrix()
-                    ray_dir_x, ray_dir_y, ray_dir_z = near_x - view_x, near_y - view_y, near_z - view_z
-                end
-
-                -- normalize the ray direction
-                local ray_dir_len = math.sqrt(ray_dir_x * ray_dir_x + ray_dir_y * ray_dir_y + ray_dir_z * ray_dir_z)
-                ray_dir_x, ray_dir_y, ray_dir_z = ray_dir_x / ray_dir_len, ray_dir_y / ray_dir_len, ray_dir_z / ray_dir_len
-
-                -- find intersection with the z=0 plane
-                local t = -near_z / ray_dir_z
-                local intersection_x, intersection_y = near_x + t * ray_dir_x, near_y + t * ray_dir_y
-
-                local mx, my = intersection_x, intersection_y
+                local mx, my = self.cameraEntity.camera:getXYPlaneIntersection(self.cameraEntity.transform, ndc_x, ndc_y)
                 
                 -- transform mouse coordinates to world coordinates
                 -- mx, my = DrawSystem.projection:inverseTransformPoint(mx, my) -- just projection, without camera view transform taken into account
