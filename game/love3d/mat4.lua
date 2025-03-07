@@ -149,7 +149,7 @@ function mat4.components(m)
            m.e4_1, m.e4_2, m.e4_3, m.e4_4
 end
 
-function mat4:multiplyVec4(x, y, z, w)
+function mat4:multiplyColumnVec4(x, y, z, w)
     local rx = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4 * w
     local ry = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4 * w
     local rz = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4 * w

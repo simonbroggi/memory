@@ -59,9 +59,9 @@ function System:update(dt)
 
                 -- calculate the world coordinates of the near and far points
                 local mat_inv_vp = mat4(inv_vp:getMatrix())
-                local near_x, near_y, near_z, near_w = mat_inv_vp:multiplyVec4(ndc_x, ndc_y, -1, 1)
+                local near_x, near_y, near_z, near_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, -1, 1)
                 near_x, near_y, near_z = near_x / near_w, near_y / near_w, near_z / near_w -- homogeneous coordinates to 3D points
-                local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyVec4(ndc_x, ndc_y, 1, 1)
+                local far_x, far_y, far_z, far_w = mat_inv_vp:multiplyColumnVec4(ndc_x, ndc_y, 1, 1)
                 far_x, far_y, far_z = far_x / far_w, far_y / far_w, far_z / far_w -- homogeneous coordinates to 3D points
 
                 -- calculate the ray direction
