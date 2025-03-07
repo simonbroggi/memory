@@ -83,6 +83,29 @@ end
 --     print("tick " .. self.tick .. " postSolve " .. tostring(shapeA) .. " " .. tostring(shapeB))
 -- end
 
+local shapeTestPoint_x, shapeTestPoint_y = 0, 0
+local function shapeInAreaCallback(shape)
+    if not shape:testPoint(shapeTestPoint_x, shapeTestPoint_y) then
+        return true -- continue testing
+    end
+
+    local body = shape:getBody()
+    local entity = body:getUserData()
+    if entity.onPointerDown then
+        entity:onPointerDown()
+    end
+    
+    -- continue testing for other shapes
+    -- could return false to stop testing and only handle the first shape collision
+    return true
+end
+
+function PhysicsSystem:pointerDown(x, y)
+    shapeTestPoint_x, shapeTestPoint_y = x, y
+    local s = 1
+    self.world:queryShapesInArea(x-s, y-s, x+s, y+s, shapeInAreaCallback)
+end
+
 function PhysicsSystem:fixedUpdate(dt)
 
     -- pragmatic approach: clear the list and re-add all entities that have a body and a transform
