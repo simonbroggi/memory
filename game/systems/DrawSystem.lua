@@ -1,7 +1,4 @@
 local core = require("core")
-local mat4 = require("love3d.mat4")
-
-local spline = require("spline")
 
 ---@class DrawSystem : System
 
