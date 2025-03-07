@@ -5,8 +5,6 @@ local core = require "core"
 ---@field gravityX number
 ---@field gravityY number
 local PhysicsSystem = {meterScale = 100, gravityX = 0, gravityY = 0}
--- local DamageSystem = require("src.DamageSystem")
-local DrawSystem = require("systems.DrawSystem")
 
 PhysicsSystem.bodyEntities = core.newList()
 
@@ -107,8 +105,18 @@ function PhysicsSystem:fixedUpdate(dt)
 end
 
 function PhysicsSystem:debugDraw()
+
+    -- find the main camera entity
+    local cameraEntity
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.camera then
+            cameraEntity = entity
+        end
+    end
+
+    love.graphics.setProjection(self.cameraEntity.camera.projection)
     love.graphics.push()
-    love.graphics.applyTransform(DrawSystem.cameraEntity.transform:inverse())
+    love.graphics.applyTransform(cameraEntity.transform:inverse())
 
     love.graphics.setColor(1,.2,.2,1)
     love.graphics.setBlendMode("alpha")
@@ -150,10 +158,13 @@ function PhysicsSystem:debugDraw()
         end
     end
 
-    love.graphics.setColor(1,1,1,1)
     love.graphics.pop()
+    love.graphics.resetProjection()
     if inactiveBodies > 0 then
-        love.graphics.print("inactiveBodies: " .. inactiveBodies, 10, 70)
+        love.graphics.setColor(0.4,0,0,0.4)
+        love.graphics.rectangle("fill", 5, 10, 135, 20)
+        love.graphics.setColor(1,1,1,1)
+        love.graphics.print("inactiveBodies: " .. inactiveBodies, 10, 10)
     end
 end
 

@@ -1,7 +1,6 @@
 local core = require "core"
 local mat4 = require("love3d.mat4")
 local PhysicsSystem = require("systems.PhysicsSystem")
-local DrawSystem = require("systems.DrawSystem")
 
 local System = {}
 
@@ -35,7 +34,17 @@ function System:init()
     end
 end
 
+function System:filter()
+    self.cameraEntity = nil
+    for _, entity in ipairs(core.ecs_world.entities) do
+        if entity.camera then
+            self.cameraEntity = entity
+        end
+    end
+end
+
 function System:update(dt)
+    self:filter()
     if self.mousePointer then
         local m = love.mouse
         self.mousePointer.x = m.getX()
@@ -51,8 +60,8 @@ function System:update(dt)
                 local ndc_x = self.mousePointer.x * 2 / love.graphics.getWidth() - 1
                 local ndc_y = 1 - self.mousePointer.y * 2 / love.graphics.getHeight()
 
-                local view = DrawSystem.cameraEntity.transform:inverse()
-                local projection = DrawSystem.cameraEntity.camera.projection
+                local view = self.cameraEntity.transform:inverse()
+                local projection = self.cameraEntity.camera.projection
                 local viewProjection = projection:clone():apply(view)
                 -- compute the inverse of the view_projection matrix
                 local inv_vp = viewProjection:inverse()
