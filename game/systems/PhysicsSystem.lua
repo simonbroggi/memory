@@ -105,18 +105,9 @@ function PhysicsSystem:fixedUpdate(dt)
 end
 
 function PhysicsSystem:debugDraw()
-
-    -- find the main camera entity
-    local cameraEntity
-    for _, entity in ipairs(core.ecs_world.entities) do
-        if entity.camera then
-            cameraEntity = entity
-        end
-    end
-
     love.graphics.setProjection(self.cameraEntity.camera.projection)
     love.graphics.push()
-    love.graphics.applyTransform(cameraEntity.transform:inverse())
+    love.graphics.applyTransform(self.cameraEntity.transform:inverse())
 
     love.graphics.setColor(1,.2,.2,1)
     love.graphics.setBlendMode("alpha")
