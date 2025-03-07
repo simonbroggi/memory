@@ -75,6 +75,10 @@ function System:update(dt)
 
                 -- calculate the ray direction
                 local ray_dir_x, ray_dir_y, ray_dir_z = far_x - near_x, far_y - near_y, far_z - near_z
+                if far_w == 0 then -- there's no far clip plane. cast ray from camera position to the near clip plane.
+                    local _, _, _, view_x, _, _, _, view_y, _, _, _, view_z = self.cameraEntity.transform:getMatrix()
+                    ray_dir_x, ray_dir_y, ray_dir_z = near_x - view_x, near_y - view_y, near_z - view_z
+                end
 
                 -- normalize the ray direction
                 local ray_dir_len = math.sqrt(ray_dir_x * ray_dir_x + ray_dir_y * ray_dir_y + ray_dir_z * ray_dir_z)
