@@ -112,7 +112,7 @@ function System:update(dt)
 
                 -- print("mouse down at: " .. mx .. "," .. my .. "  -  " .. mxx .. "," .. myy)
 
-                local test_size = 0.000000001
+                local test_size = 1
                 local topLeftX = mx - test_size
                 local topLeftY = my - test_size
                 local bottomRightX = mx + test_size
