@@ -2,14 +2,11 @@
 ---@field body? love.Body UserData of the body points to the entity.
 ---@field private __body? love.Body body is actually stored here.
 ---@field tform? tform
----@field camera? camera
 ---@field transform? love.Transform
 ---@field sprite? sprite
 ---@field rectangle? rectangle
 ---@field material? material
 ---@field onPointerDown? function
-
----@class camera
 
 ---@class tform 2d transform component
 ---@field x number translation in x

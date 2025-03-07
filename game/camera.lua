@@ -1,5 +1,22 @@
 local love3d = require("love3d")
 
+---@class camera
+---@field canvas_reference_width number
+---@field canvas_reference_height number
+---@field canvas_scale number
+---@field perspective boolean
+---@field fov number
+---@field near number
+---@field far? number
+---@field shift_x? number
+---@field shift_y? number
+---@field shear_x? number
+---@field shear_y? number
+---@field projection love.Transform
+
+---@class entity
+---@field camera? camera
+
 local camera = {}
 
 local function __construct(canvas_reference_width, canvas_reference_height, perspective, fov, near, far, shift_x, shift_y, shear_x, shear_y)
