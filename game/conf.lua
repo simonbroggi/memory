@@ -29,8 +29,9 @@ function love.conf(t)
 	t.console               = false
 	t.accelerometerjoystick = false
 	t.externalstorage       = false
-	t.gammacorrect          = true
 	t.highdpi				= false
+
+	t.graphics.gammacorrect = true
 
 	t.audio.mic             = false
 	t.audio.mixwithsystem   = true
