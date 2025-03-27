@@ -32,6 +32,18 @@ function love.load()
     Cam.transform:rotate(0, math.rad(90))
     Cam.camera = camera(1920, 1080, true, math.rad(44), 100, 10000, 0, -1.2)
 
+    local speachBubble = core.newEntitytInWorld()
+    speachBubble.transform = love.math.newTransform()
+    speachBubble.transform:translate(200, 500, -770)
+    speachBubble.transform:rotate(0, math.rad(90))
+    speachBubble.material = {red=1, green=1, blue=1, alpha=1}
+    speachBubble.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
+    speachBubble.splines = {
+        -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
+        spline({vec2(-11.07, -230.46), vec2(-47.03, -99.05), vec2(32.10, -66.74), vec2(8.18, -9.93), vec2(72.43, -62.19), vec2(294.75, -69.80), vec2(232.36, -206.21)}, {vec2(23.85, -265.95), vec2(-68.57, -117.36), vec2(-20.41, -60.20), vec2(22.87, -32.53), vec2(55.59, -65.99), vec2(272.26, -40.29), vec2(320.68, -154.70)}, {vec2(-45.98, -194.98), vec2(-25.48, -80.75), vec2(36.42, -39.62), vec2(81.76, -23.61), vec2(120.55, -52.09), vec2(317.23, -99.31), vec2(144.04, -257.73)}, true)
+        ,
+    }
+
     local oponent = core.newEntitytInWorld()
     oponent.transform = love.math.newTransform()
     oponent.transform:translate(0, 500)
@@ -39,11 +51,8 @@ function love.load()
     oponent.material = {red=1, green=1, blue=1, alpha=1}
     oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
     oponent.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
-    oponent.splines = {
-        -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
-        spline({vec2(7.00, 78.00), vec2(-20.00, 188.00), vec2(263.00, 267.00), vec2(339.00, 62.00), vec2(140.00, 23.00), vec2(34.00, 58.00), vec2(-21.00, 17.00)}, {vec2(-2.00, 61.00), vec2(-22.00, 88.00), vec2(139.00, 318.00), vec2(390.00, 122.00), vec2(196.00, 17.00), vec2(68.00, 41.00), vec2(2.00, 34.00)}, {vec2(-9.00, 98.00), vec2(-18.00, 288.00), vec2(387.00, 216.00), vec2(288.00, 2.00), vec2(84.00, 29.00), vec2(9.00, 45.00), vec2(-12.00, 43.00)}, true)
-        ,
-    }
+
+
 
     --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
@@ -82,7 +91,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    PhysicsSystem:debugDraw()
+    --PhysicsSystem:debugDraw()
     DrawSystem:draw()
 end
 

@@ -111,6 +111,20 @@ function DrawSystem:resize_canvas(w, h)
 end
 
 function DrawSystem:drawScene()
+    for _, entity in ipairs(self.spriteEntities) do
+        local tform = entity.tform
+        local sprite = entity.sprite
+        local transform = entity.transform
+        if transform then
+            love.graphics.push()
+            love.graphics.applyTransform(transform)
+        end
+        setMaterial(entity.material)
+        love.graphics.draw(sprite.texture, sprite.quad, tform.x, tform.y, tform.r, tform.sx, tform.sy, sprite.ox, sprite.oy, tform.kx, tform.ky)
+        if transform then
+            love.graphics.pop()
+        end
+    end
     for _, entity in ipairs(self.splinesEntities) do
         if entity.transform then
             love.graphics.push()
@@ -135,20 +149,6 @@ function DrawSystem:drawScene()
         end
         love.graphics.setLineWidth(w)
         if entity.transform then
-            love.graphics.pop()
-        end
-    end
-    for _, entity in ipairs(self.spriteEntities) do
-        local tform = entity.tform
-        local sprite = entity.sprite
-        local transform = entity.transform
-        if transform then
-            love.graphics.push()
-            love.graphics.applyTransform(transform)
-        end
-        setMaterial(entity.material)
-        love.graphics.draw(sprite.texture, sprite.quad, tform.x, tform.y, tform.r, tform.sx, tform.sy, sprite.ox, sprite.oy, tform.kx, tform.ky)
-        if transform then
             love.graphics.pop()
         end
     end
