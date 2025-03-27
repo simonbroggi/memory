@@ -1,21 +1,8 @@
 local core = require("core")
-local mat4 = require("love3d.mat4")
-
-local spline = require("spline")
 
 ---@class DrawSystem : System
 
 local DrawSystem = {
-    -- reference resolution where canvas scale is 1
-    -- design for this resolution
-    -- should stay constant!
-    canvas_reference_width = 1920, canvas_reference_height = 1080,
-
-    -- current translation and scale to make the reference resolution fit
-    -- into the windows resolution (letterbox/pillarbox)
-    -- calculated in resize function
-    -- this is probably no longer needed since a projection matrix is used: self.projection
-    canvas_translate_x = 0, canvas_translate_y = 0, canvas_scale = 1
 }
 
 -- lists of entities in main camera space
@@ -31,10 +18,8 @@ DrawSystem.uiTextboxEntities = core.newList()
 DrawSystem.uiSplinesEntities = core.newList()
 
 function DrawSystem:init()
-    --self.width, self.height = love.graphics.getDimensions()
-    self.halfWidth, self.halfHeight = self.canvas_reference_width/2, self.canvas_reference_height/2
-
     local width, height = love.graphics.getDimensions()
+    self:filter()
     self:resize_canvas(width, height)
 end
 
@@ -122,30 +107,7 @@ local function setMaterial(mat)
 end
 
 function DrawSystem:resize_canvas(w, h)
-    local w1, h1 = self.canvas_reference_width, self.canvas_reference_height
-    local scale = math.min(w/w1, h/h1)
-    self.canvas_translate_x, self.canvas_translate_y = (w - w1*scale)/2, (h - h1*scale)/2
-    self.canvas_scale = scale
-
-    -- set projection
-    
-    -- top left corner is aproximatly 0, 0, y is down
-    --local left, right, bottom, top = 0-self.canvas_translate_x/scale, w1+self.canvas_translate_x/scale, h1+self.canvas_translate_y/scale, 0-self.canvas_translate_y/scale
-
-    -- center of the screen is 0, 0, y is down
-    --local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, h1/2+self.canvas_translate_y/scale, -h1/2-self.canvas_translate_y/scale
-
-    -- center of the screen is 0, 0, y is up. Righthanded, like in Blender when looking downwards.
-    local left, right, bottom, top = -w1/2-self.canvas_translate_x/scale, w1/2+self.canvas_translate_x/scale, -h1/2-self.canvas_translate_y/scale, h1/2+self.canvas_translate_y/scale
-
-    --self.projection = orthographic_projection(left, right, bottom, top, 100, 2000)
-
-    -- should probably be moved to camera.
-    -- self.projection = love.math.newTransform():setMatrix(mat4.ortho(left, right, bottom, top, -10, 10):components())
-    self.projection = love.math.newTransform():setMatrix(mat4.perspective_lefthanded(math.rad(44), w1/h1, 100, nil, 0, -1.2):components())
-    --self.projection:translate(0, -3000) -- vertically shift camera lens
-
-    love.graphics.setProjection(self.projection)
+    self.cameraEntity.camera:updateProjection(w, h)
 end
 
 function DrawSystem:drawScene()
@@ -220,13 +182,16 @@ function DrawSystem:draw()
     local cameraEntity = self.cameraEntity
 
     if cameraEntity == nil then
-        love.graphics.printf("No camera entity found!", self.halfWidth, self.halfHeight, self.canvas_reference_width, "center", 0, 4, 4, self.canvas_reference_width/2, 0)
+        local cx, cy = love.graphics.getDimensions()
+        cx, cy = cx/2, cy/2
+        love.graphics.printf("No camera entity found!", cx, cy, cx*2, "center", 0, 4, 4, cx, 0)
     else
-        self:pushCameraTransform()
+        love.graphics.setProjection(self.cameraEntity.camera.projection)
+        love.graphics.push()
+        love.graphics.applyTransform(cameraEntity.transform:inverse())
         self:drawScene()
-        
-        -- end of camera transformations
         love.graphics.pop()
+        love.graphics.resetProjection()
     end
 
     -- draw UI
@@ -252,20 +217,6 @@ function DrawSystem:draw()
     end
 
     setMaterial() -- reset material
-end
-
--- probably pass camera component as an argument and do this for every camera entity
---- apply camera transformations
-function DrawSystem:pushCameraTransform()
-    local cameraEntity = self.cameraEntity
-
-    love.graphics.push()
-    love.graphics.applyTransform(cameraEntity.transform:inverse())
-    --local camSX, camSY = cameraEntity.tform.sx or 1, cameraEntity.tform.sy or cameraEntity.tform.sx or 1
-    --love.graphics.translate(self.halfWidth, self.halfHeight) -- not needed if projection 0,0 is set to center of the screen
-    --love.graphics.scale(camSX, camSY)
-    --love.graphics.rotate(cameraEntity.tform.r)
-    --love.graphics.translate(-cameraEntity.tform.x, -cameraEntity.tform.y)
 end
 
 return DrawSystem

@@ -2,6 +2,8 @@ local modpath = (...)
 
 local mat4 = require(modpath .. ".mat4")
 
+local love3d = {mat4 = mat4}
+
 require(modpath .. ".definitions")
 
 -- extend love transform to 3d
@@ -69,3 +71,5 @@ function Set_right_handed()
 end
 
 --Set_right_handed()
+
+return love3d

@@ -1,5 +1,7 @@
 local mat4 = {}
 
+---@class mat4
+
 local function __construct(e1_1, e1_2, e1_3, e1_4,
                          e2_1, e2_2, e2_3, e2_4,
                          e3_1, e3_2, e3_3, e3_4,
@@ -90,7 +92,15 @@ function mat4.scale(sx, sy, sz)
     )
 end
 
-function mat4.ortho(left, right, bottom, top, near, far)
+---create an orthogonal projection matrix
+---@param left number
+---@param right number
+---@param top number
+---@param bottom number
+---@param near number
+---@param far number
+---@return mat4 orthogonal projection matrix
+function mat4.ortho(left, right, top, bottom, near, far)
     return __construct(
         2/(right-left), 0, 0, -(right+left)/(right-left),
         0, 2/(top-bottom), 0, -(top+bottom)/(top-bottom),
@@ -100,11 +110,13 @@ function mat4.ortho(left, right, bottom, top, near, far)
 end
 
 ---create right hand perspective projection matrix
----@param vert_fov any
+---@param vert_fov number
 ---@param aspect number width / height
----@param near any
----@param far any
----@return table
+---@param near number
+---@param far number
+---@param shift_x number
+---@param shift_y number
+---@return mat4
 function mat4.perspective_righthanded(vert_fov, aspect, near, far, shift_x, shift_y)
     local e3_3, e3_4 = -1, -2*near
     if far then
@@ -120,6 +132,14 @@ function mat4.perspective_righthanded(vert_fov, aspect, near, far, shift_x, shif
     )
 end
 
+---create left hand perspective projection matrix
+---@param vert_fov number
+---@param aspect number width / height
+---@param near number
+---@param far number
+---@param shift_x number
+---@param shift_y number
+---@return mat4
 function mat4.perspective_lefthanded(vert_fov, aspect, near, far, shift_x, shift_y, shear_x, shear_y)
     local e3_3, e3_4 = -1, -2*near
     shift_x, shift_y = shift_x or 0, shift_y or 0
@@ -147,6 +167,14 @@ function mat4.components(m)
            m.e2_1, m.e2_2, m.e2_3, m.e2_4,
            m.e3_1, m.e3_2, m.e3_3, m.e3_4,
            m.e4_1, m.e4_2, m.e4_3, m.e4_4
+end
+
+function mat4:multiplyColumnVec4(x, y, z, w)
+    local rx = self.e1_1 * x + self.e1_2 * y + self.e1_3 * z + self.e1_4 * w
+    local ry = self.e2_1 * x + self.e2_2 * y + self.e2_3 * z + self.e2_4 * w
+    local rz = self.e3_1 * x + self.e3_2 * y + self.e3_3 * z + self.e3_4 * w
+    local rw = self.e4_1 * x + self.e4_2 * y + self.e4_3 * z + self.e4_4 * w
+    return rx, ry, rz, rw
 end
 
 function mat4:apply(m)

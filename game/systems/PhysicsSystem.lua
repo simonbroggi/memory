@@ -5,8 +5,6 @@ local core = require "core"
 ---@field gravityX number
 ---@field gravityY number
 local PhysicsSystem = {meterScale = 100, gravityX = 0, gravityY = 0}
--- local DamageSystem = require("src.DamageSystem")
-local DrawSystem = require("systems.DrawSystem")
 
 PhysicsSystem.bodyEntities = core.newList()
 
@@ -85,6 +83,29 @@ end
 --     print("tick " .. self.tick .. " postSolve " .. tostring(shapeA) .. " " .. tostring(shapeB))
 -- end
 
+local shapeTestPoint_x, shapeTestPoint_y = 0, 0
+local function shapeInAreaCallback(shape)
+    if not shape:testPoint(shapeTestPoint_x, shapeTestPoint_y) then
+        return true -- continue testing
+    end
+
+    local body = shape:getBody()
+    local entity = body:getUserData()
+    if entity.onPointerDown then
+        entity:onPointerDown()
+    end
+    
+    -- continue testing for other shapes
+    -- could return false to stop testing and only handle the first shape collision
+    return true
+end
+
+function PhysicsSystem:pointerDown(x, y)
+    shapeTestPoint_x, shapeTestPoint_y = x, y
+    local s = 1
+    self.world:queryShapesInArea(x-s, y-s, x+s, y+s, shapeInAreaCallback)
+end
+
 function PhysicsSystem:fixedUpdate(dt)
 
     -- pragmatic approach: clear the list and re-add all entities that have a body and a transform
@@ -107,7 +128,10 @@ function PhysicsSystem:fixedUpdate(dt)
 end
 
 function PhysicsSystem:debugDraw()
-    DrawSystem:pushCameraTransform()
+    love.graphics.setProjection(self.cameraEntity.camera.projection)
+    love.graphics.push()
+    love.graphics.applyTransform(self.cameraEntity.transform:inverse())
+
     love.graphics.setColor(1,.2,.2,1)
     love.graphics.setBlendMode("alpha")
     local inactiveBodies = 0
@@ -148,10 +172,13 @@ function PhysicsSystem:debugDraw()
         end
     end
 
-    love.graphics.setColor(1,1,1,1)
     love.graphics.pop()
+    love.graphics.resetProjection()
     if inactiveBodies > 0 then
-        love.graphics.print("inactiveBodies: " .. inactiveBodies, 10, 70)
+        love.graphics.setColor(0.4,0,0,0.4)
+        love.graphics.rectangle("fill", 5, 10, 135, 20)
+        love.graphics.setColor(1,1,1,1)
+        love.graphics.print("inactiveBodies: " .. inactiveBodies, 10, 10)
     end
 end
 
