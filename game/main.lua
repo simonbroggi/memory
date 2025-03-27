@@ -18,6 +18,12 @@ function love.load()
     PhysicsSystem:init()
     AnimSystem:init()
 
+    -- todo: put this in a separate storry reader system..
+    Story = require("tinta.love")
+    local my_story = import("ink_story.test_story")
+    local story = Story(my_story)
+    print(story:Continue())
+
     -- Hand = core.newEntitytInWorld()
     -- Hand.tform = {x = 0, y = 0}
     -- Hand.material = {red=0, green=1, blue=1, alpha=1}
