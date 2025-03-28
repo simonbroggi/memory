@@ -2,9 +2,18 @@
     "version": "2.0.0",
     "tasks": [
         {
+            // Compile ink to json then to lua.
+            // Ink to json is done with inklecate: https://github.com/inkle/ink#advanced-using-inklecate-on-the-command-line
+            // json to lua is with the tinta tools: https://github.com/smwhr/tinta#running-your-ink
+            
             "label": "Compile ink to Lua",
             "type": "shell",
-            "command": "./../tools/inklecate_mac/inklecate ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.sh ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua",
+            "windows": {
+                "command": "./../tools/inklecate_windows/inklecate.exe ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.ps1 ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua"
+            },
+            "osx": {
+                "command": "./../tools/inklecate_mac/inklecate ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.sh ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua"
+            },
             "problemMatcher": []
         }
     ]
