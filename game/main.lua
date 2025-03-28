@@ -20,7 +20,7 @@ function love.load()
 
     -- todo: put this in a separate storry reader system..
     Story = require("tinta.love")
-    local my_story = import("ink_story.test_story")
+    local my_story = import("ink_story.story_main")
     local story = Story(my_story)
     print(story:Continue())
 
