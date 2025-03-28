@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile ink to Lua",
+            "type": "shell",
+            "command": "./../tools/inklecate_mac/inklecate ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.sh ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua",
+            "problemMatcher": []
+        }
+    ]
+}

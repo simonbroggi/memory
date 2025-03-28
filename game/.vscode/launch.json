@@ -12,6 +12,7 @@
 				".",
 				"debug"
 			],
+			"preLaunchTask": "Compile ink to Lua"
 		},
 		{
 			"type": "lua-local",
@@ -23,6 +24,7 @@
 			"args": [
 				".",
 			],
+			"preLaunchTask": "Compile ink to Lua"
 		},
 	]
 }
