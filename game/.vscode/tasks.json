@@ -9,7 +9,8 @@
             "label": "Compile ink to Lua",
             "type": "shell",
             "windows": {
-                "command": "./../tools/inklecate_windows/inklecate.exe ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.ps1 ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua"
+                // power shell used ; instead of &&. execution of second script needs -ExecutionPolicy Bypass in settings.
+                "command": "./../tools/inklecate_windows/inklecate.exe ./../resources/ink_story/story_main.ink; ./../tools/tinta/json_to_lua.ps1 ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua"
             },
             "osx": {
                 "command": "./../tools/inklecate_mac/inklecate ./../resources/ink_story/story_main.ink && ./../tools/tinta/json_to_lua.sh ./../resources/ink_story/story_main.ink.json ./ink_story/story_main.lua"
