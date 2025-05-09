@@ -52,9 +52,17 @@ function camera:updateProjection(width, height)
     self.canvas_scale = math.min(width/self.canvas_reference_width, height/self.canvas_reference_height)
     local matrix
     if self.perspective then
-        matrix = love3d.mat4.perspective_lefthanded(self.fov, self.canvas_reference_width/self.canvas_reference_height, self.near, self.far, self.shift_x, self.shift_y, self.shear_x, self.shear_y)
+        -- Calculate aspect ratio according to the new canvas size. Vertical fov is fixed.
+        matrix = love3d.mat4.perspective_lefthanded(self.fov, width/height, self.near, self.far, self.shift_x, self.shift_y, self.shear_x, self.shear_y)
+
+        -- just stretch the projection matrix to fit the canvas
+        -- matrix = love3d.mat4.perspective_lefthanded(self.fov, self.canvas_reference_width/self.canvas_reference_height, self.near, self.far, self.shift_x, self.shift_y, self.shear_x, self.shear_y)
     else
-        matrix = love3d.mat4.ortho(-self.canvas_reference_width/2, self.canvas_reference_width/2, -self.canvas_reference_height/2, self.canvas_reference_height/2, self.near, self.far)
+        -- Calculate aspect ratio according to the new canvas size.
+        matrix = love3d.mat4.ortho(-width/2, width/2, -height/2, height/2, self.near, self.far)
+
+        -- just stretch the projection matrix to fit the canvas
+        -- matrix = love3d.mat4.ortho(-self.canvas_reference_width/2, self.canvas_reference_width/2, -self.canvas_reference_height/2, self.canvas_reference_height/2, self.near, self.far)
     end
     self.projection:setMatrix(matrix:components())
 end
