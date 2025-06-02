@@ -54,6 +54,27 @@ function love.load()
     oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
     oponent.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
 
+    local caption = core.newEntitytInWorld()
+    caption.tform = {x = 0, y = 0}
+    caption.ui = true
+    caption.textbox = {
+        font = love.graphics.newFont(20),
+        text = "",
+        limit = 500,
+        align = "left",
+    }
+    InkReader.caption = caption
+
+    local rileySpeach = core.newEntitytInWorld()
+    rileySpeach.tform = {x = 700, y = 20}
+    rileySpeach.ui = true
+    rileySpeach.textbox = {
+        font = love.graphics.newFont(20),
+        text = "",
+        limit = 350,
+        align = "left",
+    }
+    InkReader.rileySpeach = rileySpeach
 
 
     --[[ coordinate system lines using rectangle components

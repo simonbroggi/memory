@@ -15,6 +15,23 @@ function InkReader:update(dt)
     while self.story:canContinue() do
         local t = self.story:Continue()
         print(t)
+        if t:starts_with("RILEY: ") then
+            t = t:sub(8) -- remove "RILEY: "
+            local text = self.rileySpeach.textbox.text
+            if text == "" then
+                self.rileySpeach.textbox.text = t
+            else
+                self.rileySpeach.textbox.text = self.rileySpeach.textbox.text .. t
+            end
+        else
+            local text = self.caption.textbox.text
+            if text == "" then
+                self.caption.textbox.text = t
+            else
+                -- append to the caption text
+                self.caption.textbox.text = self.caption.textbox.text .. t
+            end
+        end
         local tags = self.story:currentTags()
         if  #tags > 0 then
             print(" # tags: " .. table.concat(tags, ", "), '\n')
