@@ -6,6 +6,7 @@ local InputSystem = require("systems.InputSystem")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 local AnimSystem = require("systems.AnimSystem")
+local InkReader = require("systems.InkReader")
 
 local CardManager = require("CardManager")
 
@@ -17,12 +18,7 @@ function love.load()
     InputSystem:init()
     PhysicsSystem:init()
     AnimSystem:init()
-
-    -- todo: put this in a separate storry reader system..
-    Story = require("tinta.love")
-    local my_story = import("ink_story.story_main")
-    local story = Story(my_story)
-    print(story:Continue())
+    InkReader:init()
 
     -- Hand = core.newEntitytInWorld()
     -- Hand.tform = {x = 0, y = 0}
@@ -93,6 +89,7 @@ function love.update(dt)
     CardManager.update(dt)
 
     AnimSystem:update(dt)
+    InkReader:update(dt)
     DrawSystem:update(dt)
 end
 
