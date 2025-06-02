@@ -39,12 +39,19 @@ function InkReader:update(dt)
         continued = true
     end
     if continued then
-        local choices = self.story:currentChoices()
-        for i,c in ipairs(choices) do
-            print(i .. ": ", c.text)
-            if #c.tags > 0 then
-                print(" # tags: " .. table.concat(c.tags, ", "))
-            end
+        local newChoices = self.story:currentChoices()
+        self:presentChoices(newChoices)
+    end
+end
+
+function InkReader:presentChoices(choices)
+    local width = love.graphics.getWidth() / #choices
+    -- todo: buttons
+
+    for i,c in ipairs(choices) do
+        print(i .. ": ", c.text)
+        if #c.tags > 0 then
+            print(" # tags: " .. table.concat(c.tags, ", "))
         end
     end
 end
