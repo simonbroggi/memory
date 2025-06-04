@@ -5,6 +5,8 @@ local InkReader = {
 }
 
 function InkReader:init()
+    self.debugLog = true -- print the story text to the console
+
     local story_definition = import("ink_story.story_main")
     self.story = Story(story_definition)
 
@@ -16,29 +18,11 @@ function InkReader:update(dt)
     --- SIMPLE SYNC VERSION
     local continued = false
     while self.story:canContinue() do
-        local t = self.story:Continue()
-        print(t)
-        if t:starts_with("RILEY: ") then
-            t = t:sub(8) -- remove "RILEY: "
-            local text = self.rileySpeach.textbox.text
-            if text == "" then
-                self.rileySpeach.textbox.text = t
-            else
-                self.rileySpeach.textbox.text = self.rileySpeach.textbox.text .. t
-            end
-        else
-            local text = self.caption.textbox.text
-            if text == "" then
-                self.caption.textbox.text = t
-            else
-                -- append to the caption text
-                self.caption.textbox.text = self.caption.textbox.text .. t
-            end
-        end
+        local line = self.story:Continue()
         local tags = self.story:currentTags()
-        if  #tags > 0 then
-            print(" # tags: " .. table.concat(tags, ", "), '\n')
-        end
+
+        self:presentLine(line, tags)
+
         continued = true
     end
     if continued then
@@ -47,14 +31,37 @@ function InkReader:update(dt)
     end
 end
 
-function InkReader:presentChoices(choices)
-    local width = love.graphics.getWidth() / #choices
-    -- todo: buttons
+function InkReader:presentLine(line, tags)
+    if self.debugLog then
+        io.write(line)
+        if #tags > 0 then
+            io.write("# tags: " .. table.concat(tags, ", ") .. "\n")
+        end
+    end
 
+    if line:starts_with("RILEY: ") then
+        line = line:sub(8) -- remove "RILEY: "
+        local text = self.rileySpeach.textbox.text
+        if text == "" then
+            self.rileySpeach.textbox.text = line
+        else
+            self.rileySpeach.textbox.text = self.rileySpeach.textbox.text .. line
+        end
+    else
+        local text = self.caption.textbox.text
+        if text == "" then
+            self.caption.textbox.text = line
+        else
+            -- append to the caption text
+            self.caption.textbox.text = self.caption.textbox.text .. line
+        end
+    end
+end
+
+function InkReader:presentChoices(choices)
     for i,c in ipairs(choices) do
-        print(i .. ": ", c.text)
-        if #c.tags > 0 then
-            print(" # tags: " .. table.concat(c.tags, ", "))
+        if self.debugLog then
+            io.write(i .. ":\t" .. c.text .. (#c.tags > 0 and " # tags: " .. table.concat(c.tags, ", ") or ""), "\n")
         end
         self:showChoice(c, i)
     end
@@ -97,7 +104,10 @@ function InkReader:showChoice(choice, index)
     end
     button.tform.y = 300 + index * 60
     button.textbox.text = choice.text
-
+    -- the choice might also have tags:
+    if #choice.tags > 0 then
+        --print(" # tags: " .. table.concat(choice.tags, ", "))
+    end
 end
 
 return InkReader
