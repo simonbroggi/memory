@@ -9,17 +9,25 @@ function InkReader:init()
 
     local story_definition = import("ink_story.story_main")
     self.story = Story(story_definition)
+    self.cooldown = 0
 
     -- add a choice button pool
     self.choiceButtonPool = {}
 end
 
 function InkReader:update(dt)
+    self.cooldown = self.cooldown - dt
+    if self.cooldown > 0 then
+        return -- wait for the cooldown to finish
+    end
+
     --- SIMPLE SYNC VERSION
     local continued = false
-    while self.story:canContinue() do
+    --while self.story:canContinue() do -- do all the available lines in one frame.
+    if self.story:canContinue() then -- only do one line per frame and wait for the cooldown.
         local line = self.story:Continue()
         local tags = self.story:currentTags()
+        self.cooldown = 1
 
         self:presentLine(line, tags)
 
