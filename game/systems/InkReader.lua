@@ -48,7 +48,7 @@ function InkReader:presentLine(line, tags)
     end
 
     if line:starts_with("NPC: ") then
-        line = line:sub(7) -- remove "NPC: "
+        line = line:sub(6) -- remove "NPC: "
         local text = self.npcSpeach.textbox.text
         if text == "" then
             self.npcSpeach.textbox.text = line
