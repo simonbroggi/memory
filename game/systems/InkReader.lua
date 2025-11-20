@@ -66,12 +66,31 @@ function InkReader:presentLine(line, tags)
     end
 end
 
+function InkReader:layoutChoices()
+    local visibleChoicesCount = self.visibleChoices
+    if not visibleChoicesCount then return end
+
+    local width = love.graphics.getWidth()
+    local xStart = 0-- -width / 2
+    local choiceSpace = width / visibleChoicesCount
+    local inset = 0
+    local choiceWidth = choiceSpace - 2*inset
+    local halfWidth = choiceWidth / 2
+    for index = 1, visibleChoicesCount do
+        local choiceButton = self.choiceButtonPool[index]
+
+        choiceButton.tform.x = xStart + choiceSpace*index - choiceSpace/2
+        choiceButton.textbox.limit = choiceWidth
+        choiceButton.textbox.ox = halfWidth
+    end
+end
+
 function InkReader:presentChoices(choices)
+    local visibleChoicesCount = 0
     for index, choice in ipairs(choices) do
         if self.debugLog then
             io.write(index .. ":\t" .. choice.text .. (#choice.tags > 0 and " # tags: " .. table.concat(choice.tags, ", ") or ""), "\n")
         end
-        
         if #self.choiceButtonPool < index then
             -- create new choice button if there are not enough in the pool
             self:createChoiceButton()
@@ -79,9 +98,13 @@ function InkReader:presentChoices(choices)
 
         local choiceButton = self.choiceButtonPool[index]
         choiceButton.textbox.text = choice.text
+
+        visibleChoicesCount = index
         core.ecs_world.entities:add(choiceButton)
-        -- todo: layout
     end
+    self.visibleChoices = visibleChoicesCount
+
+    self:layoutChoices()
 end
 
 function InkReader:hideChoices()
@@ -89,6 +112,7 @@ function InkReader:hideChoices()
     for _, button in ipairs(self.choiceButtonPool) do
         core.ecs_world.entities:remove(button)
     end
+    self.visibleChoices = 0
 end
 
 function InkReader:onChoiceButtonPointerDown(buttonEntity)
@@ -102,7 +126,7 @@ function InkReader:createChoiceButton()
     local button = core.newEntity() -- create the button entity, but don't add it to the world yet. It will be added to the world by showChoice.
     table.insert(self.choiceButtonPool, button) -- add to the pool
 
-    button.tform = {x = 1100, y = 300+index * 60}
+    button.tform = {x = 0, y = 600}
     button.ui = true
     button.rectangle = {width=200, height=50}
     button.material = {red=0, green=0, blue=1, alpha=0.7}
