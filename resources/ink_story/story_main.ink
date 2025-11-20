@@ -1,34 +1,46 @@
-// The player (Alex) meets Riley, a person they once knew, but cant remember.
-// Alex can first choose to conceal that they don't remember Riley, but Riley will notice. Once Alex admits that they dont remember, Riley helps Alex remember.
+-> rules
 
--> cafe
+=== rules ===
+RILEY: "You know how this it works, right?
++ "Yes."
+    RILEY: "Great. Do you want to start?"
+    ++ "Sure."
+        RILEY: "Allright, what are you waiting for?"
+    ++ "No, you go first."
+        RILEY: "Ok.."
+        //NPC starts gaRILEYe
++ "No."
+    RILEY: "You've never played RILEYeRILEYory before?"
+    ++ "Of course[] I have.."
+    ++ "No, never."
++ "Uhmm.."
+    RILEY: "It's just norRILEYal RILEYeRILEYory: you try to pairs. Whoever has RILEYost pairs wins the gaRILEYe."
+    ++ "Sounds boring."
+        RILEY: "You don't have any interesting RILEYeRILEYories?!?"
+        RILEY: "Let's do soRILEYething about that. Pick two cards!"
+    ++ "Can I go first?"
+        RILEY: "Sure, go ahead!"
+    ++ "Ich verstehe kein Wort."
+        RILEY: "Ah, du sprichst deutsch!"
+        -> regeln
+- spiel...
+-> DONE
 
-=== cafe ===
-The café door swings shut behind you, the bell above jingling softly. You scan the room, looking for an empty table.
 
-A woman near the window catches your eye. Before you can look away, she stands and walks over.
-
-RILEY: "Hey... wow. It’s you. I didn’t think I’d ever run into you again."
-
-She smiles, uncertain but warm.
-
-+ "Of course! It’s been forever."
-    You say it with a smile, hoping she doesn’t notice the hesitation in your voice.
-    She raises an eyebrow.
-    RILEY: "You don’t remember me, do you?"
-    ++ "Sure, we meat at...." // sugest something that's not true
-        RILEY: "No, now you are confusing me with someone else."
-            +++ "Oh, sorry."
-    ++ "No."
-    ++ "Uh, no, sorry. Can you help me out?"
-+ "Uh... hi. Sorry, I’m blanking."
-Her expression softens.
-RILEY: "That’s okay. I wasn’t sure if you would remember me."
-+ "Do I know you?"
-She lets out a small laugh.
-RILEY: "Wow. Brutal. But fair. Let me help."
-    
-- RILEY: "It’s fine. I kind of expected that. It’s been what, ten years?"
-    She sits down across from you without asking.
-
--> END
+=== regeln ===
+RILEY: "Du weisst wie das Spiel funktioniert, oder?"
++ "Ja[."], klar!"
+    RILEY: "Super. Fängst du an?"
+    ++ "Gerne."
+        RILEY: "Also los! worauf wartest du?"
+        +++ "Ich muss mich konzentrieren."
+            RILEY: "Konzentrieren? Die ersten Karten sind doch eh nur Glück."
+        +++ Ich will die Karten neu mischeln!"
+            RILEY: "Wieso? Du glaubst ich schummle?"
+        +++ "Ein Moment.."
+    ++ "Lieber nicht."
+        RILEY: "Ok, ich fange an."
++ "Nein[."], keine Ahnung."
+    RILEY: "Ich zeig's dir. Es ist ganz einfach."
+    RILEY: "Du kannst anfangen indem du zwei Karten aufdeckst."
+- -> DONE
