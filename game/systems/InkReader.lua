@@ -67,11 +67,20 @@ function InkReader:presentLine(line, tags)
 end
 
 function InkReader:presentChoices(choices)
-    for i,c in ipairs(choices) do
+    for index, choice in ipairs(choices) do
         if self.debugLog then
-            io.write(i .. ":\t" .. c.text .. (#c.tags > 0 and " # tags: " .. table.concat(c.tags, ", ") or ""), "\n")
+            io.write(index .. ":\t" .. choice.text .. (#choice.tags > 0 and " # tags: " .. table.concat(choice.tags, ", ") or ""), "\n")
         end
-        self:showChoice(c, i)
+        
+        if #self.choiceButtonPool < index then
+            -- create new choice button if there are not enough in the pool
+            self:createChoiceButton()
+        end
+
+        local choiceButton = self.choiceButtonPool[index]
+        choiceButton.textbox.text = choice.text
+        core.ecs_world.entities:add(choiceButton)
+        -- todo: layout
     end
 end
 
@@ -82,40 +91,32 @@ function InkReader:hideChoices()
     end
 end
 
+function InkReader:onChoiceButtonPointerDown(buttonEntity)
+    print("Choice Button Down!")
+    self.story:ChooseChoiceIndex(buttonEntity.choiceIndex)
+    self:hideChoices()
+end
 
-function InkReader:showChoice(choice, index)
-    local button
-    if #self.choiceButtonPool >= index then
-        button = self.choiceButtonPool[index]
-        core.ecs_world.entities:add(button)
-    else
-        -- create a new choice button
-        button = core.newEntitytInWorld()
-        table.insert(self.choiceButtonPool, button) -- add to the pool
-        button.tform = {x = 1100, y = 300+index * 60}
-        button.ui = true
-        button.rectangle = {width=200, height=50}
-        button.material = {red=0, green=0, blue=1, alpha=0.7}
-        button.textbox = {
-            font = love.graphics.newFont(20),
-            text = choice.text,
-            limit = 200,
-            ox = 100,
-            oy = 25,
-            align = "center",
-        }
-        button.choiceIndex = index
-        button.onPointerDown = function(entity)
-            self.story:ChooseChoiceIndex(entity.choiceIndex) -- choose the choice at the index
-            self:hideChoices() -- hide all choices after selecting one
-        end
-    end
-    button.tform.y = 300 + index * 60
-    button.textbox.text = choice.text
-    -- the choice might also have tags:
-    if #choice.tags > 0 then
-        --print(" # tags: " .. table.concat(choice.tags, ", "))
-    end
+function InkReader:createChoiceButton()
+    local index = #self.choiceButtonPool + 1
+    local button = core.newEntity() -- create the button entity, but don't add it to the world yet. It will be added to the world by showChoice.
+    table.insert(self.choiceButtonPool, button) -- add to the pool
+
+    button.tform = {x = 1100, y = 300+index * 60}
+    button.ui = true
+    button.rectangle = {width=200, height=50}
+    button.material = {red=0, green=0, blue=1, alpha=0.7}
+    button.textbox = {
+        font = love.graphics.newFont(20),
+        text = "choice " .. index .. " not set",
+        limit = 200,
+        ox = 100,
+        oy = 25,
+        align = "center",
+    }
+    button.choiceIndex = index
+    button.onPointerDown = self.onChoiceButtonPointerDown
+    button.pointerDownHandler = self
 end
 
 return InkReader

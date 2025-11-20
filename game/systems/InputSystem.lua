@@ -77,7 +77,11 @@ function System:update(dt)
                        self.mousePointer.y >= upperLeftY and
                        self.mousePointer.y <= lowerRightY then
                         -- mouse is over this UI element, call its onPointerDown function
-                        entity:onPointerDown()
+                        if entity.pointerDownHandler then
+                            entity.onPointerDown(entity.pointerDownHandler, entity)
+                        else
+                            entity:onPointerDown()
+                        end
                         pointerUsed = true -- stop processing pointer down for physics system
                     end
                 end
