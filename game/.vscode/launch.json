@@ -4,6 +4,19 @@
 		{
 			"type": "lua-local",
 			"request": "launch",
+			"name": "Ink & Debug",
+			"program": {
+				"command": "love"
+			},
+			"args": [
+				".",
+				"debug"
+			],
+			"preLaunchTask": "Compile ink to Lua",
+		},
+		{
+			"type": "lua-local",
+			"request": "launch",
 			"name": "Debug",
 			"program": {
 				"command": "love"
