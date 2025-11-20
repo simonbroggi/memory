@@ -1,46 +1,46 @@
 -> rules
 
 === rules ===
-RILEY: "You know how this it works, right?
+NPC: "You know how this it works, right?
 + "Yes."
-    RILEY: "Great. Do you want to start?"
+    NPC: "Great. Do you want to start?"
     ++ "Sure."
-        RILEY: "Allright, what are you waiting for?"
+        NPC: "Allright, what are you waiting for?"
     ++ "No, you go first."
-        RILEY: "Ok.."
-        //NPC starts gaRILEYe
+        NPC: "Ok.."
+        //NPC starts game
 + "No."
-    RILEY: "You've never played RILEYeRILEYory before?"
+    NPC: "You've never played memory before?"
     ++ "Of course[] I have.."
     ++ "No, never."
 + "Uhmm.."
-    RILEY: "It's just norRILEYal RILEYeRILEYory: you try to pairs. Whoever has RILEYost pairs wins the gaRILEYe."
+    NPC: "It's just normal memory: you try to pairs. Whoever has most pairs wins the game."
     ++ "Sounds boring."
-        RILEY: "You don't have any interesting RILEYeRILEYories?!?"
-        RILEY: "Let's do soRILEYething about that. Pick two cards!"
+        NPC: "You don't have any interesting memories?!?"
+        NPC: "Let's do something about that. Pick two cards!"
     ++ "Can I go first?"
-        RILEY: "Sure, go ahead!"
+        NPC: "Sure, go ahead!"
     ++ "Ich verstehe kein Wort."
-        RILEY: "Ah, du sprichst deutsch!"
+        NPC: "Ah, du sprichst deutsch!"
         -> regeln
 - spiel...
 -> DONE
 
 
 === regeln ===
-RILEY: "Du weisst wie das Spiel funktioniert, oder?"
+NPC: "Du weisst wie das Spiel funktioniert, oder?"
 + "Ja[."], klar!"
-    RILEY: "Super. Fängst du an?"
+    NPC: "Super. Fängst du an?"
     ++ "Gerne."
-        RILEY: "Also los! worauf wartest du?"
+        NPC: "Also los! worauf wartest du?"
         +++ "Ich muss mich konzentrieren."
-            RILEY: "Konzentrieren? Die ersten Karten sind doch eh nur Glück."
+            NPC: "Konzentrieren? Die ersten Karten sind doch eh nur Glück."
         +++ Ich will die Karten neu mischeln!"
-            RILEY: "Wieso? Du glaubst ich schummle?"
+            NPC: "Wieso? Du glaubst ich schummle?"
         +++ "Ein Moment.."
     ++ "Lieber nicht."
-        RILEY: "Ok, ich fange an."
+        NPC: "Ok, ich fange an."
 + "Nein[."], keine Ahnung."
-    RILEY: "Ich zeig's dir. Es ist ganz einfach."
-    RILEY: "Du kannst anfangen indem du zwei Karten aufdeckst."
+    NPC: "Ich zeig's dir. Es ist ganz einfach."
+    NPC: "Du kannst anfangen indem du zwei Karten aufdeckst."
 - -> DONE

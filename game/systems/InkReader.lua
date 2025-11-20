@@ -47,13 +47,13 @@ function InkReader:presentLine(line, tags)
         end
     end
 
-    if line:starts_with("RILEY: ") then
-        line = line:sub(8) -- remove "RILEY: "
-        local text = self.rileySpeach.textbox.text
+    if line:starts_with("NPC: ") then
+        line = line:sub(7) -- remove "NPC: "
+        local text = self.npcSpeach.textbox.text
         if text == "" then
-            self.rileySpeach.textbox.text = line
+            self.npcSpeach.textbox.text = line
         else
-            self.rileySpeach.textbox.text = self.rileySpeach.textbox.text .. line
+            self.npcSpeach.textbox.text = self.npcSpeach.textbox.text .. line
         end
     else
         local text = self.caption.textbox.text

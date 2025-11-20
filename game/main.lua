@@ -34,17 +34,17 @@ function love.load()
     Cam.transform:rotate(0, math.rad(90))
     Cam.camera = camera(1920, 1080, true, math.rad(44), 100, 10000, 0, -1.2)
 
-    local speachBubble = core.newEntitytInWorld()
-    speachBubble.transform = love.math.newTransform()
-    speachBubble.transform:translate(200, 500, -770)
-    speachBubble.transform:rotate(0, math.rad(90))
-    speachBubble.material = {red=1, green=1, blue=1, alpha=1}
-    speachBubble.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
-    speachBubble.splines = {
-        -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
-        spline({vec2(-11.07, -230.46), vec2(-47.03, -99.05), vec2(32.10, -66.74), vec2(8.18, -9.93), vec2(72.43, -62.19), vec2(294.75, -69.80), vec2(232.36, -206.21)}, {vec2(23.85, -265.95), vec2(-68.57, -117.36), vec2(-20.41, -60.20), vec2(22.87, -32.53), vec2(55.59, -65.99), vec2(272.26, -40.29), vec2(320.68, -154.70)}, {vec2(-45.98, -194.98), vec2(-25.48, -80.75), vec2(36.42, -39.62), vec2(81.76, -23.61), vec2(120.55, -52.09), vec2(317.23, -99.31), vec2(144.04, -257.73)}, true)
-        ,
-    }
+    -- local speachBubble = core.newEntitytInWorld()
+    -- speachBubble.transform = love.math.newTransform()
+    -- speachBubble.transform:translate(200, 500, -770)
+    -- speachBubble.transform:rotate(0, math.rad(90))
+    -- speachBubble.material = {red=1, green=1, blue=1, alpha=1}
+    -- speachBubble.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
+    -- speachBubble.splines = {
+    --     -- todo: add stroke and fill colors, and maybe resolution. and make it animatable.
+    --     spline({vec2(-11.07, -230.46), vec2(-47.03, -99.05), vec2(32.10, -66.74), vec2(8.18, -9.93), vec2(72.43, -62.19), vec2(294.75, -69.80), vec2(232.36, -206.21)}, {vec2(23.85, -265.95), vec2(-68.57, -117.36), vec2(-20.41, -60.20), vec2(22.87, -32.53), vec2(55.59, -65.99), vec2(272.26, -40.29), vec2(320.68, -154.70)}, {vec2(-45.98, -194.98), vec2(-25.48, -80.75), vec2(36.42, -39.62), vec2(81.76, -23.61), vec2(120.55, -52.09), vec2(317.23, -99.31), vec2(144.04, -257.73)}, true)
+    --     ,
+    -- }
 
     local oponent = core.newEntitytInWorld()
     oponent.transform = love.math.newTransform()
@@ -65,16 +65,16 @@ function love.load()
     }
     InkReader.caption = caption
 
-    local rileySpeach = core.newEntitytInWorld()
-    rileySpeach.tform = {x = 700, y = 20}
-    rileySpeach.ui = true
-    rileySpeach.textbox = {
+    local npcSpeach = core.newEntitytInWorld()
+    npcSpeach.tform = {x = 700, y = 20}
+    npcSpeach.ui = true
+    npcSpeach.textbox = {
         font = love.graphics.newFont(20),
         text = "",
         limit = 350,
         align = "left",
     }
-    InkReader.rileySpeach = rileySpeach
+    InkReader.npcSpeach = npcSpeach
 
 
     --[[ coordinate system lines using rectangle components
