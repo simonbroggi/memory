@@ -54,27 +54,27 @@ function love.load()
     oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
     oponent.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
 
-    local caption = core.newEntitytInWorld()
-    caption.tform = {x = 0, y = 0}
-    caption.ui = true
-    caption.textbox = {
+    local playerSpeech = core.newEntitytInWorld()
+    playerSpeech.tform = {x = 0, y = 0}
+    playerSpeech.ui = true
+    playerSpeech.textbox = {
         font = love.graphics.newFont(20),
         text = "",
         limit = 500,
         align = "left",
     }
-    InkReader.caption = caption
+    InkReader.playerSpeech = playerSpeech
 
-    local npcSpeach = core.newEntitytInWorld()
-    npcSpeach.tform = {x = 700, y = 20}
-    npcSpeach.ui = true
-    npcSpeach.textbox = {
+    local npcSpeech = core.newEntitytInWorld()
+    npcSpeech.tform = {x = 700, y = 20}
+    npcSpeech.ui = true
+    npcSpeech.textbox = {
         font = love.graphics.newFont(20),
         text = "",
         limit = 350,
         align = "left",
     }
-    InkReader.npcSpeach = npcSpeach
+    InkReader.npcSpeech = npcSpeech
 
 
     --[[ coordinate system lines using rectangle components
@@ -159,5 +159,5 @@ end
 function love.resize(w, h)
     print("Resize Love", w, h)
     DrawSystem:resize_canvas(w, h)
-    InkReader:layoutChoices()
+    InkReader:layout()
 end

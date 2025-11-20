@@ -49,26 +49,35 @@ function InkReader:presentLine(line, tags)
 
     if line:starts_with("NPC: ") then
         line = line:sub(6) -- remove "NPC: "
-        local text = self.npcSpeach.textbox.text
-        if text == "" then
-            self.npcSpeach.textbox.text = line
-        else
-            self.npcSpeach.textbox.text = self.npcSpeach.textbox.text .. line
-        end
+        local text = self.npcSpeech.textbox.text
+        self.npcSpeech.textbox.text = text .. line
+        self.playerSpeech.textbox.text = self.playerSpeech.textbox.text .. "\n"
     else
-        local text = self.caption.textbox.text
-        if text == "" then
-            self.caption.textbox.text = line
-        else
-            -- append to the caption text
-            self.caption.textbox.text = self.caption.textbox.text .. line
-        end
+        local text = self.playerSpeech.textbox.text
+        self.playerSpeech.textbox.text = text .. line
+        self.npcSpeech.textbox.text = self.npcSpeech.textbox.text .. "\n"
     end
+end
+
+function InkReader:layout()
+    local width = love.graphics.getWidth()
+    local border = 40
+    local colWidth = (width - border*2) / 3
+    
+    self.playerSpeech.tform.x = width - border - colWidth
+    self.playerSpeech.textbox.ox = 0
+    self.playerSpeech.textbox.limit = colWidth
+
+    self.npcSpeech.tform.x = border
+    self.npcSpeech.textbox.ox = 0
+    self.npcSpeech.textbox.limit = colWidth
+
+    self:layoutChoices()
 end
 
 function InkReader:layoutChoices()
     local visibleChoicesCount = self.visibleChoices
-    if not visibleChoicesCount then return end
+    if visibleChoicesCount == nil or visibleChoicesCount == 0 then return end
 
     local width = love.graphics.getWidth()
     local xStart = 0-- -width / 2
