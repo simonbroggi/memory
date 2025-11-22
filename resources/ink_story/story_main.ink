@@ -25,8 +25,6 @@ NPC: You know how this it works, right?
         -> regeln
 - spiel...
 -> DONE
-
-
 === regeln ===
 NPC: Du weisst wie das Spiel funktioniert, oder?
 + Ja[.], klar!
@@ -43,4 +41,19 @@ NPC: Du weisst wie das Spiel funktioniert, oder?
 + Nein[.], keine Ahnung.
     NPC: Ich zeig's dir. Es ist ganz einfach.
     NPC: Du kannst anfangen indem du zwei Karten aufdeckst.
+- -> DONE
+
+=== remember ===
+NPC: You don't remember me?
++ No, should I?
++ NO, sorry..
++ Of course I remember you! Nice to see you! How are you doing?
+    NPC: Good, thanks! Nice to
+- ->DONE
+
+=== erinnern ===
+NPC: Du kannst dich nicht mehr an mich erinnern oder?
++ Doch, klar erinnere ich mich an dich.
++ Nein, leider nicht.
++ Hmm, du kommst mir bekannt vor.
 - -> DONE
