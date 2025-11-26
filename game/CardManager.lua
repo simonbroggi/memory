@@ -288,9 +288,8 @@ function manager.revealCard(cardEntity)
         print("card is already facing up")
     else
         addFlipCardAnimation(cardEntity)
+        InkReader:addToVariable("cards_revealed", 1)
     end
-
-    InkReader:turnCard()
 end
 
 function manager.concealCard(cardEntity)

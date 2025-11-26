@@ -1,40 +1,54 @@
-VAR cards_turned = 0
+VAR cards_revealed = 0
+VAR pairs_collected = 0
+VAR npc_pairs = 0
 
 -> rules
 
 === rules ===
-NPC: You know how this it works, right??
-NPC: It's called memory, or concentration...
-NPC: I'll explain.
-NPC: We turned {cards_turned} cards so far.
-{cards_turned:
+NPC: You know how this it works, right?
++ Yes.
+    NPC: Great. You go first.
++ No[.], I've never played it.
+    NPC: I doubt that.
+    NPC: You need to find pairs of matching cards.
+    NPC: It's very simple. I'll show you.
++ Not sure.[] Is it the one where you try to find matching pairs?
+    NPC: Yes, excatly.
+- NPC: So far {cards_revealed} were flipped.
+{cards_revealed:
 - 0:
-  NPC: You need to turn two cards.
+    NPC: You need to turn two cards.
 - 1:
-  NPC: You need to turn another card.
-- else:
-  -> first_cards
+    NPC: You need to turn another card.
 }
+-> DONE // wait for game to go to first_pair_revealed
+// -> first_pair_revealed
 
--(loop_start)
-* {cards_turned < 2} ->
-    NPC: Go on.
-* {cards_turned < 2} ->
-    NPC: You can do it.
-+ ->
-    NPC: wait until player turns some cards.
-    ->loop_end
-- NPC: Just play with it.
-->loop_start
+// -(loop_start)
+// * {cards_revealed < 2} ->
+//     NPC: Go on.
+// * {cards_revealed < 2} ->
+//     NPC: You can do it.
+// + ->
+//     NPC: wait until player turns some cards.
+//     ->loop_end
+// - NPC: Just play with it.
+// ->loop_start
+// -(loop_end)
+// -> DONE
 
--(loop_end)
-NPC: what are you waiting for?
--> DONE
-
-=== first_cards ===
+=== first_pair_revealed ===
+{first_pair_revealed >= 2:
+    -> DONE
+}
 NPC: Let's see what you've got..
+{pairs_collected:
+- 0:
+    NPC: No luck. Now it's my turn.
+- 1:
+    NPC: Lucky start! You can go again.
+}
 -> DONE
-
 
 === something ===
 + Yes.
