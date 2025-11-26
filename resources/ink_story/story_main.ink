@@ -1,7 +1,42 @@
+VAR cards_turned = 0
+
 -> rules
 
 === rules ===
-NPC: You know how this it works, right?
+NPC: You know how this it works, right??
+NPC: It's called memory, or concentration...
+NPC: I'll explain.
+NPC: You turned {cards_turned} cards so far.
+{cards_turned:
+- 0:
+  NPC: You need to turn two cards.
+- 1:
+  NPC: You need to turn another card.
+- else:
+  -> first_cards
+}
+
+-(loop_start)
+* {cards_turned < 2} ->
+    NPC: Go on.
+* {cards_turned < 2} ->
+    NPC: You can do it.
++ ->
+    NPC: wait until player turns some cards.
+    ->loop_end
+- NPC: Just play with it.
+->loop_start
+
+-(loop_end)
+NPC: what are you waiting for?
+-> DONE
+
+=== first_cards ===
+NPC: Let's see what you've got..
+-> DONE
+
+
+=== something ===
 + Yes.
     NPC: Great. Do you want to start?
     ++ Sure.
