@@ -157,7 +157,6 @@ function love.keypressed(key)
 end
 
 function love.resize(w, h)
-    print("Resize Love", w, h)
     DrawSystem:resize_canvas(w, h)
     InkReader:layout()
 end

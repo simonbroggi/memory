@@ -5,7 +5,7 @@ local InkReader = {
 }
 
 function InkReader:init()
-    self.debugLog = true -- print the story text to the console
+    self.debugLog = false -- print the story text to the console
 
     local story_definition = import("ink_story.story_main")
     self.story = Story(story_definition)
@@ -80,6 +80,7 @@ function InkReader:layoutChoices()
     if visibleChoicesCount == nil or visibleChoicesCount == 0 then return end
 
     local width = love.graphics.getWidth()
+    local height = love.graphics.getHeight()
     local xStart = 0-- -width / 2
     local choiceSpace = width / visibleChoicesCount
     local inset = 0
@@ -89,6 +90,7 @@ function InkReader:layoutChoices()
         local choiceButton = self.choiceButtonPool[index]
 
         choiceButton.tform.x = xStart + choiceSpace*index - choiceSpace/2
+        choiceButton.tform.y = height - 60
         choiceButton.textbox.limit = choiceWidth
         choiceButton.textbox.ox = halfWidth
     end
@@ -125,7 +127,7 @@ function InkReader:hideChoices()
 end
 
 function InkReader:onChoiceButtonPointerDown(buttonEntity)
-    print("Choice Button Down!")
+    -- print("Choice Button Down!")
     self.story:ChooseChoiceIndex(buttonEntity.choiceIndex)
     self:hideChoices()
 end
@@ -137,7 +139,7 @@ function InkReader:createChoiceButton()
 
     button.tform = {x = 0, y = 600}
     button.ui = true
-    button.rectangle = {width=200, height=50}
+    button.rectangle = {width=260, height=50}
     button.material = {red=0, green=0, blue=1, alpha=0.7}
     button.textbox = {
         font = love.graphics.newFont(20),
