@@ -6,7 +6,7 @@ VAR cards_turned = 0
 NPC: You know how this it works, right??
 NPC: It's called memory, or concentration...
 NPC: I'll explain.
-NPC: You turned {cards_turned} cards so far.
+NPC: We turned {cards_turned} cards so far.
 {cards_turned:
 - 0:
   NPC: You need to turn two cards.

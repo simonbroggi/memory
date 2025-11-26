@@ -3,6 +3,8 @@ local PhysicsSystem = require("systems.PhysicsSystem")
 local drawer = require("CardDrawer")
 local ripple = require("ripple")
 
+local InkReader = require("systems.InkReader")
+
 ---@class CardManager creates new card sets, deals cards etc..
 local manager = {}
 local roomSounds = ripple.newTag()
@@ -287,6 +289,8 @@ function manager.revealCard(cardEntity)
     else
         addFlipCardAnimation(cardEntity)
     end
+
+    InkReader:turnCard()
 end
 
 function manager.concealCard(cardEntity)

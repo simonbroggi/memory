@@ -15,6 +15,27 @@ function InkReader:init()
     self.choiceButtonPool = {}
 end
 
+function InkReader:turnCard()
+    --works!
+
+    local ct = self.story.state.variablesState.globalVariables["cards_turned"]
+    if ct then
+        --print("turned card: " .. ct.value )
+        ct.value = ct.value+1
+    end
+
+    -- local vState = self.story.state.variablesState
+    -- vState:SetGlobal("cards_turned", 3)
+
+    --self.story.state.variablesState["cards_turned"] = 3
+    
+    
+    --local varState = self.story.state.variablesState
+    -- local cardsTurned = varState.globalVariables["cards_turned"].value
+    --varState:SetGlobal("cards_turned", {value=2})
+
+end
+
 function InkReader:update(dt)
     self.cooldown = self.cooldown - dt
     if self.cooldown > 0 then
