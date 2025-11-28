@@ -109,16 +109,36 @@ function InkReader:layoutChoices()
     local height = love.graphics.getHeight()
     local xStart = 0-- -width / 2
     local choiceSpace = width / visibleChoicesCount
-    local inset = 0
+    local inset = 12
     local choiceWidth = choiceSpace - 2*inset
     local halfWidth = choiceWidth / 2
-    for index = 1, visibleChoicesCount do
-        local choiceButton = self.choiceButtonPool[index]
 
-        choiceButton.tform.x = xStart + choiceSpace*index - choiceSpace/2
-        choiceButton.tform.y = height - 60
-        choiceButton.textbox.limit = choiceWidth
-        choiceButton.textbox.ox = halfWidth
+    -- horizontal layout
+    if width > height then
+        for index = 1, visibleChoicesCount do
+            local choiceButton = self.choiceButtonPool[index]
+
+            choiceButton.tform.x = xStart + choiceSpace*index - choiceSpace/2
+            choiceButton.tform.y = height - 60
+            choiceButton.textbox.limit = choiceWidth
+            choiceButton.textbox.ox = halfWidth
+            choiceButton.rectangle.width = choiceWidth
+        end
+    else
+        choiceSpace = width
+        choiceWidth = choiceSpace - 2*inset
+        halfWidth = choiceWidth / 2
+        local ySpace = 60
+        for index = 1, visibleChoicesCount do
+            local choiceButton = self.choiceButtonPool[index]
+
+            choiceButton.tform.x = xStart + choiceSpace/2
+            choiceButton.tform.y = height - (60 + 2*ySpace) + (index-1)*ySpace
+
+            choiceButton.textbox.limit = choiceWidth
+            choiceButton.textbox.ox = halfWidth
+            choiceButton.rectangle.width = choiceWidth 
+        end
     end
 end
 
