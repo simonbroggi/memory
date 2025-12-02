@@ -2,8 +2,7 @@ local core = require("core")
 local Story = require("tinta.love")
 local TextUISystem = require("systems.TextUISystem")
 
-local InkReader = {
-}
+local InkReader = {}
 
 function InkReader:init()
     self.debugLog = false -- print the story text to the console
@@ -80,30 +79,10 @@ function InkReader:parseLine(line, tags)
 
     if line:starts_with("NPC: ") then
         line = line:sub(6) -- remove "NPC: "
-        local text = self.npcSpeech.textbox.text
-        self.npcSpeech.textbox.text = text .. line
-        self.playerSpeech.textbox.text = self.playerSpeech.textbox.text .. "\n"
         TextUISystem:presentDialogBubble(line, "left")
     else
-        local text = self.playerSpeech.textbox.text
-        self.playerSpeech.textbox.text = text .. line
-        self.npcSpeech.textbox.text = self.npcSpeech.textbox.text .. "\n"
         TextUISystem:presentDialogBubble(line, "right")
     end
-end
-
-function InkReader:layout()
-    local width = love.graphics.getWidth()
-    local border = 40
-    local colWidth = (width - border*2) / 3
-    
-    self.playerSpeech.tform.x = width - border - colWidth
-    self.playerSpeech.textbox.ox = 0
-    self.playerSpeech.textbox.limit = colWidth
-
-    self.npcSpeech.tform.x = border
-    self.npcSpeech.textbox.ox = 0
-    self.npcSpeech.textbox.limit = colWidth
 end
 
 return InkReader

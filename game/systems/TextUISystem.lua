@@ -26,13 +26,32 @@ end
 function TextUISystem:presentDialogBubble(text, area)
     local r, g, b, a = .5, .5, .5, .5
     local bubble = self:createDialogBubble(text, 200, self.nextBubbleY, 200, 60, r, g, b, a)
+    bubble.textUIArea = area
     self.nextBubbleY = self.nextBubbleY + 70
     self.dialogBubbles[#self.dialogBubbles+1] = bubble
+
+    local width, height = love.graphics.getDimensions()
+    self:layoutDialogBubbles(width, height)
 end
 
-function TextUISystem:layoutDialogBubbles()
-    for i, bubble in ipairs(self.dialogBubbles) do
+function TextUISystem:layoutDialogBubbles(width, height)
+    -- figure out the width of the areas
+    local border = 40
+    local colWidth = (width - border*2) / 3
 
+    local leftX = border
+    local rightX = width - border - colWidth
+    
+    -- itterate through dialog bubbles starting from the last one
+    local n = #self.dialogBubbles
+    for i = n, 1, -1 do
+        local bubble = self.dialogBubbles[i]
+        bubble.tform.x = bubble.textUIArea == "left" and leftX or rightX
+        bubble.textbox.limit = colWidth
+        bubble.textbox.ox = 0
+        -- todo: Rectangle needs ox / oy!!!!!
+        
+        -- figure out the height of the text in the bubble
     end
 end
 
@@ -69,6 +88,7 @@ end
 
 function TextUISystem:resize(width, height)
     self:layoutChoices(width, height)
+    self:layoutDialogBubbles(width, height)
 end
 
 function TextUISystem:onChoiceButtonPointerDown(buttonEntity)

@@ -153,6 +153,7 @@ function DrawSystem:drawScene()
         end
     end
     for _, entity in ipairs(self.rectangleEntities) do
+        -- todo: rectangle needs ox/ oy! it's set to rWidth/2 here...
         local tform = entity.tform
         local rect = entity.rectangle
         setMaterial(entity.material)
