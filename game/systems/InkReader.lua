@@ -1,5 +1,6 @@
 local core = require("core")
 local Story = require("tinta.love")
+local TextUISystem = require("systems.TextUISystem")
 
 local InkReader = {
 }
@@ -11,8 +12,12 @@ function InkReader:init()
     self.story = Story(story_definition)
     self.cooldown = 0
 
-    -- add a choice button pool
-    self.choiceButtonPool = {}
+    TextUISystem.onChoiceChosenHandler = self
+    TextUISystem.onChoiceChosen = self.onChoiceChosen
+end
+
+function InkReader:onChoiceChosen(choiceIndex)
+    self.story:ChooseChoiceIndex(choiceIndex)
 end
 
 function InkReader:setVariable(var_name, value)
@@ -27,7 +32,7 @@ function InkReader:addToVariable(var_name, increment)
 end
 
 function InkReader:goto(path)
-    self:hideChoices()
+    TextUISystem:hideChoices()
     self.story:ChoosePathString(path)
 end
 
@@ -61,7 +66,7 @@ function InkReader:update(dt)
     end
     if continued then
         local newChoices = self.story:currentChoices()
-        self:presentChoices(newChoices)
+        TextUISystem:presentChoices(newChoices)
     end
 end
 
@@ -97,107 +102,6 @@ function InkReader:layout()
     self.npcSpeech.tform.x = border
     self.npcSpeech.textbox.ox = 0
     self.npcSpeech.textbox.limit = colWidth
-
-    self:layoutChoices()
-end
-
-function InkReader:layoutChoices()
-    local visibleChoicesCount = self.visibleChoices
-    if visibleChoicesCount == nil or visibleChoicesCount == 0 then return end
-
-    local width = love.graphics.getWidth()
-    local height = love.graphics.getHeight()
-    local xStart = 0-- -width / 2
-    local choiceSpace = width / visibleChoicesCount
-    local inset = 12
-    local choiceWidth = choiceSpace - 2*inset
-    local halfWidth = choiceWidth / 2
-
-    -- horizontal layout
-    if width > height then
-        for index = 1, visibleChoicesCount do
-            local choiceButton = self.choiceButtonPool[index]
-
-            choiceButton.tform.x = xStart + choiceSpace*index - choiceSpace/2
-            choiceButton.tform.y = height - 60
-            choiceButton.textbox.limit = choiceWidth
-            choiceButton.textbox.ox = halfWidth
-            choiceButton.rectangle.width = choiceWidth
-        end
-    else
-        choiceSpace = width
-        choiceWidth = choiceSpace - 2*inset
-        halfWidth = choiceWidth / 2
-        local ySpace = 60
-        for index = 1, visibleChoicesCount do
-            local choiceButton = self.choiceButtonPool[index]
-
-            choiceButton.tform.x = xStart + choiceSpace/2
-            choiceButton.tform.y = height - (60 + 2*ySpace) + (index-1)*ySpace
-
-            choiceButton.textbox.limit = choiceWidth
-            choiceButton.textbox.ox = halfWidth
-            choiceButton.rectangle.width = choiceWidth 
-        end
-    end
-end
-
-function InkReader:presentChoices(choices)
-    local visibleChoicesCount = 0
-    for index, choice in ipairs(choices) do
-        if self.debugLog then
-            io.write(index .. ":\t" .. choice.text .. (#choice.tags > 0 and " # tags: " .. table.concat(choice.tags, ", ") or ""), "\n")
-        end
-        if #self.choiceButtonPool < index then
-            -- create new choice button if there are not enough in the pool
-            self:createChoiceButton()
-        end
-
-        local choiceButton = self.choiceButtonPool[index]
-        choiceButton.textbox.text = choice.text
-
-        visibleChoicesCount = index
-        core.ecs_world.entities:add(choiceButton)
-    end
-    self.visibleChoices = visibleChoicesCount
-
-    self:layoutChoices()
-end
-
-function InkReader:hideChoices()
-    -- hide all choice buttons
-    for _, button in ipairs(self.choiceButtonPool) do
-        core.ecs_world.entities:remove(button)
-    end
-    self.visibleChoices = 0
-end
-
-function InkReader:onChoiceButtonPointerDown(buttonEntity)
-    -- print("Choice Button Down!")
-    self.story:ChooseChoiceIndex(buttonEntity.choiceIndex)
-    self:hideChoices()
-end
-
-function InkReader:createChoiceButton()
-    local index = #self.choiceButtonPool + 1
-    local button = core.newEntity() -- create the button entity, but don't add it to the world yet. It will be added to the world by showChoice.
-    table.insert(self.choiceButtonPool, button) -- add to the pool
-
-    button.tform = {x = 0, y = 600}
-    button.ui = true
-    button.rectangle = {width=260, height=50}
-    button.material = {red=0, green=0, blue=1, alpha=0.7}
-    button.textbox = {
-        font = love.graphics.newFont(20),
-        text = "choice " .. index .. " not set",
-        limit = 200,
-        ox = 100,
-        oy = 25,
-        align = "center",
-    }
-    button.choiceIndex = index
-    button.onPointerDown = self.onChoiceButtonPointerDown
-    button.pointerDownHandler = self
 end
 
 return InkReader
