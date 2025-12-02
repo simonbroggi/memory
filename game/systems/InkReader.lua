@@ -60,7 +60,7 @@ function InkReader:update(dt)
         local tags = self.story:currentTags()
         self.cooldown = 1
 
-        self:presentLine(line, tags)
+        self:parseLine(line, tags)
 
         continued = true
     end
@@ -70,7 +70,7 @@ function InkReader:update(dt)
     end
 end
 
-function InkReader:presentLine(line, tags)
+function InkReader:parseLine(line, tags)
     if self.debugLog then
         io.write(line)
         if #tags > 0 then
@@ -83,10 +83,12 @@ function InkReader:presentLine(line, tags)
         local text = self.npcSpeech.textbox.text
         self.npcSpeech.textbox.text = text .. line
         self.playerSpeech.textbox.text = self.playerSpeech.textbox.text .. "\n"
+        TextUISystem:presentDialogBubble(line, "left")
     else
         local text = self.playerSpeech.textbox.text
         self.playerSpeech.textbox.text = text .. line
         self.npcSpeech.textbox.text = self.npcSpeech.textbox.text .. "\n"
+        TextUISystem:presentDialogBubble(line, "right")
     end
 end
 

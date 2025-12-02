@@ -6,6 +6,7 @@ local InputSystem = require("systems.InputSystem")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 local AnimSystem = require("systems.AnimSystem")
+local TextUISystem = require("systems.TextUISystem")
 local InkReader = require("systems.InkReader")
 
 local CardManager = require("CardManager")
@@ -18,6 +19,7 @@ function love.load()
     InputSystem:init()
     PhysicsSystem:init()
     AnimSystem:init()
+    TextUISystem:init()
     InkReader:init()
 
     -- Hand = core.newEntitytInWorld()
@@ -157,6 +159,7 @@ function love.keypressed(key)
 end
 
 function love.resize(w, h)
+    TextUISystem:resize(w, h)
     DrawSystem:resize_canvas(w, h)
     InkReader:layout()
 end

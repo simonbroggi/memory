@@ -13,6 +13,27 @@ function TextUISystem:init()
     -- the variable is set in InkReader, and the handler is the InkReader.
     self.onChoiceChosen = self.onChoiceChosen
     self.onChoiceChosenHandler = self.onChoiceChosenHandler
+
+    self.font = love.graphics.newFont(20)
+
+    self.dialogBubbles = {}
+    self.nextBubbleY = 0
+end
+
+---todo: use this
+---@param text string text displayed in the bubble
+---@param area string where the bubble is shown
+function TextUISystem:presentDialogBubble(text, area)
+    local r, g, b, a = .5, .5, .5, .5
+    local bubble = self:createDialogBubble(text, 200, self.nextBubbleY, 200, 60, r, g, b, a)
+    self.nextBubbleY = self.nextBubbleY + 70
+    self.dialogBubbles[#self.dialogBubbles+1] = bubble
+end
+
+function TextUISystem:layoutDialogBubbles()
+    for i, bubble in ipairs(self.dialogBubbles) do
+
+    end
 end
 
 function TextUISystem:presentChoices(choices)
@@ -104,7 +125,7 @@ function TextUISystem:createChoiceButton()
     button.rectangle = {width=260, height=50}
     button.material = {red=0, green=0, blue=1, alpha=0.7}
     button.textbox = {
-        font = love.graphics.newFont(20),
+        font = self.font,
         text = "choice " .. index .. " not set",
         limit = 200,
         ox = 100,
@@ -114,6 +135,24 @@ function TextUISystem:createChoiceButton()
     button.choiceIndex = index
     button.onPointerDown = self.onChoiceButtonPointerDown
     button.pointerDownHandler = self
+end
+
+function TextUISystem:createDialogBubble(text, x, y, w, h, r, g, b, a)
+    local bubble = core.newEntitytInWorld()
+    bubble.tform = {x = x, y = y}
+    bubble.ui = true
+    bubble.rectangle = {width = w, height = h} -- todo: h is dynamic.
+    bubble.material = {red=r, green=g, blue=b, alpha=a}
+    local textWidth = w - 20
+    bubble.textbox = {
+        font = self.font,
+        text = text,
+        limit = textWidth,
+        ox = textWidth/2,
+        oy = h/2, -- todo: h is dynamic.
+        align = "left",
+    }
+    return bubble
 end
 
 return TextUISystem
