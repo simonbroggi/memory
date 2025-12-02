@@ -15,6 +15,46 @@ function TextUISystem:init()
     self.onChoiceChosenHandler = self.onChoiceChosenHandler
 end
 
+function TextUISystem:presentChoices(choices)
+    local visibleChoicesCount = 0
+    for index, choice in ipairs(choices) do
+        if self.debugLog then
+            io.write(index .. ":\t" .. choice.text .. (#choice.tags > 0 and " # tags: " .. table.concat(choice.tags, ", ") or ""), "\n")
+        end
+        if #self.choiceButtonPool < index then
+            -- create new choice button if there are not enough in the pool
+            self:createChoiceButton()
+        end
+
+        local choiceButton = self.choiceButtonPool[index]
+        choiceButton.textbox.text = choice.text
+
+        visibleChoicesCount = index
+        core.ecs_world.entities:add(choiceButton)
+    end
+    self.visibleChoices = visibleChoicesCount
+
+    local width, height = love.graphics.getDimensions()
+    self:layoutChoices(width, height)
+end
+
+function TextUISystem:hideChoices()
+    -- hide all choice buttons
+    for _, button in ipairs(self.choiceButtonPool) do
+        core.ecs_world.entities:remove(button)
+    end
+    self.visibleChoices = 0
+end
+
+function TextUISystem:resize(width, height)
+    self:layoutChoices(width, height)
+end
+
+function TextUISystem:onChoiceButtonPointerDown(buttonEntity)
+    self.onChoiceChosen(self.onChoiceChosenHandler, buttonEntity.choiceIndex)
+    TextUISystem:hideChoices()
+end
+
 function TextUISystem:layoutChoices(width, height)
     local visibleChoicesCount = self.visibleChoices
     if visibleChoicesCount == nil or visibleChoicesCount == 0 then return end
@@ -52,55 +92,6 @@ function TextUISystem:layoutChoices(width, height)
             choiceButton.rectangle.width = choiceWidth 
         end
     end
-end
-
-function TextUISystem:presentChoices(choices)
-    local visibleChoicesCount = 0
-    for index, choice in ipairs(choices) do
-        if self.debugLog then
-            io.write(index .. ":\t" .. choice.text .. (#choice.tags > 0 and " # tags: " .. table.concat(choice.tags, ", ") or ""), "\n")
-        end
-        if #self.choiceButtonPool < index then
-            -- create new choice button if there are not enough in the pool
-            self:createChoiceButton()
-        end
-
-        local choiceButton = self.choiceButtonPool[index]
-        choiceButton.textbox.text = choice.text
-
-        visibleChoicesCount = index
-        core.ecs_world.entities:add(choiceButton)
-    end
-    self.visibleChoices = visibleChoicesCount
-
-    local width, height = love.graphics.getDimensions()
-    self:layoutChoices(width, height)
-end
-
-function TextUISystem:hideChoices()
-    -- hide all choice buttons
-    for _, button in ipairs(self.choiceButtonPool) do
-        core.ecs_world.entities:remove(button)
-    end
-    self.visibleChoices = 0
-end
-
-function TextUISystem:resize(width, height)
-    self:layoutChoices(width, height)
-end
-
-function TextUISystem:onChoiceButtonPointerDown(buttonEntity)
-    -- print("Choice Button Down!")
-
-    if self.onChoiceChosen then
-        if self.onChoiceChosenHandler then
-            self.onChoiceChosen(self.onChoiceChosenHandler, buttonEntity.choiceIndex)
-        else
-            self.onChoiceChosen(buttonEntity.choiceIndex)
-        end
-    end
-
-    TextUISystem:hideChoices()
 end
 
 function TextUISystem:createChoiceButton()
