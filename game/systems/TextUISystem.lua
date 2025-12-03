@@ -17,7 +17,7 @@ function TextUISystem:init()
     self.font = love.graphics.newFont(20)
 
     self.dialogBubbles = {}
-    self.nextBubbleY = 0
+    self.nextBubbleY = 300
 end
 
 ---todo: use this
@@ -39,20 +39,34 @@ function TextUISystem:layoutDialogBubbles(width, height)
     local border = 40
     local colWidth = (width - border*2) / 3
 
-    local leftX = border
+    local leftX = border + colWidth
     local rightX = width - border - colWidth
     
+    self.nextBubbleY = 300 -- the lower limit of the dialog bubbles
+
     -- itterate through dialog bubbles starting from the last one
     local n = #self.dialogBubbles
     for i = n, 1, -1 do
         local bubble = self.dialogBubbles[i]
-        bubble.tform.x = bubble.textUIArea == "left" and leftX or rightX
-        bubble.textbox.limit = colWidth
-        bubble.textbox.ox = 0
-        bubble.rectangle.ox = 0
-        -- todo: Rectangle needs ox / oy!!!!!
-        
+
         -- figure out the height of the text in the bubble
+        local font = bubble.textbox.font
+        local textWidth, textWrapped = font:getWrap(bubble.textbox.text, bubble.textbox.limit)
+        local textHeight = font:getHeight() * #textWrapped
+
+        local left = bubble.textUIArea == "left"
+
+        bubble.tform.x = left and leftX or rightX
+        bubble.tform.y = self.nextBubbleY
+        bubble.textbox.limit = colWidth
+        bubble.textbox.ox = left and textWidth or 0
+        bubble.textbox.oy = textHeight
+        bubble.rectangle.ox = left and textWidth or 0
+        bubble.rectangle.oy = textHeight
+        bubble.rectangle.width = textWidth
+        bubble.rectangle.height = textHeight
+
+        self.nextBubbleY = self.nextBubbleY - textHeight - 6
     end
 end
 
