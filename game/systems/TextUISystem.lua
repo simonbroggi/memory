@@ -49,6 +49,7 @@ function TextUISystem:layoutDialogBubbles(width, height)
         bubble.tform.x = bubble.textUIArea == "left" and leftX or rightX
         bubble.textbox.limit = colWidth
         bubble.textbox.ox = 0
+        bubble.rectangle.ox = 0
         -- todo: Rectangle needs ox / oy!!!!!
         
         -- figure out the height of the text in the bubble
@@ -161,9 +162,9 @@ function TextUISystem:createDialogBubble(text, x, y, w, h, r, g, b, a)
     local bubble = core.newEntitytInWorld()
     bubble.tform = {x = x, y = y}
     bubble.ui = true
-    bubble.rectangle = {width = w, height = h} -- todo: h is dynamic.
-    bubble.material = {red=r, green=g, blue=b, alpha=a}
     local textWidth = w - 20
+    bubble.rectangle = {width = w, height = h, ox = textWidth/2, oy = h/2} -- todo: h is dynamic.
+    bubble.material = {red=r, green=g, blue=b, alpha=a}
     bubble.textbox = {
         font = self.font,
         text = text,
