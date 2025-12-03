@@ -16,8 +16,8 @@ function TextUISystem:init()
 
     self.font = love.graphics.newFont(20)
 
-    self.dialogBubbles = {}
-    self.nextBubbleY = 300
+    self.dialogBubbles = {} -- all the bubbles that have been said.
+    self.bubblesAreaLowerBound = 240 -- the lower limit of the dialog bubbles (upper limit is 0)
 end
 
 ---@param text string text displayed in the bubble
@@ -39,14 +39,14 @@ function TextUISystem:layoutDialogBubbles(width, height)
     local leftX = border + colWidth
     local rightX = width - border - colWidth
     
-    self.nextBubbleY = 300 -- the lower limit of the dialog bubbles
+    local nextBubbleY = self.bubblesAreaLowerBound
 
     -- itterate through dialog bubbles starting from the last one
     local n = #self.dialogBubbles
     for i = n, 1, -1 do
         local bubble = self.dialogBubbles[i]
-        local paddingW = 12 -- padding width
-        local paddingH = 6 -- padding height
+        local paddingW = 14 -- padding width
+        local paddingH = 4 -- padding height
 
         bubble.textbox.limit = colWidth
 
@@ -60,7 +60,7 @@ function TextUISystem:layoutDialogBubbles(width, height)
         local left = bubble.textUIArea == "left"
 
         bubble.tform.x = left and leftX or rightX
-        bubble.tform.y = self.nextBubbleY
+        bubble.tform.y = nextBubbleY
         bubble.textbox.ox = left and (paddingW+textWidth) or - paddingW
         bubble.textbox.oy = paddingH + textHeight
         bubble.rectangle.ox = left and boxWidth or 0
@@ -68,7 +68,15 @@ function TextUISystem:layoutDialogBubbles(width, height)
         bubble.rectangle.width = boxWidth
         bubble.rectangle.height = boxHeight
 
-        self.nextBubbleY = self.nextBubbleY - boxHeight - 4
+        nextBubbleY = nextBubbleY - boxHeight - 4
+    end
+
+    -- now make sure the bubbles start at the top
+    if nextBubbleY > 0 then
+        local freeSpace = nextBubbleY
+        for i, bubble in ipairs(self.dialogBubbles) do
+            bubble.tform.y = bubble.tform.y - freeSpace
+        end
     end
 end
 
