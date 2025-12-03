@@ -20,7 +20,6 @@ function TextUISystem:init()
     self.nextBubbleY = 300
 end
 
----todo: use this
 ---@param text string text displayed in the bubble
 ---@param area string where the bubble is shown
 function TextUISystem:presentDialogBubble(text, area)
@@ -46,25 +45,30 @@ function TextUISystem:layoutDialogBubbles(width, height)
     local n = #self.dialogBubbles
     for i = n, 1, -1 do
         local bubble = self.dialogBubbles[i]
+        local paddingW = 12 -- padding width
+        local paddingH = 6 -- padding height
+
+        bubble.textbox.limit = colWidth
 
         -- figure out the height of the text in the bubble
         local font = bubble.textbox.font
         local textWidth, textWrapped = font:getWrap(bubble.textbox.text, colWidth)
         local textHeight = font:getHeight() * #textWrapped
+        local boxWidth = paddingW + textWidth + paddingW
+        local boxHeight = paddingH + textHeight + paddingH
 
         local left = bubble.textUIArea == "left"
 
         bubble.tform.x = left and leftX or rightX
         bubble.tform.y = self.nextBubbleY
-        bubble.textbox.limit = colWidth
-        bubble.textbox.ox = left and textWidth or 0
-        bubble.textbox.oy = textHeight
-        bubble.rectangle.ox = left and textWidth or 0
-        bubble.rectangle.oy = textHeight
-        bubble.rectangle.width = textWidth
-        bubble.rectangle.height = textHeight
+        bubble.textbox.ox = left and (paddingW+textWidth) or - paddingW
+        bubble.textbox.oy = paddingH + textHeight
+        bubble.rectangle.ox = left and boxWidth or 0
+        bubble.rectangle.oy = boxHeight
+        bubble.rectangle.width = boxWidth
+        bubble.rectangle.height = boxHeight
 
-        self.nextBubbleY = self.nextBubbleY - textHeight - 6
+        self.nextBubbleY = self.nextBubbleY - boxHeight - 4
     end
 end
 
@@ -174,7 +178,7 @@ function TextUISystem:createDialogBubble(text, r, g, b, a)
     local bubble = core.newEntitytInWorld()
     bubble.tform = {x = 400, y = 400}
     bubble.ui = true
-    bubble.rectangle = {width = 100, height = 100}
+    bubble.rectangle = {width = 100, height = 100, rx = 5}
     bubble.material = {red=r, green=g, blue=b, alpha=a}
     bubble.textbox = {
         font = self.font,

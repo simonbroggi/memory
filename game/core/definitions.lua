@@ -30,6 +30,8 @@
 ---@field height number
 ---@field ox? number
 ---@field oy? number
+---@field rx? number x-axis radius of each corner
+---@field ry? number y-axis radius of each corner
 
 ---@class textbox
 ---@field font love.Font
