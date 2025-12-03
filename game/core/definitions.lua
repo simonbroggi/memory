@@ -26,6 +26,8 @@
 ---@class rectangle
 ---@field width number
 ---@field height number
+---@field ox number
+---@field oy number
 
 ---@class material
 ---@field shader? love.Shader
