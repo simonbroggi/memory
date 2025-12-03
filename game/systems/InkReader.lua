@@ -19,6 +19,14 @@ function InkReader:onChoiceChosen(choiceIndex)
     self.story:ChooseChoiceIndex(choiceIndex)
 end
 
+function InkReader:getVisitCount(path)
+    -- if self.story.state.visitCounts then
+        return self.story.state:VisitCountAtPathString(path)
+    -- else
+    --     print("NO VISIT COUNTS")
+    -- end
+end
+
 function InkReader:setVariable(var_name, value)
     local var = self.story.state.variablesState.globalVariables[var_name]
     var.value = value
@@ -70,6 +78,7 @@ function InkReader:update(dt)
 end
 
 function InkReader:parseLine(line, tags)
+    print(" read rules? " .. self:getVisitCount("rules"))
     if self.debugLog then
         io.write(line)
         if #tags > 0 then

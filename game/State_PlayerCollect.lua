@@ -11,7 +11,12 @@ end
 
 function state:enter()
     print(self.name, "enter")
-    InkReader:goto("first_pair_revealed")
+
+    if InkReader:getVisitCount("rules") == 0 then
+        print("goto first pair revealed")
+        InkReader:goto("first_cards_revealed")
+    end
+    
     self.collectCards = {}
     self.flipCards = {}
     self.time = 0
@@ -50,6 +55,10 @@ end
 
 function state:exit()
     print(self.name, "exit")
+    local cards = self.manager.get_cards_in_play()
+    if cards.size <= 0 then
+        InkReader:goto("completed")
+    end
 end
 
 function state:update(dt)

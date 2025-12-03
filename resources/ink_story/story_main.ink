@@ -8,6 +8,7 @@ VAR npc_pairs = 0
 NPC: You know how this it works, right?
 + Yes.
     NPC: Great. You go first.
+    -> first_cards_revealed
 + No[.], I've never played it.
     NPC: I doubt that.
     NPC: You need to find pairs of matching cards.
@@ -21,26 +22,10 @@ NPC: You know how this it works, right?
 - 1:
     NPC: You need to turn another card.
 }
--> DONE // wait for game to go to first_pair_revealed
-// -> first_pair_revealed
+-> DONE // wait for game to go to first_cards_revealed
+// -> first_cards_revealed
 
-// -(loop_start)
-// * {cards_revealed < 2} ->
-//     NPC: Go on.
-// * {cards_revealed < 2} ->
-//     NPC: You can do it.
-// + ->
-//     NPC: wait until player turns some cards.
-//     ->loop_end
-// - NPC: Just play with it.
-// ->loop_start
-// -(loop_end)
-// -> DONE
-
-=== first_pair_revealed ===
-{first_pair_revealed >= 2:
-    -> DONE
-}
+=== first_cards_revealed ===
 NPC: Let's see what you've got..
 {pairs_collected:
 - 0:
@@ -49,6 +34,17 @@ NPC: Let's see what you've got..
     NPC: Lucky start! You can go again.
 }
 -> DONE
+
+=== completed ===
+NPC: That's it. Let's see who won...
+NPC: I've got {npc_pairs} pairs. What about you?
++ {pairs_collected + 1}
+    NPC: You sure?
++ {pairs_collected}
+    NPC: Ok..
++ {pairs_collected + 2}
+    NPC: I don't believe it!
+- -> DONE
 
 === something ===
 + Yes.

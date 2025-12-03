@@ -49,6 +49,10 @@ end
 
 function state:exit()
     print(self.name, "exit")
+    local cards = self.manager.get_cards_in_play()
+    if cards.size <= 0 then
+        InkReader:goto("completed")
+    end
 end
 
 function state:update(dt)
