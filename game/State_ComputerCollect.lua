@@ -1,4 +1,5 @@
 local core = require("core")
+local InkReader = require("systems.InkReader")
 
 local state = {}
 
@@ -40,6 +41,9 @@ function state:enter()
         self.collectCards[#self.collectCards+1] = firstCardEntity
     else
         self.flipCards[#self.flipCards+1] = firstCardEntity
+    end
+    if self.pairFound then
+        InkReader:addToVariable("npc_pairs", 1)
     end
 end
 

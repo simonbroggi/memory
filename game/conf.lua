@@ -23,7 +23,7 @@ end
 
 -- https://love2d.org/wiki/Config_Files
 function love.conf(t)
-	t.identity              = "InsertCoin_Memory"
+	t.identity              = "InsertCoin_Memories"
 	t.appendidentity        = false
 	t.version               = "12.0"
 	t.console               = false
@@ -31,12 +31,16 @@ function love.conf(t)
 	t.externalstorage       = false
 	t.highdpi				= false
 
-	t.graphics.gammacorrect = true
+	if t.graphics then
+		t.graphics.gammacorrect = true
+	else
+		t.gammacorrect = true
+	end
 
 	t.audio.mic             = false
 	t.audio.mixwithsystem   = true
 
-	t.window.title          = "Memory Game"
+	t.window.title          = "Memories"
 	t.window.icon           = nil
 	t.window.width          = 1280
 	t.window.height         = 720

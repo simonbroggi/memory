@@ -20,14 +20,14 @@ function System:init()
         self.mousePointer = {x = m.getX(), y = m.getY(), isDown = m.isDown(1), wasDown = false}
 
         function love.mousepressed( x, y, button, istouch, presses )
-            if istouch then return end
+            --if istouch then return end
             if button == 1 then
                 self.mousePointer.isDown = true
             end
         end
 
         function love.mousereleased( x, y, button, istouch, presses)
-            if istouch then return end
+            --if istouch then return end
             if button == 1 then
                 self.mousePointer.isDown = false
             end

@@ -6,6 +6,7 @@ local InputSystem = require("systems.InputSystem")
 local PhysicsSystem = require("systems.PhysicsSystem")
 local DrawSystem = require("systems.DrawSystem")
 local AnimSystem = require("systems.AnimSystem")
+local TextUISystem = require("systems.TextUISystem")
 local InkReader = require("systems.InkReader")
 
 local CardManager = require("CardManager")
@@ -18,6 +19,7 @@ function love.load()
     InputSystem:init()
     PhysicsSystem:init()
     AnimSystem:init()
+    TextUISystem:init()
     InkReader:init()
 
     -- Hand = core.newEntitytInWorld()
@@ -53,29 +55,6 @@ function love.load()
     oponent.material = {red=1, green=1, blue=1, alpha=1}
     oponent.sprite = {texture = love.graphics.newImage("assets/charactere.png"), quad = love.graphics.newQuad(0, 0, 512, 512, 512, 512), ox=256, oy=480}
     oponent.tform = {x = 0, y = 0, r = math.rad(0), sx = 2.1, sy = 2.1}
-
-    local playerSpeech = core.newEntitytInWorld()
-    playerSpeech.tform = {x = 0, y = 0}
-    playerSpeech.ui = true
-    playerSpeech.textbox = {
-        font = love.graphics.newFont(20),
-        text = "",
-        limit = 500,
-        align = "left",
-    }
-    InkReader.playerSpeech = playerSpeech
-
-    local npcSpeech = core.newEntitytInWorld()
-    npcSpeech.tform = {x = 700, y = 20}
-    npcSpeech.ui = true
-    npcSpeech.textbox = {
-        font = love.graphics.newFont(20),
-        text = "",
-        limit = 350,
-        align = "left",
-    }
-    InkReader.npcSpeech = npcSpeech
-
 
     --[[ coordinate system lines using rectangle components
     local ex = core.newEntitytInWorld()
@@ -157,7 +136,6 @@ function love.keypressed(key)
 end
 
 function love.resize(w, h)
-    print("Resize Love", w, h)
+    TextUISystem:resize(w, h)
     DrawSystem:resize_canvas(w, h)
-    InkReader:layout()
 end

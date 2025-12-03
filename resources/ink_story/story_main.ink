@@ -1,7 +1,56 @@
+VAR cards_revealed = 0
+VAR pairs_collected = 0
+VAR npc_pairs = 0
+
 -> rules
 
 === rules ===
 NPC: You know how this it works, right?
++ Yes.
+    NPC: Great. You go first.
++ No[.], I've never played it.
+    NPC: I doubt that.
+    NPC: You need to find pairs of matching cards.
+    NPC: It's very simple. I'll show you.
++ Not sure.[] Is it the one where you try to find matching pairs?
+    NPC: Yes, excatly.
+- NPC: So far {cards_revealed} were flipped.
+{cards_revealed:
+- 0:
+    NPC: You need to turn two cards.
+- 1:
+    NPC: You need to turn another card.
+}
+-> DONE // wait for game to go to first_pair_revealed
+// -> first_pair_revealed
+
+// -(loop_start)
+// * {cards_revealed < 2} ->
+//     NPC: Go on.
+// * {cards_revealed < 2} ->
+//     NPC: You can do it.
+// + ->
+//     NPC: wait until player turns some cards.
+//     ->loop_end
+// - NPC: Just play with it.
+// ->loop_start
+// -(loop_end)
+// -> DONE
+
+=== first_pair_revealed ===
+{first_pair_revealed >= 2:
+    -> DONE
+}
+NPC: Let's see what you've got..
+{pairs_collected:
+- 0:
+    NPC: No luck. Now it's my turn.
+- 1:
+    NPC: Lucky start! You can go again.
+}
+-> DONE
+
+=== something ===
 + Yes.
     NPC: Great. Do you want to start?
     ++ Sure.
@@ -25,8 +74,6 @@ NPC: You know how this it works, right?
         -> regeln
 - spiel...
 -> DONE
-
-
 === regeln ===
 NPC: Du weisst wie das Spiel funktioniert, oder?
 + Ja[.], klar!
@@ -43,4 +90,19 @@ NPC: Du weisst wie das Spiel funktioniert, oder?
 + Nein[.], keine Ahnung.
     NPC: Ich zeig's dir. Es ist ganz einfach.
     NPC: Du kannst anfangen indem du zwei Karten aufdeckst.
+- -> DONE
+
+=== remember ===
+NPC: You don't remember me?
++ No, should I?
++ NO, sorry..
++ Of course I remember you! Nice to see you! How are you doing?
+    NPC: Good, thanks! Nice to
+- ->DONE
+
+=== erinnern ===
+NPC: Du kannst dich nicht mehr an mich erinnern oder?
++ Doch, klar erinnere ich mich an dich.
++ Nein, leider nicht.
++ Hmm, du kommst mir bekannt vor.
 - -> DONE

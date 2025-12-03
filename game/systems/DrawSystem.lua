@@ -157,7 +157,8 @@ function DrawSystem:drawScene()
         local rect = entity.rectangle
         setMaterial(entity.material)
         local rWidth, rHeight = rect.width * (tform.sx or 1), rect.height * (tform.sy or tform.sx or 1)
-        love.graphics.rectangle("fill", tform.x - rWidth/2, tform.y - rHeight/2, rWidth, rHeight)
+        local ox, oy = rect.ox or rWidth/2, rect.oy or rHeight/2 -- default ox / oy to center
+        love.graphics.rectangle("fill", tform.x - ox, tform.y - oy, rWidth, rHeight, rect.rx, rect.ry)
     end
 
     -- todo: shader and/or blendmode per drawable component?
@@ -206,7 +207,8 @@ function DrawSystem:draw()
         local rect = entity.rectangle
         setMaterial(entity.material)
         local rWidth, rHeight = rect.width * (tform.sx or 1), rect.height * (tform.sy or tform.sx or 1)
-        love.graphics.rectangle("fill", tform.x - rWidth/2, tform.y - rHeight/2, rWidth, rHeight)
+        local ox, oy = rect.ox or rWidth/2, rect.oy or rHeight/2 -- default ox / oy to center
+        love.graphics.rectangle("fill", tform.x - ox, tform.y - oy, rWidth, rHeight, rect.rx, rect.ry)
     end
     for _, entity in ipairs(self.uiTextboxEntities) do
         local tform = entity.tform

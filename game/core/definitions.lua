@@ -7,6 +7,8 @@
 ---@field rectangle? rectangle
 ---@field material? material
 ---@field onPointerDown? function
+---@field ui? boolean
+---@field textbox? textbox
 
 ---@class tform 2d transform component
 ---@field x number translation in x
@@ -26,6 +28,18 @@
 ---@class rectangle
 ---@field width number
 ---@field height number
+---@field ox? number
+---@field oy? number
+---@field rx? number x-axis radius of each corner
+---@field ry? number y-axis radius of each corner
+
+---@class textbox
+---@field font love.Font
+---@field text string
+---@field limit number line wrap limit
+---@field ox number x offset
+---@field oy number y offset
+---@field align string alignment
 
 ---@class material
 ---@field shader? love.Shader
