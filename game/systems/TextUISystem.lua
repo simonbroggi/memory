@@ -23,6 +23,7 @@ end
 ---@param text string text displayed in the bubble
 ---@param area string where the bubble is shown
 function TextUISystem:presentDialogBubble(text, area)
+    print("present " .. text .. " - " .. area)
     local r, g, b, a = .5, .5, .5, .5
     local bubble = self:createDialogBubble(text, r, g, b, a)
     bubble.textUIArea = area

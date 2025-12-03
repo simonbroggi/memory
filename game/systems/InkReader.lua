@@ -77,11 +77,14 @@ function InkReader:parseLine(line, tags)
         end
     end
 
+    local area = "left"
     if line:starts_with("NPC: ") then
         line = line:sub(6) -- remove "NPC: "
-        TextUISystem:presentDialogBubble(line, "left")
     else
-        TextUISystem:presentDialogBubble(line, "right")
+        area = "right"
+    end
+    if line ~= "" then
+        TextUISystem:presentDialogBubble(line, area)
     end
 end
 
