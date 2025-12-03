@@ -25,11 +25,9 @@ end
 ---@param area string where the bubble is shown
 function TextUISystem:presentDialogBubble(text, area)
     local r, g, b, a = .5, .5, .5, .5
-    local bubble = self:createDialogBubble(text, 200, self.nextBubbleY, 200, 60, r, g, b, a)
+    local bubble = self:createDialogBubble(text, r, g, b, a)
     bubble.textUIArea = area
-    self.nextBubbleY = self.nextBubbleY + 70
     self.dialogBubbles[#self.dialogBubbles+1] = bubble
-
     local width, height = love.graphics.getDimensions()
     self:layoutDialogBubbles(width, height)
 end
@@ -51,7 +49,7 @@ function TextUISystem:layoutDialogBubbles(width, height)
 
         -- figure out the height of the text in the bubble
         local font = bubble.textbox.font
-        local textWidth, textWrapped = font:getWrap(bubble.textbox.text, bubble.textbox.limit)
+        local textWidth, textWrapped = font:getWrap(bubble.textbox.text, colWidth)
         local textHeight = font:getHeight() * #textWrapped
 
         local left = bubble.textUIArea == "left"
@@ -172,19 +170,18 @@ function TextUISystem:createChoiceButton()
     button.pointerDownHandler = self
 end
 
-function TextUISystem:createDialogBubble(text, x, y, w, h, r, g, b, a)
+function TextUISystem:createDialogBubble(text, r, g, b, a)
     local bubble = core.newEntitytInWorld()
-    bubble.tform = {x = x, y = y}
+    bubble.tform = {x = 400, y = 400}
     bubble.ui = true
-    local textWidth = w - 20
-    bubble.rectangle = {width = w, height = h, ox = textWidth/2, oy = h/2} -- todo: h is dynamic.
+    bubble.rectangle = {width = 100, height = 100}
     bubble.material = {red=r, green=g, blue=b, alpha=a}
     bubble.textbox = {
         font = self.font,
         text = text,
-        limit = textWidth,
-        ox = textWidth/2,
-        oy = h/2, -- todo: h is dynamic.
+        limit = 100,
+        ox = 0,
+        oy = 0,
         align = "left",
     }
     return bubble
