@@ -2,6 +2,77 @@ VAR cards_revealed = 0
 VAR pairs_collected = 0
 VAR npc_pairs = 0
 
+-> create_invention
+
+=== create_invention ===
+    -> physics_or_audio_puzzle
+
+    = physics_or_audio_puzzle
+    solve physics or audio puzzle.
+    -> write_report
+
+    = write_report
+    Write the documentation about your invention.
+    Start with a title
+    + Turbo Blast Engine
+    + Hyper Drive Exaust
+    + Supersonar Propulsion
+    - Great choice.
+    Now continue your report.
+    - (report_loop)
+    * stuff
+        it's stuffed.
+    * more
+        the more the marry.
+    + conclude
+        -> save_report
+    - ->report_loop
+
+    = save_report
+    You staple the paper and put it in your drawer.
+    -> publication
+
+=== publication ===
+    You need to decide on how to tell the world about your genious invention.
+    + Pubicate in a scientifig journal.
+        You publish your findings an a renown scientific journa.
+        After some weeks, the Senegal Space Symposium invites you to present your work.
+        -> go_to_conference
+    + Propose a talk in a relevant conference.
+        -> go_to_conference
+    + Write a colegue directly
+        You write a mail about your discovery to Sarah. She proposes to present it at Senegal Spaceflight Symposium.
+        -> go_to_conference
+
+=== go_to_conference ===
+    Your arrive at Senegal Space Symposium just in time for your presentation.
+    -> present_work
+    
+    = present_work
+    You present your work.
+    Croud applauds.
+    -> meet_people
+    
+    = meet_people
+    try and find some partners to create a prototype.
+    find someone else has it already. stolen?!
+    -> END
+
+=== Campfire ===
+Campfire close to the beach. Sun is down. Json strumming a guitar, Arnet smoking. It's warm.
++ (sit) Sit down
+    It's cosy.
+    ++ Ask for a smoke
+        -> sit
+    ++ Stand up
+        -> Campfire
++ Leave
+    ++ Hostel
+    ++ Beach
+    ++ Vilage
+-> DONE
+
+
 -> rules
 
 === rules ===
