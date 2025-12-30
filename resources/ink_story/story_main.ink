@@ -2,9 +2,17 @@ VAR cards_revealed = 0
 VAR pairs_collected = 0
 VAR npc_pairs = 0
 
+// player character: inventor.
+// friend: musician playing in a solarpunk band. You modified his instruments.
+// story takes place near future: 2035.
+
 -> create_invention
 
 === create_invention ===
+//todo: define where. home? lab? how's it furnished. anyone else around? weather?..
+
+// Inventor lives and works in a house alone with his dog. locaten in Baden AG.
+// todo: try to get some sort of pseudo realistic future of zurich/ baden into a 2d space cycle game. can it work?
     -> physics_or_audio_puzzle
 
     = physics_or_audio_puzzle
